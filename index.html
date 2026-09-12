@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Towels Wrap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0d0f14;
+            --panel: #151922;
+            --panel-2: #1b202b;
+            --border: #2b3240;
+
+            --text: #f2f4f8;
+            --muted: #8d96a8;
+
+            --accent: #6c8cff;
+
+            --p1: #4f8cff;
+            --p2: #ff5757;
+            --empty: #202632;
+
+            --invalid: #7b2525;
+
+            --cell-radius: 8px;
+
+            --transition: 0.12s;
+        }
+
+        * {
+            scrollbar-width: thin;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background: var(--bg);
+            color: var(--text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            overflow-x: hidden;
+        }
+
+        button,
+        select,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .screen {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+           ===================================================== */
+
+        .button {
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+            color: var(--text);
+
+            border-radius: 10px;
+
+            padding: 11px 17px;
+
+            transition:
+                background var(--transition),
+                border-color var(--transition),
+                transform var(--transition);
+        }
+
+        .button:hover {
+            background: var(--panel-2);
+
+            border-color: #3b4455;
+        }
+
+        .button:active {
+            transform: scale(0.97);
+        }
+
+        .button.primary {
+            background: var(--accent);
+
+            border-color: var(--accent);
+
+            color: white;
+        }
+
+        .button.primary:hover {
+            filter: brightness(1.08);
+        }
+
+        .button.large {
+            width: 100%;
+
+            padding: 14px 18px;
+
+            font-size: 17px;
+        }
+
+
+        /* =====================================================
+           MAIN MENU
+           ===================================================== */
+
+        #menuScreen {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+        }
+
+        .menu {
+            width: min(420px, 100%);
+
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 45px;
+        }
+
+        .logo h1 {
+            margin: 0;
+
+            font-size:
+                clamp(42px, 10vw, 68px);
+
+            letter-spacing: -3px;
+
+            font-weight: 800;
+        }
+
+        .logo p {
+            margin: 10px 0 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+        .menu-buttons {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .menu-buttons .button {
+            width: 100%;
+        }
+
+        .menu-footer {
+            margin-top: 30px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .page {
+            width: min(760px, 100%);
+
+            margin: 0 auto;
+
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+
+            font-size: 25px;
+        }
+
+        .back-button {
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: var(--panel);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            margin-bottom: 14px;
+        }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card h3 {
+            margin:
+                0 0 8px;
+        }
+
+        .card p {
+            color: var(--muted);
+
+            line-height: 1.55;
+
+            margin:
+                0 0 12px;
+        }
+
+
+        /* =====================================================
+           SETUP
+           ===================================================== */
+
+        .setup-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 14px;
+
+            margin-bottom: 14px;
+        }
+
+        .player-card {
+            background: var(--panel);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding: 18px;
+        }
+
+        .player-card h3 {
+            margin:
+                0 0 15px;
+        }
+
+        .setting {
+            margin-bottom: 17px;
+        }
+
+        .setting:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: 600;
+
+            font-size: 14px;
+        }
+
+        .setting small {
+            display: block;
+
+            margin-top: 6px;
+
+            color: var(--muted);
+
+            line-height: 1.4;
+        }
+
+        select {
+            width: 100%;
+
+            padding: 11px;
+
+            border-radius: 9px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel-2);
+
+            color: var(--text);
+
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        select:disabled {
+            opacity: 0.7;
+
+            cursor: not-allowed;
+        }
+
+        .color-preview {
+            width: 100%;
+
+            height: 8px;
+
+            border-radius: 999px;
+
+            margin-bottom: 15px;
+
+            background: var(--p1);
+        }
+
+        .color-preview.p2 {
+            background: var(--p2);
+        }
+
+
+        /* =====================================================
+           HOW TO PLAY
+           ===================================================== */
+
+        .rules-list {
+            margin:
+                10px 0 0;
+
+            padding-left: 21px;
+
+            color: var(--muted);
+
+            line-height: 1.65;
+        }
+
+        .example {
+            margin-top: 18px;
+
+            padding: 16px;
+
+            background: var(--panel-2);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+        }
+
+        .example-title {
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 12px;
+        }
+
+        .example-board {
+            width: min(350px, 100%);
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, minmax(0, 1fr));
+
+            gap: 4px;
+        }
+
+        .example-cell {
+            aspect-ratio: 1;
+
+            border-radius: 5px;
+
+            background: var(--empty);
+        }
+
+        .example-cell.p1 {
+            background: var(--p1);
+        }
+
+        .example-cell.p2 {
+            background: var(--p2);
+        }
+
+        .example-caption {
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 10px;
+        }
+
+
+        /* =====================================================
+           SETTINGS
+           ===================================================== */
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-section h3 {
+            margin:
+                0 0 14px;
+
+            font-size: 17px;
+        }
+
+        .setting-row {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 14px;
+        }
+
+        input[type="color"] {
+            width: 100%;
+
+            height: 44px;
+
+            padding: 3px;
+
+            background: var(--panel-2);
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+        }
+
+
+        /* =====================================================
+           GAME
+           ===================================================== */
+
+        #gameScreen {
+            padding:
+                18px 16px 25px;
+        }
+
+        .game-container {
+            width: min(760px, 100%);
+
+            margin: 0 auto;
+        }
+
+        .game-topbar {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .game-title {
+            font-weight: 750;
+
+            font-size: 20px;
+        }
+
+        .game-actions {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .status {
+            text-align: center;
+
+            margin-bottom: 17px;
+        }
+
+        .turn {
+            font-size: 21px;
+
+            font-weight: 750;
+        }
+
+        .substatus {
+            color: var(--muted);
+
+            margin-top: 5px;
+
+            font-size: 14px;
+        }
+
+        .board-panel {
+            background: var(--panel);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding:
+                clamp(10px, 3vw, 20px);
+        }
+
+        .board-wrap {
+            width: 100%;
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+            min-width: 0;
+        }
+
+        .board {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(7, minmax(0, 1fr));
+
+            gap:
+                clamp(3px, 1vw, 6px);
+
+            user-select: none;
+
+            touch-action: manipulation;
+        }
+
+        .cell {
+            width: 100%;
+
+            aspect-ratio: 1 / 1;
+
+            min-width: 0;
+
+            border-radius:
+                var(--cell-radius);
+
+            background: var(--empty);
+
+            border: 2px solid transparent;
+
+            transition:
+                background var(--transition),
+                transform var(--transition),
+                border-color var(--transition);
+
+            -webkit-tap-highlight-color:
+                transparent;
+        }
+
+        .cell.p1 {
+            background: var(--p1);
+        }
+
+        .cell.p2 {
+            background: var(--p2);
+        }
+
+        .cell.clickable:hover {
+            transform: scale(0.96);
+        }
+
+        .cell.preview {
+            background:
+                color-mix(
+                    in srgb,
+                    var(--current-player-color)
+                    55%,
+                    var(--empty)
+                );
+
+            border-color:
+                var(--current-player-color);
+        }
+
+        .cell.invalid {
+            background:
+                var(--invalid);
+
+            border-color:
+                #ff5555;
+        }
+
+        .cell:active {
+            transform: scale(0.96);
+        }
+
+        .game-info {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 25px;
+
+            flex-wrap: wrap;
+
+            margin-top: 17px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+        .game-info strong {
+            color: var(--text);
+        }
+
+
+        /* =====================================================
+           GAME OVER
+           ===================================================== */
+
+        .game-over {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 50;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(0, 0, 0, 0.68);
+        }
+
+        .game-over-card {
+            width: min(390px, 100%);
+
+            background: var(--panel);
+
+            border: 1px solid var(--border);
+
+            border-radius: 17px;
+
+            padding: 28px;
+
+            text-align: center;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .game-over-card h2 {
+            margin: 0;
+
+            font-size: 29px;
+        }
+
+        .game-over-card p {
+            color: var(--muted);
+
+            margin:
+                9px 0 22px;
+
+            line-height: 1.5;
+        }
+
+        .game-over-actions {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 9px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 650px) {
+
+            .setup-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .setting-row {
+                grid-template-columns: 1fr;
+            }
+
+            .page {
+                padding: 16px;
+            }
+
+            .game-topbar {
+                align-items: flex-start;
+            }
+
+            .game-title {
+                font-size: 18px;
+            }
+
+            .game-actions {
+                flex-shrink: 0;
+            }
+
+            .game-actions .button {
+                padding:
+                    9px 11px;
+            }
+        }
+
+
+        @media (max-width: 430px) {
+
+            #menuScreen {
+                padding: 18px;
+            }
+
+            .logo {
+                margin-bottom: 35px;
+            }
+
+            .logo h1 {
+                font-size: 43px;
+            }
+
+            #gameScreen {
+                padding:
+                    12px 8px 20px;
+            }
+
+            .board-panel {
+                padding: 9px;
+            }
+
+            .board {
+                gap: 3px;
+            }
+
+            .cell {
+                border-width: 1px;
+
+                border-radius:
+                    calc(
+                        var(--cell-radius) * 0.75
+                    );
+            }
+
+            .game-info {
+                gap: 12px;
+            }
+        }
+
+
+        /* =====================================================
+           ANIMATIONS OFF
+           ===================================================== */
+
+        html.no-animations * {
+            transition: none !important;
+            animation: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<!-- =========================================================
+     MAIN MENU
+     ========================================================= -->
+
+<section
+    class="screen"
+    id="menuScreen"
+>
+
+    <div class="menu">
+
+        <div class="logo">
+
+            <h1>Towels Wrap</h1>
+
+            <p>
+                A simple two-player strategy game.
+            </p>
+
+        </div>
+
+
+        <div class="menu-buttons">
+
+            <button
+                class="button primary large"
+                id="menuPlay"
+            >
+                Play
+            </button>
+
+
+            <button
+                class="button large"
+                id="menuHowToPlay"
+            >
+                How to Play
+            </button>
+
+
+            <button
+                class="button large"
+                id="menuSettings"
+            >
+                Settings
+            </button>
+
+        </div>
+
+
+        <div class="menu-footer">
+            Towels Wrap
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GAME SETUP
+     ========================================================= -->
+
+<section
+    class="screen hidden"
+    id="setupScreen"
+>
+
+    <div class="page">
+
+        <div class="page-header">
+
+            <button
+                class="button back-button"
+                data-back="menu"
+            >
+                ←
+            </button>
+
+            <h2>Game Setup</h2>
+
+        </div>
+
+
+        <div class="setup-grid">
+
+            <!-- PLAYER 1 -->
+
+            <div class="player-card">
+
+                <h3>Player 1</h3>
+
+
+                <div
+                    class="color-preview"
+                    id="setupP1Preview"
+                ></div>
+
+
+                <div class="setting">
+
+                    <label for="setupP1Color">
+                        Color
+                    </label>
+
+                    <input
+                        type="color"
+                        id="setupP1Color"
+                        value="#4f8cff"
+                    >
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label for="setupP1Orientation">
+                        Orientation
+                    </label>
+
+                    <select
+                        id="setupP1Orientation"
+                    >
+
+                        <option value="random">
+                            Random
+                        </option>
+
+                        <option value="H">
+                            Horizontal
+                        </option>
+
+                        <option value="V">
+                            Vertical
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- PLAYER 2 -->
+
+            <div class="player-card">
+
+                <h3>Player 2</h3>
+
+
+                <div
+                    class="color-preview p2"
+                    id="setupP2Preview"
+                ></div>
+
+
+                <div class="setting">
+
+                    <label for="setupP2Color">
+                        Color
+                    </label>
+
+                    <input
+                        type="color"
+                        id="setupP2Color"
+                        value="#ff5757"
+                    >
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label>
+                        Orientation
+                    </label>
+
+                    <select
+                        id="setupP2Orientation"
+                        disabled
+                    >
+
+                        <option>
+                            Opposite of Player 1
+                        </option>
+
+                    </select>
+
+
+                    <small>
+                        Player 2 automatically gets
+                        the opposite orientation.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="setting">
+
+                <label for="setupStartingPlayer">
+                    Starting Player
+                </label>
+
+                <select
+                    id="setupStartingPlayer"
+                >
+
+                    <option value="1">
+                        Player 1
+                    </option>
+
+                    <option value="2">
+                        Player 2
+                    </option>
+
+                    <option value="random">
+                        Random
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="button primary large"
+                id="startGameButton"
+            >
+                Start Game
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     HOW TO PLAY
+     ========================================================= -->
+
+<section
+    class="screen hidden"
+    id="howToPlayScreen"
+>
+
+    <div class="page">
+
+        <div class="page-header">
+
+            <button
+                class="button back-button"
+                data-back="menu"
+            >
+                ←
+            </button>
+
+            <h2>How to Play</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>The Goal</h3>
+
+            <p>
+                Take turns placing your two-cell
+                piece on the board.
+            </p>
+
+            <p>
+                Your piece must follow your assigned
+                orientation.
+            </p>
+
+            <p>
+                If you have no legal move, you lose.
+                If the board becomes completely full,
+                the game is a tie.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>1. Place Your Piece</h3>
+
+            <p>
+                Each piece covers exactly two
+                neighboring squares.
+            </p>
+
+
+            <div class="example">
+
+                <div class="example-title">
+                    Horizontal piece
+                </div>
+
+
+                <div
+                    class="example-board"
+                    id="horizontalExample"
+                ></div>
+
+
+                <div class="example-caption">
+                    Two neighboring blue squares
+                    make one horizontal piece.
+                </div>
+
+            </div>
+
+
+            <div class="example">
+
+                <div class="example-title">
+                    Vertical piece
+                </div>
+
+
+                <div
+                    class="example-board"
+                    id="verticalExample"
+                ></div>
+
+
+                <div class="example-caption">
+                    Two neighboring red squares
+                    make one vertical piece.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>2. Take Turns</h3>
+
+            <p>
+                Players alternate turns.
+                Both squares used by your piece
+                must be empty.
+            </p>
+
+
+            <div class="example">
+
+                <div class="example-title">
+                    Occupied squares are blocked
+                </div>
+
+
+                <div
+                    class="example-board"
+                    id="blockedExample"
+                ></div>
+
+
+                <div class="example-caption">
+                    A piece cannot overlap another piece.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>3. Win or Tie</h3>
+
+            <ul class="rules-list">
+
+                <li>
+                    No legal move → you lose.
+                </li>
+
+                <li>
+                    The other player wins.
+                </li>
+
+                <li>
+                    Completely full board → tie.
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SETTINGS
+     ========================================================= -->
+
+<section
+    class="screen hidden"
+    id="settingsScreen"
+>
+
+    <div class="page">
+
+        <div class="page-header">
+
+            <button
+                class="button back-button"
+                data-back="menu"
+            >
+                ←
+            </button>
+
+            <h2>Settings</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="settings-section">
+
+                <h3>Graphics</h3>
+
+
+                <div class="setting">
+
+                    <label for="themeSetting">
+                        Theme
+                    </label>
+
+                    <select id="themeSetting">
+
+                        <option value="dark">
+                            Dark
+                        </option>
+
+                        <option value="light">
+                            Light
+                        </option>
+
+                        <option value="system">
+                            System
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label for="cellStyleSetting">
+                        Cell Shape
+                    </label>
+
+                    <select id="cellStyleSetting">
+
+                        <option value="rounded">
+                            Rounded
+                        </option>
+
+                        <option value="square">
+                            Square
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label for="animationSetting">
+                        Animations
+                    </label>
+
+                    <select id="animationSetting">
+
+                        <option value="on">
+                            On
+                        </option>
+
+                        <option value="off">
+                            Off
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label for="previewSetting">
+                        Move Preview
+                    </label>
+
+                    <select id="previewSetting">
+
+                        <option value="on">
+                            On
+                        </option>
+
+                        <option value="off">
+                            Off
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-section">
+
+                <h3>Board Colors</h3>
+
+
+                <div class="setting-row">
+
+                    <div class="setting">
+
+                        <label for="settingsP1Color">
+                            Player 1
+                        </label>
+
+                        <input
+                            type="color"
+                            id="settingsP1Color"
+                        >
+
+                    </div>
+
+
+                    <div class="setting">
+
+                        <label for="settingsP2Color">
+                            Player 2
+                        </label>
+
+                        <input
+                            type="color"
+                            id="settingsP2Color"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <label for="settingsEmptyColor">
+                        Empty Cells
+                    </label>
+
+                    <input
+                        type="color"
+                        id="settingsEmptyColor"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="button primary large"
+                id="saveSettingsButton"
+            >
+                Save Settings
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GAME
+     ========================================================= -->
+
+<section
+    class="screen hidden"
+    id="gameScreen"
+>
+
+    <div class="game-container">
+
+        <div class="game-topbar">
+
+            <div class="game-title">
+                Towels Wrap
+            </div>
+
+
+            <div class="game-actions">
+
+                <button
+                    class="button"
+                    id="gameMenuButton"
+                >
+                    Menu
+                </button>
+
+
+                <button
+                    class="button primary"
+                    id="gameNewButton"
+                >
+                    New Game
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="status">
+
+            <div
+                class="turn"
+                id="turnText"
+            >
+                Player 1's turn
+            </div>
+
+
+            <div
+                class="substatus"
+                id="substatus"
+            >
+                Horizontal
+            </div>
+
+        </div>
+
+
+        <div class="board-panel">
+
+            <div class="board-wrap">
+
+                <div
+                    class="board"
+                    id="board"
+                ></div>
+
+            </div>
+
+
+            <div class="game-info">
+
+                <div>
+
+                    <strong>
+                        Player 1:
+                    </strong>
+
+                    <span id="p1Orientation">
+                        Horizontal
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Player 2:
+                    </strong>
+
+                    <span id="p2Orientation">
+                        Vertical
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Moves:
+                    </strong>
+
+                    <span id="moveCount">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GAME OVER
+     ========================================================= -->
+
+<div
+    class="game-over hidden"
+    id="gameOver"
+>
+
+    <div class="game-over-card">
+
+        <h2 id="gameOverTitle">
+            Player 1 Wins!
+        </h2>
+
+
+        <p id="gameOverMessage">
+            Player 2 has no legal moves.
+        </p>
+
+
+        <div class="game-over-actions">
+
+            <button
+                class="button primary large"
+                id="playAgainButton"
+            >
+                Play Again
+            </button>
+
+
+            <button
+                class="button large"
+                id="gameOverMenuButton"
+            >
+                Main Menu
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+
+/* =========================================================
+   CONSTANTS
+   ========================================================= */
+
+const EMPTY = 0;
+const P1 = 1;
+const P2 = 2;
+
+
+/* =========================================================
+   RULES
+   ========================================================= */
+
+const rules = {
+
+    boardWidth: 7,
+
+    boardHeight: 8,
+
+    pieceLength: 2,
+
+    oppositeOrientations: true,
+
+    noLegalMove: "lose",
+
+    fullBoard: "tie"
+
+};
+
+
+/* =========================================================
+   DEFAULT SETTINGS
+   ========================================================= */
+
+const DEFAULT_SETTINGS = {
+
+    theme: "dark",
+
+    cellStyle: "rounded",
+
+    animations: "on",
+
+    preview: "on",
+
+    p1Color: "#4f8cff",
+
+    p2Color: "#ff5757",
+
+    emptyColor: "#202632"
+
+};
+
+
+/* =========================================================
+   SAFE STORAGE
+   =========================================================
+
+   localStorage can fail in some browser/file contexts.
+
+   These functions make storage optional rather than
+   allowing a storage error to crash the game.
+   ========================================================= */
+
+function loadSettings() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "towelsWrapSettings"
+            );
+
+
+        if (!saved) {
+
+            return {
+                ...DEFAULT_SETTINGS
+            };
+        }
+
+
+        const parsed =
+            JSON.parse(saved);
+
+
+        return {
+
+            ...DEFAULT_SETTINGS,
+
+            ...parsed
+
+        };
+
+    } catch {
+
+        return {
+            ...DEFAULT_SETTINGS
+        };
+    }
+}
+
+
+function saveSettings() {
+
+    try {
+
+        localStorage.setItem(
+            "towelsWrapSettings",
+
+            JSON.stringify(settings)
+        );
+
+    } catch {
+
+        /*
+            Settings simply won't persist if
+            browser storage isn't available.
+
+            The game still works normally.
+        */
+    }
+}
+
+
+let settings =
+    loadSettings();
+
+
+/* =========================================================
+   GAME STATE
+   ========================================================= */
+
+let board = [];
+
+let currentPlayer = P1;
+
+let gameOver = false;
+
+let moveCount = 0;
+
+let hoverCell = null;
+
+let orientations = {
+
+    1: "H",
+
+    2: "V"
+
+};
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const screens = {
+
+    menu:
+        document.getElementById(
+            "menuScreen"
+        ),
+
+    setup:
+        document.getElementById(
+            "setupScreen"
+        ),
+
+    howToPlay:
+        document.getElementById(
+            "howToPlayScreen"
+        ),
+
+    settings:
+        document.getElementById(
+            "settingsScreen"
+        ),
+
+    game:
+        document.getElementById(
+            "gameScreen"
+        )
+
+};
+
+
+const boardElement =
+    document.getElementById(
+        "board"
+    );
+
+const turnText =
+    document.getElementById(
+        "turnText"
+    );
+
+const substatus =
+    document.getElementById(
+        "substatus"
+    );
+
+const p1OrientationText =
+    document.getElementById(
+        "p1Orientation"
+    );
+
+const p2OrientationText =
+    document.getElementById(
+        "p2Orientation"
+    );
+
+const moveCountText =
+    document.getElementById(
+        "moveCount"
+    );
+
+const gameOverElement =
+    document.getElementById(
+        "gameOver"
+    );
+
+const gameOverTitle =
+    document.getElementById(
+        "gameOverTitle"
+    );
+
+const gameOverMessage =
+    document.getElementById(
+        "gameOverMessage"
+    );
+
+
+/* =========================================================
+   SCREEN NAVIGATION
+   ========================================================= */
+
+function showScreen(name) {
+
+    /*
+        Always hide every screen first.
+    */
+
+    Object.values(screens)
+        .forEach(
+            screen => {
+
+                screen.classList.add(
+                    "hidden"
+                );
+
+            }
+        );
+
+
+    /*
+        Make sure the requested screen
+        actually exists.
+
+        This prevents navigation bugs from
+        crashing the whole script.
+    */
+
+    if (!screens[name]) {
+
+        console.error(
+            `Unknown screen: ${name}`
+        );
+
+        screens.menu.classList.remove(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    screens[name].classList.remove(
+        "hidden"
+    );
+
+
+    /*
+        Put the user back at the top of
+        the page when changing screens.
+    */
+
+    window.scrollTo(
+        0,
+        0
+    );
+}
+
+
+function showMainMenu() {
+
+    gameOverElement.classList.add(
+        "hidden"
+    );
+
+    showScreen("menu");
+}
+
+
+/* =========================================================
+   ALL BACK BUTTONS
+   ========================================================= */
+
+document
+    .querySelectorAll(
+        "[data-back]"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const destination =
+                        button.dataset.back;
+
+
+                    showScreen(
+                        destination
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   MAIN MENU
+   ========================================================= */
+
+document
+    .getElementById(
+        "menuPlay"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            prepareSetup();
+
+            showScreen("setup");
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "menuHowToPlay"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            buildHowToPlayExamples();
+
+            showScreen(
+                "howToPlay"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "menuSettings"
+    )
+    .addEventListener(
+        "click",
+        openSettings
+    );
+
+
+/* =========================================================
+   COLORS
+   ========================================================= */
+
+function applyColors() {
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--p1",
+            settings.p1Color
+        );
+
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--p2",
+            settings.p2Color
+        );
+
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--empty",
+            settings.emptyColor
+        );
+
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--cell-radius",
+            settings.cellStyle === "square"
+                ? "2px"
+                : "8px"
+        );
+
+
+    /*
+        Theme
+    */
+
+    let theme =
+        settings.theme;
+
+
+    if (
+        theme === "system"
+    ) {
+
+        theme =
+            window.matchMedia(
+                "(prefers-color-scheme: light)"
+            ).matches
+                ? "light"
+                : "dark";
+    }
+
+
+    if (
+        theme === "light"
+    ) {
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--bg",
+                "#f1f3f7"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--panel",
+                "#ffffff"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--panel-2",
+                "#f1f3f7"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--border",
+                "#d7dce5"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--text",
+                "#151922"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--muted",
+                "#697386"
+            );
+
+    } else {
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--bg",
+                "#0d0f14"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--panel",
+                "#151922"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--panel-2",
+                "#1b202b"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--border",
+                "#2b3240"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--text",
+                "#f2f4f8"
+            );
+
+        document.documentElement
+            .style
+            .setProperty(
+                "--muted",
+                "#8d96a8"
+            );
+    }
+
+
+    /*
+        Animations
+    */
+
+    document.documentElement
+        .classList.toggle(
+            "no-animations",
+            settings.animations === "off"
+        );
+}
+
+
+/* =========================================================
+   SETUP
+   ========================================================= */
+
+function prepareSetup() {
+
+    document.getElementById(
+        "setupP1Color"
+    ).value =
+        settings.p1Color;
+
+
+    document.getElementById(
+        "setupP2Color"
+    ).value =
+        settings.p2Color;
+
+
+    document.getElementById(
+        "setupP1Orientation"
+    ).value =
+        "random";
+
+
+    document.getElementById(
+        "setupStartingPlayer"
+    ).value =
+        "1";
+
+
+    updateSetupPreviews();
+}
+
+
+function updateSetupPreviews() {
+
+    const p1Color =
+        document.getElementById(
+            "setupP1Color"
+        ).value;
+
+
+    const p2Color =
+        document.getElementById(
+            "setupP2Color"
+        ).value;
+
+
+    document.getElementById(
+        "setupP1Preview"
+    ).style.background =
+        p1Color;
+
+
+    document.getElementById(
+        "setupP2Preview"
+    ).style.background =
+        p2Color;
+}
+
+
+document
+    .getElementById(
+        "setupP1Color"
+    )
+    .addEventListener(
+        "input",
+        updateSetupPreviews
+    );
+
+
+document
+    .getElementById(
+        "setupP2Color"
+    )
+    .addEventListener(
+        "input",
+        updateSetupPreviews
+    );
+
+
+/* =========================================================
+   START GAME
+   ========================================================= */
+
+document
+    .getElementById(
+        "startGameButton"
+    )
+    .addEventListener(
+        "click",
+        startGameFromSetup
+    );
+
+
+function startGameFromSetup() {
+
+    /*
+        Get setup values FIRST.
+    */
+
+    const p1Color =
+        document.getElementById(
+            "setupP1Color"
+        ).value;
+
+
+    const p2Color =
+        document.getElementById(
+            "setupP2Color"
+        ).value;
+
+
+    const orientationSetting =
+        document.getElementById(
+            "setupP1Orientation"
+        ).value;
+
+
+    const startingPlayer =
+        document.getElementById(
+            "setupStartingPlayer"
+        ).value;
+
+
+    /*
+        Save colors to the normal settings.
+    */
+
+    settings.p1Color =
+        p1Color;
+
+    settings.p2Color =
+        p2Color;
+
+
+    /*
+        Saving is now safe and cannot crash
+        the game.
+    */
+
+    saveSettings();
+
+    applyColors();
+
+
+    /*
+        Determine Player 1 orientation.
+    */
+
+    let p1Orientation =
+        orientationSetting;
+
+
+    if (
+        p1Orientation === "random"
+    ) {
+
+        p1Orientation =
+            randomOrientation();
+    }
+
+
+    orientations[P1] =
+        p1Orientation;
+
+
+    /*
+        Player 2 gets the opposite.
+    */
+
+    orientations[P2] =
+        oppositeOrientation(
+            p1Orientation
+        );
+
+
+    /*
+        Determine starting player.
+    */
+
+    if (
+        startingPlayer === "random"
+    ) {
+
+        currentPlayer =
+            Math.random() < 0.5
+                ? P1
+                : P2;
+
+    } else {
+
+        currentPlayer =
+            Number(
+                startingPlayer
+            );
+    }
+
+
+    /*
+        Reset game.
+    */
+
+    board =
+        createEmptyBoard();
+
+
+    moveCount =
+        0;
+
+
+    gameOver =
+        false;
+
+
+    hoverCell =
+        null;
+
+
+    gameOverElement.classList.add(
+        "hidden"
+    );
+
+
+    /*
+        Go directly to the game.
+    */
+
+    showScreen("game");
+
+
+    render();
+}
+
+
+/* =========================================================
+   BOARD CREATION
+   ========================================================= */
+
+function createEmptyBoard() {
+
+    return Array.from(
+        {
+            length:
+                rules.boardHeight
+        },
+
+        () =>
+            Array(
+                rules.boardWidth
+            ).fill(EMPTY)
+    );
+}
+
+
+/* =========================================================
+   ORIENTATION
+   ========================================================= */
+
+function randomOrientation() {
+
+    return Math.random() < 0.5
+        ? "H"
+        : "V";
+}
+
+
+function oppositeOrientation(
+    orientation
+) {
+
+    return orientation === "H"
+        ? "V"
+        : "H";
+}
+
+
+function orientationName(
+    orientation
+) {
+
+    return orientation === "H"
+        ? "Horizontal"
+        : "Vertical";
+}
+
+
+/* =========================================================
+   PLAYER
+   ========================================================= */
+
+function playerName(player) {
+
+    return player === P1
+        ? "Player 1"
+        : "Player 2";
+}
+
+
+function getPlayerColor(player) {
+
+    return player === P1
+        ? settings.p1Color
+        : settings.p2Color;
+}
+
+
+/* =========================================================
+   LEGAL MOVES
+   ========================================================= */
+
+function getLegalMoves(
+    stateBoard,
+    player
+) {
+
+    const moves = [];
+
+    const orientation =
+        orientations[player];
+
+
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
+
+            const cells = [];
+
+
+            for (
+                let i = 0;
+                i < rules.pieceLength;
+                i++
+            ) {
+
+                const cellR =
+                    orientation === "H"
+                        ? r
+                        : r + i;
+
+
+                const cellC =
+                    orientation === "H"
+                        ? c + i
+                        : c;
+
+
+                cells.push({
+
+                    r: cellR,
+
+                    c: cellC
+
+                });
+            }
+
+
+            const inside =
+                cells.every(
+                    cell =>
+
+                        cell.r >= 0 &&
+                        cell.r <
+                            rules.boardHeight &&
+
+                        cell.c >= 0 &&
+                        cell.c <
+                            rules.boardWidth
+                );
+
+
+            if (!inside) {
+
+                continue;
+            }
+
+
+            const empty =
+                cells.every(
+                    cell =>
+                        stateBoard[
+                            cell.r
+                        ][
+                            cell.c
+                        ] === EMPTY
+                );
+
+
+            if (empty) {
+
+                moves.push({
+                    cells
+                });
+            }
+        }
+    }
+
+
+    return moves;
+}
+
+
+/* =========================================================
+   BOARD FULL
+   ========================================================= */
+
+function isBoardFull() {
+
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
+
+            if (
+                board[r][c] === EMPTY
+            ) {
+
+                return false;
+            }
+        }
+    }
+
+
+    return true;
+}
+
+
+/* =========================================================
+   PREVIEW
+   ========================================================= */
+
+function getPreview() {
+
+    if (
+        !hoverCell ||
+        gameOver ||
+        settings.preview === "off"
+    ) {
+
+        return null;
+    }
+
+
+    const r =
+        hoverCell.r;
+
+    const c =
+        hoverCell.c;
+
+
+    const orientation =
+        orientations[currentPlayer];
+
+
+    const cells = [];
+
+
+    for (
+        let i = 0;
+        i < rules.pieceLength;
+        i++
+    ) {
+
+        const cellR =
+            orientation === "H"
+                ? r
+                : r + i;
+
+
+        const cellC =
+            orientation === "H"
+                ? c + i
+                : c;
+
+
+        cells.push({
+
+            r: cellR,
+
+            c: cellC
+
+        });
+    }
+
+
+    const valid =
+        cells.every(
+            cell =>
+
+                cell.r >= 0 &&
+                cell.r <
+                    rules.boardHeight &&
+
+                cell.c >= 0 &&
+                cell.c <
+                    rules.boardWidth &&
+
+                board[
+                    cell.r
+                ][
+                    cell.c
+                ] === EMPTY
+        );
+
+
+    return {
+
+        cells,
+
+        valid
+
+    };
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function render() {
+
+    boardElement.innerHTML = "";
+
+
+    const preview =
+        getPreview();
+
+
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
+
+            const cell =
+                document.createElement(
+                    "div"
+                );
+
+
+            cell.className =
+                "cell";
+
+
+            const value =
+                board[r][c];
+
+
+            if (
+                value === P1
+            ) {
+
+                cell.classList.add(
+                    "p1"
+                );
+
+            } else if (
+                value === P2
+            ) {
+
+                cell.classList.add(
+                    "p2"
+                );
+            }
+
+
+            if (
+                !gameOver &&
+                value === EMPTY
+            ) {
+
+                cell.classList.add(
+                    "clickable"
+                );
+            }
+
+
+            if (preview) {
+
+                const isPreview =
+                    preview.cells.some(
+                        previewCell =>
+
+                            previewCell.r === r &&
+                            previewCell.c === c
+                    );
+
+
+                if (isPreview) {
+
+                    cell.classList.add(
+                        preview.valid
+                            ? "preview"
+                            : "invalid"
+                    );
+                }
+            }
+
+
+            cell.dataset.row =
+                r;
+
+            cell.dataset.col =
+                c;
+
+
+            boardElement.appendChild(
+                cell
+            );
+        }
+    }
+
+
+    updateStatus();
+
+
+    p1OrientationText.textContent =
+        orientationName(
+            orientations[P1]
+        );
+
+
+    p2OrientationText.textContent =
+        orientationName(
+            orientations[P2]
+        );
+
+
+    moveCountText.textContent =
+        moveCount;
+
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--current-player-color",
+            getPlayerColor(
+                currentPlayer
+            )
+        );
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function updateStatus() {
+
+    if (gameOver) {
+
+        return;
+    }
+
+
+    /*
+        FULL BOARD = TIE
+
+        This must happen before the
+        no-legal-move check.
+    */
+
+    if (
+        isBoardFull() &&
+        rules.fullBoard === "tie"
+    ) {
+
+        finishTie();
+
+        return;
+    }
+
+
+    const legalMoves =
+        getLegalMoves(
+            board,
+            currentPlayer
+        );
+
+
+    /*
+        NO MOVE = LOSS
+    */
+
+    if (
+        legalMoves.length === 0 &&
+        rules.noLegalMove === "lose"
+    ) {
+
+        const winner =
+            currentPlayer === P1
+                ? P2
+                : P1;
+
+
+        finishWin(winner);
+
+        return;
+    }
+
+
+    turnText.textContent =
+        `${playerName(
+            currentPlayer
+        )}'s turn`;
+
+
+    substatus.textContent =
+        orientationName(
+            orientations[
+                currentPlayer
+            ]
+        );
+}
+
+
+/* =========================================================
+   WIN
+   ========================================================= */
+
+function finishWin(winner) {
+
+    gameOver = true;
+
+
+    const loser =
+        winner === P1
+            ? P2
+            : P1;
+
+
+    gameOverTitle.textContent =
+        `${playerName(winner)} Wins!`;
+
+
+    gameOverMessage.textContent =
+        `${playerName(loser)} has no legal moves.`;
+
+
+    gameOverElement.classList.remove(
+        "hidden"
+    );
+
+
+    turnText.textContent =
+        `${playerName(winner)} wins!`;
+
+
+    substatus.textContent =
+        "No legal moves.";
+}
+
+
+/* =========================================================
+   TIE
+   ========================================================= */
+
+function finishTie() {
+
+    gameOver = true;
+
+
+    gameOverTitle.textContent =
+        "It's a Tie!";
+
+
+    gameOverMessage.textContent =
+        "The board is completely full.";
+
+
+    gameOverElement.classList.remove(
+        "hidden"
+    );
+
+
+    turnText.textContent =
+        "It's a tie!";
+
+
+    substatus.textContent =
+        "The board is completely full.";
+}
+
+
+/* =========================================================
+   MAKE MOVE
+   ========================================================= */
+
+function humanMove(
+    r,
+    c
+) {
+
+    if (gameOver) {
+
+        return;
+    }
+
+
+    const orientation =
+        orientations[currentPlayer];
+
+
+    const cells = [];
+
+
+    for (
+        let i = 0;
+        i < rules.pieceLength;
+        i++
+    ) {
+
+        const cellR =
+            orientation === "H"
+                ? r
+                : r + i;
+
+
+        const cellC =
+            orientation === "H"
+                ? c + i
+                : c;
+
+
+        cells.push({
+
+            r: cellR,
+
+            c: cellC
+
+        });
+    }
+
+
+    /*
+        Check board boundaries.
+    */
+
+    const inside =
+        cells.every(
+            cell =>
+
+                cell.r >= 0 &&
+                cell.r <
+                    rules.boardHeight &&
+
+                cell.c >= 0 &&
+                cell.c <
+                    rules.boardWidth
+        );
+
+
+    if (!inside) {
+
+        hoverCell = {
+            r,
+            c
+        };
+
+        render();
+
+        return;
+    }
+
+
+    /*
+        Check occupancy.
+    */
+
+    const empty =
+        cells.every(
+            cell =>
+                board[
+                    cell.r
+                ][
+                    cell.c
+                ] === EMPTY
+        );
+
+
+    if (!empty) {
+
+        hoverCell = {
+            r,
+            c
+        };
+
+        render();
+
+        return;
+    }
+
+
+    /*
+        Place the entire piece.
+    */
+
+    cells.forEach(
+        cell => {
+
+            board[
+                cell.r
+            ][
+                cell.c
+            ] =
+                currentPlayer;
+
+        }
+    );
+
+
+    moveCount++;
+
+    /*
+        Clear preview BEFORE switching
+        players.
+    */
+
+    hoverCell = null;
+
+
+    nextTurn();
+}
+
+
+/* =========================================================
+   NEXT TURN
+   ========================================================= */
+
+function nextTurn() {
+
+    /*
+        Check tie immediately after
+        placing the piece.
+    */
+
+    if (
+        isBoardFull() &&
+        rules.fullBoard === "tie"
+    ) {
+
+        finishTie();
+
+        render();
+
+        return;
+    }
+
+
+    /*
+        Switch player.
+    */
+
+    currentPlayer =
+        currentPlayer === P1
+            ? P2
+            : P1;
+
+
+    /*
+        Check whether the new player
+        has a legal move.
+    */
+
+    const legalMoves =
+        getLegalMoves(
+            board,
+            currentPlayer
+        );
+
+
+    if (
+        legalMoves.length === 0
+    ) {
+
+        const winner =
+            currentPlayer === P1
+                ? P2
+                : P1;
+
+
+        finishWin(winner);
+
+        render();
+
+        return;
+    }
+
+
+    render();
+}
+
+
+/* =========================================================
+   BOARD MOUSE MOVE
+   ========================================================= */
+
+boardElement.addEventListener(
+    "mousemove",
+    event => {
+
+        const cell =
+            event.target.closest(
+                ".cell"
+            );
+
+
+        if (!cell) {
+
+            if (
+                hoverCell !== null
+            ) {
+
+                hoverCell = null;
+
+                render();
+            }
+
+            return;
+        }
+
+
+        const nextHover = {
+
+            r: Number(
+                cell.dataset.row
+            ),
+
+            c: Number(
+                cell.dataset.col
+            )
+
+        };
+
+
+        if (
+            hoverCell &&
+            hoverCell.r === nextHover.r &&
+            hoverCell.c === nextHover.c
+        ) {
+
+            return;
+        }
+
+
+        hoverCell =
+            nextHover;
+
+
+        render();
+    }
+);
+
+
+/* =========================================================
+   BOARD MOUSE LEAVE
+   ========================================================= */
+
+boardElement.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            hoverCell !== null
+        ) {
+
+            hoverCell = null;
+
+            render();
+        }
+    }
+);
+
+
+/* =========================================================
+   BOARD CLICK
+   ========================================================= */
+
+boardElement.addEventListener(
+    "click",
+    event => {
+
+        const cell =
+            event.target.closest(
+                ".cell"
+            );
+
+
+        if (!cell) {
+
+            return;
+        }
+
+
+        humanMove(
+
+            Number(
+                cell.dataset.row
+            ),
+
+            Number(
+                cell.dataset.col
+            )
+
+        );
+    }
+);
+
+
+/* =========================================================
+   GAME MENU
+   ========================================================= */
+
+document
+    .getElementById(
+        "gameMenuButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            gameOverElement.classList.add(
+                "hidden"
+            );
+
+            showMainMenu();
+
+        }
+    );
+
+
+/* =========================================================
+   GAME NEW
+   ========================================================= */
+
+document
+    .getElementById(
+        "gameNewButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            prepareSetup();
+
+            showScreen("setup");
+
+        }
+    );
+
+
+/* =========================================================
+   GAME OVER: PLAY AGAIN
+   ========================================================= */
+
+document
+    .getElementById(
+        "playAgainButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            gameOverElement.classList.add(
+                "hidden"
+            );
+
+
+            prepareSetup();
+
+            showScreen("setup");
+
+        }
+    );
+
+
+/* =========================================================
+   GAME OVER: MENU
+   ========================================================= */
+
+document
+    .getElementById(
+        "gameOverMenuButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            showMainMenu();
+
+        }
+    );
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function openSettings() {
+
+    document.getElementById(
+        "themeSetting"
+    ).value =
+        settings.theme;
+
+
+    document.getElementById(
+        "cellStyleSetting"
+    ).value =
+        settings.cellStyle;
+
+
+    document.getElementById(
+        "animationSetting"
+    ).value =
+        settings.animations;
+
+
+    document.getElementById(
+        "previewSetting"
+    ).value =
+        settings.preview;
+
+
+    document.getElementById(
+        "settingsP1Color"
+    ).value =
+        settings.p1Color;
+
+
+    document.getElementById(
+        "settingsP2Color"
+    ).value =
+        settings.p2Color;
+
+
+    document.getElementById(
+        "settingsEmptyColor"
+    ).value =
+        settings.emptyColor;
+
+
+    showScreen("settings");
+}
+
+
+/* =========================================================
+   SAVE SETTINGS
+   ========================================================= */
+
+document
+    .getElementById(
+        "saveSettingsButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            settings.theme =
+                document.getElementById(
+                    "themeSetting"
+                ).value;
+
+
+            settings.cellStyle =
+                document.getElementById(
+                    "cellStyleSetting"
+                ).value;
+
+
+            settings.animations =
+                document.getElementById(
+                    "animationSetting"
+                ).value;
+
+
+            settings.preview =
+                document.getElementById(
+                    "previewSetting"
+                ).value;
+
+
+            settings.p1Color =
+                document.getElementById(
+                    "settingsP1Color"
+                ).value;
+
+
+            settings.p2Color =
+                document.getElementById(
+                    "settingsP2Color"
+                ).value;
+
+
+            settings.emptyColor =
+                document.getElementById(
+                    "settingsEmptyColor"
+                ).value;
+
+
+            saveSettings();
+
+            applyColors();
+
+            showMainMenu();
+
+        }
+    );
+
+
+/* =========================================================
+   HOW TO PLAY EXAMPLES
+   ========================================================= */
+
+function createExampleBoard(
+    elementId,
+    cells
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    element.innerHTML = "";
+
+
+    const width = 5;
+
+    const height = 4;
+
+
+    for (
+        let r = 0;
+        r < height;
+        r++
+    ) {
+
+        for (
+            let c = 0;
+            c < width;
+            c++
+        ) {
+
+            const cell =
+                document.createElement(
+                    "div"
+                );
+
+
+            cell.className =
+                "example-cell";
+
+
+            const value =
+                cells[
+                    `${r},${c}`
+                ];
+
+
+            if (
+                value === P1
+            ) {
+
+                cell.classList.add(
+                    "p1"
+                );
+
+            } else if (
+                value === P2
+            ) {
+
+                cell.classList.add(
+                    "p2"
+                );
+            }
+
+
+            element.appendChild(
+                cell
+            );
+        }
+    }
+}
+
+
+function buildHowToPlayExamples() {
+
+    /*
+        Horizontal
+    */
+
+    const horizontal = {};
+
+
+    horizontal["1,1"] =
+        P1;
+
+    horizontal["1,2"] =
+        P1;
+
+
+    createExampleBoard(
+        "horizontalExample",
+        horizontal
+    );
+
+
+    /*
+        Vertical
+    */
+
+    const vertical = {};
+
+
+    vertical["0,2"] =
+        P2;
+
+    vertical["1,2"] =
+        P2;
+
+
+    createExampleBoard(
+        "verticalExample",
+        vertical
+    );
+
+
+    /*
+        Blocked board
+    */
+
+    const blocked = {};
+
+
+    blocked["1,1"] =
+        P1;
+
+    blocked["1,2"] =
+        P1;
+
+
+    blocked["2,3"] =
+        P2;
+
+    blocked["2,4"] =
+        P2;
+
+
+    createExampleBoard(
+        "blockedExample",
+        blocked
+    );
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+applyColors();
+
+showMainMenu();
+
+</script>
+
+</body>
+</html>
