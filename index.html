@@ -1,3478 +1,1975 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Towels Wrap</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #0d0f14;
-            --panel: #151922;
-            --panel-2: #1b202b;
-            --border: #2b3240;
-
-            --text: #f2f4f8;
-            --muted: #8d96a8;
-
-            --accent: #6c8cff;
-
-            --p1: #4f8cff;
-            --p2: #ff5757;
-            --empty: #202632;
-
-            --invalid: #7b2525;
-
-            --cell-radius: 8px;
-
-            --transition: 0.12s;
-        }
-
-        * {
-            scrollbar-width: thin;
-        }
-
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            min-height: 100%;
-        }
-
-        body {
-            min-height: 100vh;
-
-            background: var(--bg);
-            color: var(--text);
-
-            font-family:
-                Inter,
-                ui-sans-serif,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            overflow-x: hidden;
-        }
-
-        button,
-        select,
-        input {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        button:focus-visible,
-        select:focus-visible,
-        input:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .screen {
-            width: 100%;
-            min-height: 100vh;
-        }
-
-
-        /* =====================================================
-           BUTTONS
-           ===================================================== */
-
-        .button {
-            border: 1px solid var(--border);
-
-            background: var(--panel);
-            color: var(--text);
-
-            border-radius: 10px;
-
-            padding: 11px 17px;
-
-            transition:
-                background var(--transition),
-                border-color var(--transition),
-                transform var(--transition);
-        }
-
-        .button:hover {
-            background: var(--panel-2);
-            border-color: #3b4455;
-        }
-
-        .button:active {
-            transform: scale(0.97);
-        }
-
-        .button.primary {
-            background: var(--accent);
-
-            border-color: var(--accent);
-
-            color: white;
-        }
-
-        .button.primary:hover {
-            filter: brightness(1.08);
-        }
-
-        .button.large {
-            width: 100%;
-
-            padding: 14px 18px;
-
-            font-size: 17px;
-        }
-
-
-        /* =====================================================
-           MAIN MENU
-           ===================================================== */
-
-        #menuScreen {
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            padding: 24px;
-        }
-
-        .menu {
-            width: min(420px, 100%);
-
-            text-align: center;
-        }
-
-        .logo {
-            margin-bottom: 45px;
-        }
-
-        .logo h1 {
-            margin: 0;
-
-            font-size:
-                clamp(42px, 10vw, 68px);
-
-            letter-spacing: -3px;
-
-            font-weight: 800;
-        }
-
-        .logo p {
-            margin: 10px 0 0;
-
-            color: var(--muted);
-
-            font-size: 14px;
-        }
-
-        .menu-buttons {
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 10px;
-        }
-
-        .menu-buttons .button {
-            width: 100%;
-        }
-
-        .menu-footer {
-            margin-top: 30px;
-
-            color: var(--muted);
-
-            font-size: 12px;
-        }
-
-
-        /* =====================================================
-           PAGE
-           ===================================================== */
-
-        .page {
-            width: min(760px, 100%);
-
-            margin: 0 auto;
-
-            padding: 24px;
-        }
-
-        .page-header {
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-
-            margin-bottom: 25px;
-        }
-
-        .page-header h2 {
-            margin: 0;
-
-            font-size: 25px;
-        }
-
-        .back-button {
-            flex-shrink: 0;
-        }
-
-        .card {
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            border-radius: 15px;
-
-            padding: 20px;
-
-            margin-bottom: 14px;
-        }
-
-        .card:last-child {
-            margin-bottom: 0;
-        }
-
-        .card h3 {
-            margin:
-                0 0 8px;
-        }
-
-        .card p {
-            color: var(--muted);
-
-            line-height: 1.55;
-
-            margin:
-                0 0 12px;
-        }
-
-
-        /* =====================================================
-           SETUP
-           ===================================================== */
-
-        .setup-grid {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 14px;
-
-            margin-bottom: 14px;
-        }
-
-        .player-card {
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            border-radius: 15px;
-
-            padding: 18px;
-        }
-
-        .player-card h3 {
-            margin:
-                0 0 15px;
-        }
-
-        .setting {
-            margin-bottom: 17px;
-        }
-
-        .setting:last-child {
-            margin-bottom: 0;
-        }
-
-        .setting label {
-            display: block;
-
-            margin-bottom: 7px;
-
-            font-weight: 600;
-
-            font-size: 14px;
-        }
-
-        .setting small {
-            display: block;
-
-            margin-top: 6px;
-
-            color: var(--muted);
-
-            line-height: 1.4;
-        }
-
-        select {
-            width: 100%;
-
-            padding: 11px;
-
-            border-radius: 9px;
-
-            border: 1px solid var(--border);
-
-            background: var(--panel-2);
-
-            color: var(--text);
-
-            outline: none;
-        }
-
-        select:focus {
-            border-color: var(--accent);
-        }
-
-        select:disabled {
-            opacity: 0.7;
-
-            cursor: not-allowed;
-        }
-
-        .color-preview {
-            width: 100%;
-
-            height: 8px;
-
-            border-radius: 999px;
-
-            margin-bottom: 15px;
-
-            background: var(--p1);
-        }
-
-        .color-preview.p2 {
-            background: var(--p2);
-        }
-
-
-        /* =====================================================
-           HOW TO PLAY
-           ===================================================== */
-
-        .rules-list {
-            margin:
-                10px 0 0;
-
-            padding-left: 21px;
-
-            color: var(--muted);
-
-            line-height: 1.65;
-        }
-
-        .example {
-            margin-top: 18px;
-
-            padding: 16px;
-
-            background: var(--panel-2);
-
-            border: 1px solid var(--border);
-
-            border-radius: 12px;
-        }
-
-        .example-title {
-            font-size: 14px;
-
-            font-weight: 700;
-
-            margin-bottom: 12px;
-        }
-
-        .example-board {
-            width: min(350px, 100%);
-
-            margin: 0 auto;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(5, minmax(0, 1fr));
-
-            gap: 4px;
-        }
-
-        .example-cell {
-            aspect-ratio: 1;
-
-            border-radius: 5px;
-
-            background: var(--empty);
-        }
-
-        .example-cell.p1 {
-            background: var(--p1);
-        }
-
-        .example-cell.p2 {
-            background: var(--p2);
-        }
-
-        .example-caption {
-            text-align: center;
-
-            color: var(--muted);
-
-            font-size: 13px;
-
-            margin-top: 10px;
-        }
-
-
-        /* =====================================================
-           SETTINGS
-           ===================================================== */
-
-        .settings-section {
-            margin-bottom: 28px;
-
-            padding-bottom: 24px;
-
-            border-bottom: 1px solid var(--border);
-        }
-
-        .settings-section:last-child {
-            margin-bottom: 0;
-
-            padding-bottom: 0;
-
-            border-bottom: 0;
-        }
-
-        .settings-section h3 {
-            margin:
-                0 0 14px;
-
-            font-size: 17px;
-        }
-
-        .settings-description {
-            color: var(--muted);
-
-            line-height: 1.5;
-
-            font-size: 13px;
-
-            margin:
-                -5px 0 15px;
-        }
-
-        .setting-row {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 14px;
-        }
-
-        input[type="color"] {
-            width: 100%;
-
-            height: 44px;
-
-            padding: 3px;
-
-            background: var(--panel-2);
-
-            border: 1px solid var(--border);
-
-            border-radius: 9px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-
-            height: 44px;
-
-            padding: 9px 11px;
-
-            background: var(--panel-2);
-
-            border: 1px solid var(--border);
-
-            border-radius: 9px;
-
-            color: var(--text);
-
-            outline: none;
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--accent);
-        }
-
-        .rule-status {
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 7px;
-
-            margin-top: 4px;
-
-            padding: 6px 9px;
-
-            border-radius: 7px;
-
-            background: var(--panel-2);
-
-            color: var(--muted);
-
-            font-size: 12px;
-        }
-
-        .rule-status-dot {
-            width: 7px;
-
-            height: 7px;
-
-            border-radius: 50%;
-
-            background: var(--accent);
-        }
-
-
-        /* =====================================================
-           GAME
-           ===================================================== */
-
-        #gameScreen {
-            padding:
-                18px 16px 25px;
-        }
-
-        .game-container {
-            width: min(760px, 100%);
-
-            margin: 0 auto;
-        }
-
-        .game-topbar {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 15px;
-
-            margin-bottom: 15px;
-        }
-
-        .game-title {
-            font-weight: 750;
-
-            font-size: 20px;
-        }
-
-        .game-actions {
-            display: flex;
-
-            gap: 8px;
-        }
-
-        .status {
-            text-align: center;
-
-            margin-bottom: 14px;
-        }
-
-        .turn {
-            font-size: 21px;
-
-            font-weight: 750;
-        }
-
-        .substatus {
-            color: var(--muted);
-
-            margin-top: 5px;
-
-            font-size: 14px;
-        }
-
-
-        /* =====================================================
-           PLAYER CLOCKS
-           ===================================================== */
-
-        .clock-area {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 12px;
-
-            margin-bottom: 14px;
-        }
-
-        .clock-card {
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            border-radius: 14px;
-
-            padding: 14px 16px;
-
-            transition:
-                border-color var(--transition),
-                background var(--transition),
-                box-shadow var(--transition);
-        }
-
-        .clock-card.active {
-            border-color: var(--clock-color);
-
-            box-shadow:
-                0 0 0 1px
-                color-mix(
-                    in srgb,
-                    var(--clock-color) 35%,
-                    transparent
-                );
-        }
-
-        .clock-card.p1-clock {
-            --clock-color: var(--p1);
-        }
-
-        .clock-card.p2-clock {
-            --clock-color: var(--p2);
-        }
-
-        .clock-header {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 10px;
-
-            margin-bottom: 7px;
-        }
-
-        .clock-player {
-            font-weight: 700;
-
-            font-size: 14px;
-        }
-
-        .clock-turn {
-            color: var(--muted);
-
-            font-size: 11px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.6px;
-        }
-
-        .clock {
-            font-variant-numeric:
-                tabular-nums;
-
-            font-feature-settings:
-                "tnum";
-
-            font-size:
-                clamp(28px, 7vw, 42px);
-
-            line-height: 1;
-
-            font-weight: 800;
-
-            letter-spacing: -1px;
-        }
-
-        .clock.paused {
-            opacity: 0.6;
-        }
-
-        .clock-controls {
-            display: flex;
-
-            justify-content: center;
-
-            gap: 8px;
-
-            margin-top: 10px;
-        }
-
-        .clock-controls .button {
-            padding:
-                7px 12px;
-
-            font-size: 13px;
-        }
-
-
-        /* =====================================================
-           BOARD
-           ===================================================== */
-
-        .board-panel {
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            border-radius: 15px;
-
-            padding:
-                clamp(10px, 3vw, 20px);
-        }
-
-        .board-wrap {
-            width: 100%;
-
-            max-width: 600px;
-
-            margin: 0 auto;
-
-            min-width: 0;
-        }
-
-        .board {
-            width: 100%;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(7, minmax(0, 1fr));
-
-            gap:
-                clamp(3px, 1vw, 6px);
-
-            user-select: none;
-
-            touch-action: manipulation;
-        }
-
-        .cell {
-            width: 100%;
-
-            aspect-ratio: 1 / 1;
-
-            min-width: 0;
-
-            border-radius:
-                var(--cell-radius);
-
-            background: var(--empty);
-
-            border: 2px solid transparent;
-
-            transition:
-                background var(--transition),
-                transform var(--transition),
-                border-color var(--transition);
-
-            -webkit-tap-highlight-color:
-                transparent;
-        }
-
-        .cell.p1 {
-            background: var(--p1);
-        }
-
-        .cell.p2 {
-            background: var(--p2);
-        }
-
-        .cell.clickable:hover {
-            transform: scale(0.96);
-        }
-
-        .cell.preview {
-            background:
-                color-mix(
-                    in srgb,
-                    var(--current-player-color)
-                    55%,
-                    var(--empty)
-                );
-
-            border-color:
-                var(--current-player-color);
-        }
-
-        .cell.invalid {
-            background:
-                var(--invalid);
-
-            border-color:
-                #ff5555;
-        }
-
-        .cell:active {
-            transform: scale(0.96);
-        }
-
-        .game-info {
-            display: flex;
-
-            justify-content: center;
-
-            gap: 25px;
-
-            flex-wrap: wrap;
-
-            margin-top: 17px;
-
-            color: var(--muted);
-
-            font-size: 13px;
-
-            text-align: center;
-        }
-
-        .game-info strong {
-            color: var(--text);
-        }
-
-
-        /* =====================================================
-           GAME OVER
-           ===================================================== */
-
-        .game-over {
-            position: fixed;
-
-            inset: 0;
-
-            z-index: 50;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 20px;
-
-            background:
-                rgba(0, 0, 0, 0.68);
-        }
-
-        .game-over-card {
-            width: min(390px, 100%);
-
-            background: var(--panel);
-
-            border: 1px solid var(--border);
-
-            border-radius: 17px;
-
-            padding: 28px;
-
-            text-align: center;
-
-            box-shadow:
-                0 20px 60px
-                rgba(0, 0, 0, 0.35);
-        }
-
-        .game-over-card h2 {
-            margin: 0;
-
-            font-size: 29px;
-        }
-
-        .game-over-card p {
-            color: var(--muted);
-
-            margin:
-                9px 0 22px;
-
-            line-height: 1.5;
-        }
-
-        .game-over-actions {
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 9px;
-        }
-
-
-        /* =====================================================
-           MOBILE
-           ===================================================== */
-
-        @media (max-width: 650px) {
-
-            .setup-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .setting-row {
-                grid-template-columns: 1fr;
-            }
-
-            .clock-area {
-                gap: 8px;
-            }
-
-            .clock-card {
-                padding:
-                    12px 11px;
-            }
-
-            .page {
-                padding: 16px;
-            }
-
-            .game-topbar {
-                align-items: flex-start;
-            }
-
-            .game-title {
-                font-size: 18px;
-            }
-
-            .game-actions {
-                flex-shrink: 0;
-            }
-
-            .game-actions .button {
-                padding:
-                    9px 11px;
-            }
-        }
-
-
-        @media (max-width: 430px) {
-
-            #menuScreen {
-                padding: 18px;
-            }
-
-            .logo {
-                margin-bottom: 35px;
-            }
-
-            .logo h1 {
-                font-size: 43px;
-            }
-
-            #gameScreen {
-                padding:
-                    12px 8px 20px;
-            }
-
-            .board-panel {
-                padding: 9px;
-            }
-
-            .board {
-                gap: 3px;
-            }
-
-            .cell {
-                border-width: 1px;
-
-                border-radius:
-                    calc(
-                        var(--cell-radius) * 0.75
-                    );
-            }
-
-            .game-info {
-                gap: 12px;
-            }
-
-            .clock {
-                font-size: 27px;
-            }
-
-            .clock-player {
-                font-size: 12px;
-            }
-
-            .clock-turn {
-                font-size: 9px;
-            }
-        }
-
-
-        /* =====================================================
-           ANIMATIONS OFF
-           ===================================================== */
-
-        html.no-animations * {
-            transition: none !important;
-            animation: none !important;
-        }
-
-
-        /* =====================================================
-           REDUCED MOTION
-           ===================================================== */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            * {
-                scroll-behavior: auto !important;
-            }
-
-            html:not(.force-animations) * {
-                transition: none !important;
-                animation: none !important;
-            }
-        }
-        #saveSettingsButton,
-        #resetSettingsButton {
-            width: auto;
-            min-width: 160px;
-            min-height: 48px;
-            padding: 12px 20px;
-            margin: 0;
-        }
-        
-        #saveSettingsButton + #resetSettingsButton {
-            margin-left: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Towels Wrap</title>
+
+<style>
+* { box-sizing: border-box; }
+
+:root {
+    --bg: #0d0f14;
+    --panel: #151922;
+    --panel-2: #1b202b;
+    --border: #2b3240;
+    --text: #f2f4f8;
+    --muted: #8d96a8;
+    --accent: #6c8cff;
+    --p1: #4f8cff;
+    --p2: #ff5757;
+    --empty: #202632;
+    --invalid: #7b2525;
+    --cell-radius: 8px;
+    --transition: 0.12s;
+}
+
+* {
+    scrollbar-width: thin;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-x: hidden;
+}
+
+button,
+select,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.screen {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.button {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 11px 17px;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.button:hover {
+    background: var(--panel-2);
+    border-color: #3b4455;
+}
+
+.button:active {
+    transform: scale(0.97);
+}
+
+.button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.button.primary:hover {
+    filter: brightness(1.08);
+}
+
+.button.large {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 17px;
+}
+
+#menuScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.menu {
+    width: min(420px, 100%);
+    text-align: center;
+}
+
+.logo {
+    margin-bottom: 45px;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: clamp(42px, 10vw, 68px);
+    letter-spacing: -3px;
+    font-weight: 800;
+}
+
+.logo p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-buttons .button {
+    width: 100%;
+}
+
+.menu-footer {
+    margin-top: 30px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.page {
+    width: min(760px, 100%);
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.back-button {
+    flex-shrink: 0;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+
+.card:last-child {
+    margin-bottom: 0;
+}
+
+.card h3 {
+    margin: 0 0 8px;
+}
+
+.card p {
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0 0 12px;
+}
+
+.setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.player-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 18px;
+}
+
+.player-card h3 {
+    margin: 0 0 15px;
+}
+
+.setting {
+    margin-bottom: 17px;
+}
+
+.setting:last-child {
+    margin-bottom: 0;
+}
+
+.setting label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.setting small {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+select {
+    width: 100%;
+    padding: 11px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    outline: none;
+}
+
+select:focus {
+    border-color: var(--accent);
+}
+
+select:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.color-preview {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    margin-bottom: 15px;
+    background: var(--p1);
+}
+
+.color-preview.p2 {
+    background: var(--p2);
+}
+
+.rules-list {
+    margin: 10px 0 0;
+    padding-left: 21px;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.example {
+    margin-top: 18px;
+    padding: 16px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.example-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.example-board {
+    width: min(350px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.example-cell {
+    aspect-ratio: 1;
+    border-radius: 5px;
+    background: var(--empty);
+}
+
+.example-cell.p1 {
+    background: var(--p1);
+}
+
+.example-cell.p2 {
+    background: var(--p2);
+}
+
+.example-caption {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.settings-section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.settings-section h3 {
+    margin: 0 0 14px;
+    font-size: 17px;
+}
+
+.settings-description {
+    color: var(--muted);
+    line-height: 1.5;
+    font-size: 13px;
+    margin: -5px 0 15px;
+}
+
+.setting-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 44px;
+    padding: 3px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
+
+input[type="number"] {
+    width: 100%;
+    height: 44px;
+    padding: 9px 11px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--text);
+    outline: none;
+}
+
+input[type="number"]:focus {
+    border-color: var(--accent);
+}
+
+.rule-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.rule-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.ai-info {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+#saveSettingsButton,
+#resetSettingsButton {
+    width: auto;
+    min-width: 160px;
+    min-height: 48px;
+    padding: 12px 20px;
+    margin: 0;
+}
+
+#saveSettingsButton + #resetSettingsButton {
+    margin-left: 10px;
+}
+
+#gameScreen {
+    padding: 18px 16px 25px;
+}
+
+.game-container {
+    width: min(760px, 100%);
+    margin: 0 auto;
+}
+
+.game-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.game-title {
+    font-weight: 750;
+    font-size: 20px;
+}
+
+.game-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.status {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.turn {
+    font-size: 21px;
+    font-weight: 750;
+}
+
+.substatus {
+    color: var(--muted);
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.clock-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.clock-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.clock-card.active {
+    border-color: var(--clock-color);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--clock-color) 35%, transparent);
+}
+
+.clock-card.p1-clock {
+    --clock-color: var(--p1);
+}
+
+.clock-card.p2-clock {
+    --clock-color: var(--p2);
+}
+
+.clock-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+}
+
+.clock-player {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.clock-turn {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.clock {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-size: clamp(28px, 7vw, 42px);
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.clock.paused {
+    opacity: 0.6;
+}
+
+.board-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: clamp(10px, 3vw, 20px);
+}
+
+.board-wrap {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    min-width: 0;
+}
+
+.board {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: clamp(3px, 1vw, 6px);
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.cell {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    min-width: 0;
+    border-radius: var(--cell-radius);
+    background: var(--empty);
+    border: 2px solid transparent;
+    transition: background var(--transition), transform var(--transition), border-color var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.cell.p1 {
+    background: var(--p1);
+}
+
+.cell.p2 {
+    background: var(--p2);
+}
+
+.cell.clickable:hover {
+    transform: scale(0.96);
+}
+
+.cell.preview {
+    background: color-mix(in srgb, var(--current-player-color) 55%, var(--empty));
+    border-color: var(--current-player-color);
+}
+
+.cell.invalid {
+    background: var(--invalid);
+    border-color: #ff5555;
+}
+
+.cell:active {
+    transform: scale(0.96);
+}
+
+.game-info {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 17px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.game-info strong {
+    color: var(--text);
+}
+
+.ai-thinking {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.ai-thinking::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: aiPulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes aiPulse {
+    from { opacity: 0.35; transform: scale(0.75); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.game-over {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.68);
+}
+
+.game-over-card {
+    width: min(390px, 100%);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.game-over-card h2 {
+    margin: 0;
+    font-size: 29px;
+}
+
+.game-over-card p {
+    color: var(--muted);
+    margin: 9px 0 22px;
+    line-height: 1.5;
+}
+
+.game-over-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+@media (max-width: 650px) {
+    .setup-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .setting-row {
+        grid-template-columns: 1fr;
+    }
+
+    .clock-area {
+        gap: 8px;
+    }
+
+    .clock-card {
+        padding: 12px 11px;
+    }
+
+    .page {
+        padding: 16px;
+    }
+
+    .game-topbar {
+        align-items: flex-start;
+    }
+
+    .game-title {
+        font-size: 18px;
+    }
+
+    .game-actions {
+        flex-shrink: 0;
+    }
+
+    .game-actions .button {
+        padding: 9px 11px;
+    }
+}
+
+@media (max-width: 430px) {
+    #menuScreen {
+        padding: 18px;
+    }
+
+    .logo {
+        margin-bottom: 35px;
+    }
+
+    .logo h1 {
+        font-size: 43px;
+    }
+
+    #gameScreen {
+        padding: 12px 8px 20px;
+    }
+
+    .board-panel {
+        padding: 9px;
+    }
+
+    .board {
+        gap: 3px;
+    }
+
+    .cell {
+        border-width: 1px;
+        border-radius: calc(var(--cell-radius) * 0.75);
+    }
+
+    .game-info {
+        gap: 12px;
+    }
+
+    .clock {
+        font-size: 27px;
+    }
+
+    .clock-player {
+        font-size: 12px;
+    }
+
+    .clock-turn {
+        font-size: 9px;
+    }
+}
+
+html.no-animations * {
+    transition: none !important;
+    animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        scroll-behavior: auto !important;
+    }
+
+    html:not(.force-animations) * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
 </head>
 
 <body>
 
-
-<!-- =========================================================
-     MAIN MENU
-     ========================================================= -->
-
-<section
-    class="screen"
-    id="menuScreen"
->
-
+<section class="screen" id="menuScreen">
     <div class="menu">
-
         <div class="logo">
-
             <h1>Towels Wrap</h1>
-
-            <p>
-                A simple two-player strategy game.
-            </p>
-
+            <p>A simple two-player strategy game.</p>
         </div>
-
 
         <div class="menu-buttons">
-
-            <button
-                class="button primary large"
-                id="menuPlay"
-            >
-                Play
-            </button>
-
-
-            <button
-                class="button large"
-                id="menuHowToPlay"
-            >
-                How to Play
-            </button>
-
-
-            <button
-                class="button large"
-                id="menuSettings"
-            >
-                Settings
-            </button>
-
+            <button class="button primary large" id="menuPlay">Play</button>
+            <button class="button large" id="menuHowToPlay">How to Play</button>
+            <button class="button large" id="menuSettings">Settings</button>
         </div>
 
-
-        <div class="menu-footer">
-            Towels Wrap
-        </div>
-
+        <div class="menu-footer">Towels Wrap</div>
     </div>
-
 </section>
 
-
-<!-- =========================================================
-     GAME SETUP
-     ========================================================= -->
-
-<section
-    class="screen hidden"
-    id="setupScreen"
->
-
+<section class="screen hidden" id="setupScreen">
     <div class="page">
 
         <div class="page-header">
-
-            <button
-                class="button back-button"
-                data-back="menu"
-            >
-                ←
-            </button>
-
+            <button class="button back-button" data-back="menu">←</button>
             <h2>Game Setup</h2>
-
         </div>
-
 
         <div class="setup-grid">
 
-            <!-- PLAYER 1 -->
-
             <div class="player-card">
-
                 <h3>Player 1</h3>
 
-
-                <div
-                    class="color-preview"
-                    id="setupP1Preview"
-                ></div>
-
+                <div class="color-preview" id="setupP1Preview"></div>
 
                 <div class="setting">
-
-                    <label for="setupP1Color">
-                        Color
-                    </label>
-
-                    <input
-                        type="color"
-                        id="setupP1Color"
-                        value="#4f8cff"
-                    >
-
-                </div>
-
-
-                <div class="setting">
-
-                    <label for="setupP1Orientation">
-                        Orientation
-                    </label>
-
-                    <select
-                        id="setupP1Orientation"
-                    >
-
-                        <option value="random">
-                            Random
-                        </option>
-
-                        <option value="H">
-                            Horizontal
-                        </option>
-
-                        <option value="V">
-                            Vertical
-                        </option>
-
+                    <label for="setupP1Type">Player Type</label>
+                    <select id="setupP1Type">
+                        <option value="human">Human</option>
+                        <option value="ai">Computer</option>
                     </select>
-
                 </div>
 
+                <div class="setting">
+                    <label for="setupP1Color">Color</label>
+                    <input type="color" id="setupP1Color" value="#4f8cff">
+                </div>
+
+                <div class="setting">
+                    <label for="setupP1Orientation">Orientation</label>
+                    <select id="setupP1Orientation">
+                        <option value="random">Random</option>
+                        <option value="H">Horizontal</option>
+                        <option value="V">Vertical</option>
+                    </select>
+                </div>
             </div>
 
-
-            <!-- PLAYER 2 -->
-
             <div class="player-card">
-
                 <h3>Player 2</h3>
 
-
-                <div
-                    class="color-preview p2"
-                    id="setupP2Preview"
-                ></div>
-
+                <div class="color-preview p2" id="setupP2Preview"></div>
 
                 <div class="setting">
-
-                    <label for="setupP2Color">
-                        Color
-                    </label>
-
-                    <input
-                        type="color"
-                        id="setupP2Color"
-                        value="#ff5757"
-                    >
-
-                </div>
-
-
-                <div class="setting">
-
-                    <label>
-                        Orientation
-                    </label>
-
-                    <select
-                        id="setupP2Orientation"
-                        disabled
-                    >
-
-                        <option>
-                            Opposite of Player 1
-                        </option>
-
+                    <label for="setupP2Type">Player Type</label>
+                    <select id="setupP2Type">
+                        <option value="human">Human</option>
+                        <option value="ai">Computer</option>
                     </select>
-
-
-                    <small>
-                        Player 2 automatically gets
-                        the opposite orientation.
-                    </small>
-
                 </div>
 
+                <div class="setting">
+                    <label for="setupP2Color">Color</label>
+                    <input type="color" id="setupP2Color" value="#ff5757">
+                </div>
+
+                <div class="setting">
+                    <label>Orientation</label>
+                    <select id="setupP2Orientation" disabled>
+                        <option>Opposite of Player 1</option>
+                    </select>
+                    <small>
+                        Player 2 automatically follows the configured orientation rule.
+                    </small>
+                </div>
             </div>
 
         </div>
-
 
         <div class="card">
 
             <div class="setting">
-
-                <label for="setupStartingPlayer">
-                    Starting Player
-                </label>
-
-                <select
-                    id="setupStartingPlayer"
-                >
-
-                    <option value="1">
-                        Player 1
-                    </option>
-
-                    <option value="2">
-                        Player 2
-                    </option>
-
-                    <option value="random">
-                        Random
-                    </option>
-
+                <label for="setupStartingPlayer">Starting Player</label>
+                <select id="setupStartingPlayer">
+                    <option value="1">Player 1</option>
+                    <option value="2">Player 2</option>
+                    <option value="random">Random</option>
                 </select>
-
             </div>
 
+            <div class="setting">
+                <label>AI Difficulty</label>
+                <select id="setupAiDifficulty">
+                    <option value="easy">Easy</option>
+                    <option value="normal">Normal</option>
+                    <option value="hard">Hard</option>
+                </select>
+                <small>
+                    The computer uses iterative-deepening minimax with alpha-beta pruning.
+                </small>
+            </div>
 
             <div class="setting">
-
-                <label>
-                    Time Control
-                </label>
-
+                <label>Time Control</label>
                 <small>
                     Time control is configured in Settings.
                     Current setting:
-                    <strong id="setupTimeControl">
-                        Stopwatch
-                    </strong>
+                    <strong id="setupTimeControl">Stopwatch</strong>
                 </small>
-
             </div>
 
-
-            <button
-                class="button primary large"
-                id="startGameButton"
-            >
+            <button class="button primary large" id="startGameButton">
                 Start Game
             </button>
 
         </div>
 
     </div>
-
 </section>
 
-
-<!-- =========================================================
-     HOW TO PLAY
-     ========================================================= -->
-
-<section
-    class="screen hidden"
-    id="howToPlayScreen"
->
-
+<section class="screen hidden" id="howToPlayScreen">
     <div class="page">
 
         <div class="page-header">
-
-            <button
-                class="button back-button"
-                data-back="menu"
-            >
-                ←
-            </button>
-
+            <button class="button back-button" data-back="menu">←</button>
             <h2>How to Play</h2>
-
         </div>
 
-
         <div class="card">
-
             <h3>The Goal</h3>
-
-            <p>
-                Take turns placing your two-cell
-                piece on the board.
-            </p>
-
-            <p>
-                Your piece must follow your assigned
-                orientation.
-            </p>
-
+            <p>Take turns placing your piece on the board.</p>
+            <p>Your piece must follow your assigned orientation.</p>
             <p>
                 If you have no legal move, you lose.
-                If the board becomes completely full,
-                the game is a tie.
+                If the board becomes completely full, the game is a tie.
             </p>
-
         </div>
 
-
         <div class="card">
-
             <h3>1. Place Your Piece</h3>
-
             <p>
-                Each piece covers exactly two
-                neighboring squares.
+                Each piece covers the configured number of neighboring squares.
             </p>
 
-
             <div class="example">
-
-                <div class="example-title">
-                    Horizontal piece
-                </div>
-
-
-                <div
-                    class="example-board"
-                    id="horizontalExample"
-                ></div>
-
-
+                <div class="example-title">Horizontal piece</div>
+                <div class="example-board" id="horizontalExample"></div>
                 <div class="example-caption">
-                    Two neighboring blue squares
-                    make one horizontal piece.
+                    Neighboring blue squares make one horizontal piece.
                 </div>
-
             </div>
 
-
             <div class="example">
-
-                <div class="example-title">
-                    Vertical piece
-                </div>
-
-
-                <div
-                    class="example-board"
-                    id="verticalExample"
-                ></div>
-
-
+                <div class="example-title">Vertical piece</div>
+                <div class="example-board" id="verticalExample"></div>
                 <div class="example-caption">
-                    Two neighboring red squares
-                    make one vertical piece.
+                    Neighboring red squares make one vertical piece.
                 </div>
-
             </div>
-
         </div>
 
-
         <div class="card">
-
             <h3>2. Take Turns</h3>
-
             <p>
-                Players alternate turns.
-                Both squares used by your piece
-                must be empty.
+                Players alternate turns. Every square used by your piece must be empty.
             </p>
 
-
             <div class="example">
-
-                <div class="example-title">
-                    Occupied squares are blocked
-                </div>
-
-
-                <div
-                    class="example-board"
-                    id="blockedExample"
-                ></div>
-
-
+                <div class="example-title">Occupied squares are blocked</div>
+                <div class="example-board" id="blockedExample"></div>
                 <div class="example-caption">
                     A piece cannot overlap another piece.
                 </div>
-
             </div>
-
         </div>
 
-
         <div class="card">
-
             <h3>3. Manage Your Clock</h3>
-
             <p>
-                Each player has their own clock.
-                Only the current player's clock runs.
+                Each player has their own clock. Only the current player's clock runs.
                 After a move, the clocks switch.
             </p>
 
             <p>
-                The default time control is a stopwatch,
-                which counts upward. Countdown modes can
-                be selected in Settings.
+                Stopwatch mode counts upward.
+                Countdown modes can be selected in Settings.
             </p>
-
         </div>
 
-
         <div class="card">
-
             <h3>4. Win or Tie</h3>
 
             <ul class="rules-list">
-
-                <li>
-                    No legal move → you lose.
-                </li>
-
-                <li>
-                    The other player wins.
-                </li>
-
-                <li>
-                    Completely full board → tie.
-                </li>
-
-                <li>
-                    In countdown mode, reaching zero
-                    can end the game.
-                </li>
-
+                <li>No legal move → the configured no-move rule applies.</li>
+                <li>The other player normally wins.</li>
+                <li>Completely full board → the configured full-board rule applies.</li>
+                <li>In countdown mode, reaching zero can end the game.</li>
             </ul>
+        </div>
 
+        <div class="card">
+            <h3>Computer Players</h3>
+            <p>
+                Computer players use the same legal-move rules as human players.
+                The AI searches simulated board states and never modifies the real
+                board while thinking.
+            </p>
         </div>
 
     </div>
-
 </section>
 
-
-<!-- =========================================================
-     SETTINGS
-     ========================================================= -->
-
-<section
-    class="screen hidden"
-    id="settingsScreen"
->
-
+<section class="screen hidden" id="settingsScreen">
     <div class="page">
 
         <div class="page-header">
-
-            <button
-                class="button back-button"
-                data-back="menu"
-            >
-                ←
-            </button>
-
+            <button class="button back-button" data-back="menu">←</button>
             <h2>Settings</h2>
-
         </div>
-
 
         <div class="card">
 
-            <!-- GRAPHICS -->
-
             <div class="settings-section">
-
                 <h3>Graphics</h3>
 
-
                 <div class="setting">
-
-                    <label for="themeSetting">
-                        Theme
-                    </label>
-
+                    <label for="themeSetting">Theme</label>
                     <select id="themeSetting">
-
-                        <option value="dark">
-                            Dark
-                        </option>
-
-                        <option value="light">
-                            Light
-                        </option>
-
-                        <option value="system">
-                            System
-                        </option>
-
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="system">System</option>
                     </select>
-
                 </div>
 
-
                 <div class="setting">
-
-                    <label for="cellStyleSetting">
-                        Cell Shape
-                    </label>
-
+                    <label for="cellStyleSetting">Cell Shape</label>
                     <select id="cellStyleSetting">
-
-                        <option value="rounded">
-                            Rounded
-                        </option>
-
-                        <option value="square">
-                            Square
-                        </option>
-
+                        <option value="rounded">Rounded</option>
+                        <option value="square">Square</option>
                     </select>
-
                 </div>
 
-
                 <div class="setting">
-
-                    <label for="animationSetting">
-                        Animations
-                    </label>
-
+                    <label for="animationSetting">Animations</label>
                     <select id="animationSetting">
-
-                        <option value="on">
-                            On
-                        </option>
-
-                        <option value="off">
-                            Off
-                        </option>
-
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
                     </select>
-
                 </div>
-
 
                 <div class="setting">
-
-                    <label for="previewSetting">
-                        Move Preview
-                    </label>
-
+                    <label for="previewSetting">Move Preview</label>
                     <select id="previewSetting">
-
-                        <option value="on">
-                            On
-                        </option>
-
-                        <option value="off">
-                            Off
-                        </option>
-
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
                     </select>
-
                 </div>
-
             </div>
 
-
-            <!-- BOARD COLORS -->
-
             <div class="settings-section">
-
                 <h3>Board Colors</h3>
 
-
                 <div class="setting-row">
-
                     <div class="setting">
-
-                        <label for="settingsP1Color">
-                            Player 1
-                        </label>
-
-                        <input
-                            type="color"
-                            id="settingsP1Color"
-                        >
-
+                        <label for="settingsP1Color">Player 1</label>
+                        <input type="color" id="settingsP1Color">
                     </div>
 
-
                     <div class="setting">
-
-                        <label for="settingsP2Color">
-                            Player 2
-                        </label>
-
-                        <input
-                            type="color"
-                            id="settingsP2Color"
-                        >
-
+                        <label for="settingsP2Color">Player 2</label>
+                        <input type="color" id="settingsP2Color">
                     </div>
-
                 </div>
-
 
                 <div class="setting">
-
-                    <label for="settingsEmptyColor">
-                        Empty Cells
-                    </label>
-
-                    <input
-                        type="color"
-                        id="settingsEmptyColor"
-                    >
-
+                    <label for="settingsEmptyColor">Empty Cells</label>
+                    <input type="color" id="settingsEmptyColor">
                 </div>
-
             </div>
 
-
-            <!-- TIME -->
-
             <div class="settings-section">
-
                 <h3>Time Control</h3>
 
                 <p class="settings-description">
-                    Choose how player clocks behave.
-                    Stopwatch is the default and counts
-                    upward from zero.
+                    Choose how player clocks behave. Stopwatch is the default and counts upward from zero.
                 </p>
 
-
                 <div class="setting">
-
-                    <label for="timeControlSetting">
-                        Clock Type
-                    </label>
-
+                    <label for="timeControlSetting">Clock Type</label>
                     <select id="timeControlSetting">
-
-                        <option value="stopwatch">
-                            Stopwatch
-                        </option>
-
-                        <option value="countdown">
-                            Countdown
-                        </option>
-
+                        <option value="stopwatch">Stopwatch</option>
+                        <option value="countdown">Countdown</option>
                     </select>
-
                 </div>
 
-
-                <div
-                    id="countdownSettings"
-                    class="hidden"
-                >
-
+                <div id="countdownSettings" class="hidden">
                     <div class="setting-row">
-
                         <div class="setting">
-
-                            <label for="countdownMinutesSetting">
-                                Minutes per Player
-                            </label>
-
-                            <input
-                                type="number"
-                                id="countdownMinutesSetting"
-                                min="0"
-                                max="999"
-                                step="1"
-                            >
-
+                            <label for="countdownMinutesSetting">Minutes per Player</label>
+                            <input type="number" id="countdownMinutesSetting" min="0" max="999" step="1">
                         </div>
 
-
                         <div class="setting">
-
-                            <label for="countdownSecondsSetting">
-                                Seconds
-                            </label>
-
-                            <input
-                                type="number"
-                                id="countdownSecondsSetting"
-                                min="0"
-                                max="59"
-                                step="1"
-                            >
-
+                            <label for="countdownSecondsSetting">Seconds</label>
+                            <input type="number" id="countdownSecondsSetting" min="0" max="59" step="1">
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- RULES -->
-
             <div class="settings-section">
-
                 <h3>Rules</h3>
 
                 <p class="settings-description">
                     Configure the core rules used by new games.
-                    More advanced rule editing can be added
-                    without changing the main game system.
                 </p>
 
-
                 <div class="setting">
-
-                    <label for="pieceLengthSetting">
-                        Piece Length
-                    </label>
-
-                    <input
-                        type="number"
-                        id="pieceLengthSetting"
-                        min="1"
-                        max="7"
-                        step="1"
-                    >
-
+                    <label for="pieceLengthSetting">Piece Length</label>
+                    <input type="number" id="pieceLengthSetting" min="1" max="7" step="1">
                     <small>
-                        Number of connected cells occupied
-                        by each piece.
+                        Number of connected cells occupied by each piece.
                     </small>
-
                 </div>
 
-
                 <div class="setting">
-
-                    <label for="noMoveSetting">
-                        No Legal Move
-                    </label>
-
+                    <label for="noMoveSetting">No Legal Move</label>
                     <select id="noMoveSetting">
-
-                        <option value="lose">
-                            Player loses
-                        </option>
-
-                        <option value="tie">
-                            Game is a tie
-                        </option>
-
+                        <option value="lose">Player loses</option>
+                        <option value="tie">Game is a tie</option>
                     </select>
-
                 </div>
 
-
                 <div class="setting">
-
-                    <label for="fullBoardSetting">
-                        Full Board
-                    </label>
-
+                    <label for="fullBoardSetting">Full Board</label>
                     <select id="fullBoardSetting">
-
-                        <option value="tie">
-                            Game is a tie
-                        </option>
-
-                        <option value="win">
-                            Last player to move wins
-                        </option>
-
+                        <option value="tie">Game is a tie</option>
+                        <option value="win">Last player to move wins</option>
                     </select>
-
                 </div>
-
 
                 <div class="setting">
-
-                    <label for="oppositeOrientationSetting">
-                        Player 2 Orientation
-                    </label>
-
-                    <select
-                        id="oppositeOrientationSetting"
-                    >
-
-                        <option value="opposite">
-                            Opposite of Player 1
-                        </option>
-
-                        <option value="same">
-                            Same as Player 1
-                        </option>
-
+                    <label for="oppositeOrientationSetting">Player 2 Orientation</label>
+                    <select id="oppositeOrientationSetting">
+                        <option value="opposite">Opposite of Player 1</option>
+                        <option value="same">Same as Player 1</option>
                     </select>
-
                 </div>
-
 
                 <div class="rule-status">
-
-                    <span
-                        class="rule-status-dot"
-                    ></span>
-
+                    <span class="rule-status-dot"></span>
                     Rules apply to new games.
-
                 </div>
-
             </div>
 
-
-            <!-- GAMEPLAY -->
-
             <div class="settings-section">
-
                 <h3>Gameplay</h3>
 
                 <div class="setting">
-
-                    <label for="confirmMoveSetting">
-                        Confirm Moves
-                    </label>
-
+                    <label for="confirmMoveSetting">Confirm Moves</label>
                     <select id="confirmMoveSetting">
-
-                        <option value="off">
-                            Off
-                        </option>
-
-                        <option value="on">
-                            On
-                        </option>
-
+                        <option value="off">Off</option>
+                        <option value="on">On</option>
                     </select>
 
                     <small>
-                        Require a second click before
-                        placing a piece.
+                        Require a second click before placing a piece.
                     </small>
-
                 </div>
-
 
                 <div class="setting">
-
-                    <label for="autoPauseSetting">
-                        Pause When Hidden
-                    </label>
-
+                    <label for="autoPauseSetting">Pause When Hidden</label>
                     <select id="autoPauseSetting">
-
-                        <option value="on">
-                            On
-                        </option>
-
-                        <option value="off">
-                            Off
-                        </option>
-
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
                     </select>
 
                     <small>
-                        Automatically pause the game when
-                        the browser tab is hidden.
+                        Automatically pause the game when the browser tab is hidden.
                     </small>
-
                 </div>
-
             </div>
 
+            <div class="settings-section">
+                <h3>Computer AI</h3>
 
-            <!-- ACCESSIBILITY -->
+                <p class="settings-description">
+                    The AI runs entirely inside this HTML file. No network connection,
+                    server, API, model download, or external library is required.
+                </p>
+
+                <div class="setting">
+                    <label for="aiDifficultySetting">Default Difficulty</label>
+                    <select id="aiDifficultySetting">
+                        <option value="easy">Easy</option>
+                        <option value="normal">Normal</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+
+                <div class="ai-info">
+                    Easy uses a shallow search with a short time limit.
+                    Normal searches deeper with alpha-beta pruning and caching.
+                    Hard uses longer iterative deepening and stronger move ordering.
+                    The actual search depth is automatically limited by the browser
+                    search time.
+                </div>
+            </div>
 
             <div class="settings-section">
-
                 <h3>Accessibility</h3>
 
                 <div class="setting">
-
-                    <label for="reducedMotionSetting">
-                        Reduced Motion
-                    </label>
-
+                    <label for="reducedMotionSetting">Reduced Motion</label>
                     <select id="reducedMotionSetting">
-
-                        <option value="system">
-                            Follow System
-                        </option>
-
-                        <option value="on">
-                            On
-                        </option>
-
-                        <option value="off">
-                            Off
-                        </option>
-
+                        <option value="system">Follow System</option>
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
                     </select>
 
                     <small>
                         Reduce interface movement and animations.
                     </small>
-
                 </div>
-
             </div>
 
-
-            <button
-                class="button primary large"
-                id="saveSettingsButton"
-            >
+            <button class="button primary large" id="saveSettingsButton">
                 Save Settings
             </button>
-            <button class="button primary large" id="resetSettingsButton">Reset Settings</button>
+
+            <button class="button primary large" id="resetSettingsButton">
+                Reset Settings
+            </button>
 
         </div>
-
     </div>
-
 </section>
 
-
-<!-- =========================================================
-     GAME
-     ========================================================= -->
-
-<section
-    class="screen hidden"
-    id="gameScreen"
->
-
+<section class="screen hidden" id="gameScreen">
     <div class="game-container">
 
         <div class="game-topbar">
-
-            <div class="game-title">
-                Towels Wrap
-            </div>
-
+            <div class="game-title">Towels Wrap</div>
 
             <div class="game-actions">
-
-                <button
-                    class="button"
-                    id="gamePauseButton"
-                >
-                    Pause
-                </button>
-
-
-                <button
-                    class="button"
-                    id="gameMenuButton"
-                >
-                    Menu
-                </button>
-
-
-                <button
-                    class="button primary"
-                    id="gameNewButton"
-                >
-                    New Game
-                </button>
-
+                <button class="button" id="gamePauseButton">Pause</button>
+                <button class="button" id="gameMenuButton">Menu</button>
+                <button class="button primary" id="gameNewButton">New Game</button>
             </div>
-
         </div>
-
 
         <div class="clock-area">
 
-            <div
-                class="clock-card p1-clock"
-                id="p1ClockCard"
-            >
-
+            <div class="clock-card p1-clock" id="p1ClockCard">
                 <div class="clock-header">
-
-                    <span class="clock-player">
-                        Player 1
-                    </span>
-
-                    <span
-                        class="clock-turn"
-                        id="p1ClockTurn"
-                    >
-                        Waiting
-                    </span>
-
+                    <span class="clock-player">Player 1</span>
+                    <span class="clock-turn" id="p1ClockTurn">Waiting</span>
                 </div>
 
-
-                <div
-                    class="clock"
-                    id="p1Clock"
-                >
-                    0:00
-                </div>
-
+                <div class="clock" id="p1Clock">0:00</div>
             </div>
 
-
-            <div
-                class="clock-card p2-clock"
-                id="p2ClockCard"
-            >
-
+            <div class="clock-card p2-clock" id="p2ClockCard">
                 <div class="clock-header">
-
-                    <span class="clock-player">
-                        Player 2
-                    </span>
-
-                    <span
-                        class="clock-turn"
-                        id="p2ClockTurn"
-                    >
-                        Waiting
-                    </span>
-
+                    <span class="clock-player">Player 2</span>
+                    <span class="clock-turn" id="p2ClockTurn">Waiting</span>
                 </div>
 
-
-                <div
-                    class="clock"
-                    id="p2Clock"
-                >
-                    0:00
-                </div>
-
+                <div class="clock" id="p2Clock">0:00</div>
             </div>
 
         </div>
-
 
         <div class="status">
-
-            <div
-                class="turn"
-                id="turnText"
-            >
-                Player 1's turn
-            </div>
-
-
-            <div
-                class="substatus"
-                id="substatus"
-            >
-                Horizontal
-            </div>
-
+            <div class="turn" id="turnText">Player 1's turn</div>
+            <div class="substatus" id="substatus">Horizontal</div>
         </div>
-
 
         <div class="board-panel">
 
             <div class="board-wrap">
-
-                <div
-                    class="board"
-                    id="board"
-                ></div>
-
+                <div class="board" id="board"></div>
             </div>
-
 
             <div class="game-info">
-
                 <div>
-
-                    <strong>
-                        Player 1:
-                    </strong>
-
-                    <span id="p1Orientation">
-                        Horizontal
-                    </span>
-
+                    <strong>Player 1:</strong>
+                    <span id="p1Orientation">Horizontal</span>
                 </div>
 
-
                 <div>
-
-                    <strong>
-                        Player 2:
-                    </strong>
-
-                    <span id="p2Orientation">
-                        Vertical
-                    </span>
-
+                    <strong>Player 2:</strong>
+                    <span id="p2Orientation">Vertical</span>
                 </div>
 
-
                 <div>
-
-                    <strong>
-                        Moves:
-                    </strong>
-
-                    <span id="moveCount">
-                        0
-                    </span>
-
+                    <strong>Moves:</strong>
+                    <span id="moveCount">0</span>
                 </div>
 
-
                 <div>
-
-                    <strong>
-                        Time:
-                    </strong>
-
-                    <span id="timeControlLabel">
-                        Stopwatch
-                    </span>
-
+                    <strong>Time:</strong>
+                    <span id="timeControlLabel">Stopwatch</span>
                 </div>
 
+                <div>
+                    <strong>AI:</strong>
+                    <span id="aiStatus">Off</span>
+                </div>
             </div>
 
         </div>
 
     </div>
-
 </section>
 
-
-<!-- =========================================================
-     PAUSED
-     ========================================================= -->
-
-<div
-    class="game-over hidden"
-    id="pauseOverlay"
->
-
+<div class="game-over hidden" id="pauseOverlay">
     <div class="game-over-card">
-
-        <h2>
-            Game Paused
-        </h2>
-
-
-        <p>
-            Both player clocks are stopped.
-        </p>
-
+        <h2>Game Paused</h2>
+        <p>Both player clocks are stopped.</p>
 
         <div class="game-over-actions">
-
-            <button
-                class="button primary large"
-                id="resumeButton"
-            >
-                Resume
-            </button>
-
-
-            <button
-                class="button large"
-                id="pauseMenuButton"
-            >
-                Main Menu
-            </button>
-
+            <button class="button primary large" id="resumeButton">Resume</button>
+            <button class="button large" id="pauseMenuButton">Main Menu</button>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- =========================================================
-     GAME OVER
-     ========================================================= -->
-
-<div
-    class="game-over hidden"
-    id="gameOver"
->
-
+<div class="game-over hidden" id="gameOver">
     <div class="game-over-card">
-
-        <h2 id="gameOverTitle">
-            Player 1 Wins!
-        </h2>
-
-
-        <p id="gameOverMessage">
-            Player 2 has no legal moves.
-        </p>
-
+        <h2 id="gameOverTitle">Player 1 Wins!</h2>
+        <p id="gameOverMessage">Player 2 has no legal moves.</p>
 
         <div class="game-over-actions">
-
-            <button
-                class="button primary large"
-                id="playAgainButton"
-            >
-                Play Again
-            </button>
-
-
-            <button
-                class="button large"
-                id="gameOverMenuButton"
-            >
-                Main Menu
-            </button>
-
+            <button class="button primary large" id="playAgainButton">Play Again</button>
+            <button class="button large" id="gameOverMenuButton">Main Menu</button>
         </div>
-
     </div>
-
 </div>
-
 
 <script>
 "use strict";
 
+/*
+ * ============================================================
+ * TOWELS WRAP
+ * ============================================================
+ *
+ * AI additions:
+ *
+ * - Human / Computer player types
+ * - Easy / Normal / Hard
+ * - Minimax
+ * - Alpha-beta pruning
+ * - Iterative deepening
+ * - Bounded transposition table
+ * - Move ordering
+ * - Deterministic mobility-based evaluator
+ * - No external libraries
+ * - No network access
+ * - No model download
+ *
+ * The AI searches copies of the board and never changes the
+ * actual game board during hypothetical search.
+ */
 
-/* =========================================================
-   CONSTANTS
-   ========================================================= */
+/* ============================================================
+ * CORE CONSTANTS AND RULES
+ * ============================================================ */
 
 const EMPTY = 0;
 const P1 = 1;
 const P2 = 2;
 
-
-/* =========================================================
-   DEFAULT RULES
-   ========================================================= */
-
 const DEFAULT_RULES = {
-
     boardWidth: 7,
-
     boardHeight: 8,
-
     pieceLength: 2,
-
     oppositeOrientations: true,
-
     noLegalMove: "lose",
-
     fullBoard: "tie"
-
 };
-
-
-/*
-    These are mutable so the Settings page can
-    configure them for future games.
-*/
 
 const rules = {
     ...DEFAULT_RULES
 };
 
-
-/* =========================================================
-   DEFAULT SETTINGS
-   ========================================================= */
-
 const DEFAULT_SETTINGS = {
-
     theme: "dark",
-
     cellStyle: "rounded",
-
     animations: "on",
-
     preview: "on",
 
     p1Color: "#4f8cff",
-
     p2Color: "#ff5757",
-
     emptyColor: "#202632",
 
     timeControl: "stopwatch",
-
     countdownMinutes: 10,
-
     countdownSeconds: 0,
 
     confirmMove: "off",
-
     autoPause: "on",
-
     reducedMotion: "system",
 
     pieceLength: 2,
-
     noMove: "lose",
-
     fullBoard: "tie",
+    oppositeOrientation: "opposite",
 
-    oppositeOrientation: "opposite"
-
+    aiDifficulty: "normal"
 };
 
-
-/* =========================================================
-   SAFE STORAGE
-   ========================================================= */
+/* ============================================================
+ * SETTINGS
+ * ============================================================ */
 
 function loadSettings() {
-
     try {
-
-        const saved =
-            localStorage.getItem(
-                "towelsWrapSettings"
-            );
-
+        const saved = localStorage.getItem("towelsWrapSettings");
 
         if (!saved) {
-
-            return {
-                ...DEFAULT_SETTINGS
-            };
+            return { ...DEFAULT_SETTINGS };
         }
 
-
-        const parsed =
-            JSON.parse(saved);
-
+        const parsed = JSON.parse(saved);
 
         return {
-
             ...DEFAULT_SETTINGS,
-
             ...parsed
-
         };
-
     } catch {
-
         return {
             ...DEFAULT_SETTINGS
         };
     }
 }
 
-
 function saveSettings() {
-
     try {
-
         localStorage.setItem(
             "towelsWrapSettings",
-
             JSON.stringify(settings)
         );
-
     } catch {
-        /*
-            Storage is optional.
-        */
+        /* Local storage may be unavailable. */
     }
 }
 
+let settings = loadSettings();
 
-let settings =
-    loadSettings();
-
-
-/* =========================================================
-   GAME STATE
-   ========================================================= */
+/* ============================================================
+ * GAME STATE
+ * ============================================================ */
 
 let board = [];
-
 let currentPlayer = P1;
-
 let gameOver = false;
-
 let moveCount = 0;
 
 let hoverCell = null;
-
 let pendingMove = null;
 
 let gamePaused = false;
 
 let orientations = {
-
     1: "H",
-
     2: "V"
-
 };
 
-
-/* =========================================================
-   CLOCK STATE
-   ========================================================= */
+let playerTypes = {
+    1: "human",
+    2: "human"
+};
 
 let playerTime = {
-
     1: 0,
-
     2: 0
-
 };
-
 
 let clockRunning = false;
-
 let lastClockUpdate = null;
-
 let clockAnimationFrame = null;
 
+let aiThinking = false;
+let aiSearchGeneration = 0;
+let currentAiDifficulty = "normal";
 
-/* =========================================================
-   DOM
-   ========================================================= */
+/* ============================================================
+ * DOM
+ * ============================================================ */
 
 const screens = {
-
-    menu:
-        document.getElementById(
-            "menuScreen"
-        ),
-
-    setup:
-        document.getElementById(
-            "setupScreen"
-        ),
-
-    howToPlay:
-        document.getElementById(
-            "howToPlayScreen"
-        ),
-
-    settings:
-        document.getElementById(
-            "settingsScreen"
-        ),
-
-    game:
-        document.getElementById(
-            "gameScreen"
-        )
-
+    menu: document.getElementById("menuScreen"),
+    setup: document.getElementById("setupScreen"),
+    howToPlay: document.getElementById("howToPlayScreen"),
+    settings: document.getElementById("settingsScreen"),
+    game: document.getElementById("gameScreen")
 };
 
+const boardElement = document.getElementById("board");
 
-const boardElement =
-    document.getElementById(
-        "board"
-    );
+const turnText = document.getElementById("turnText");
+const substatus = document.getElementById("substatus");
 
-const turnText =
-    document.getElementById(
-        "turnText"
-    );
+const p1OrientationText = document.getElementById("p1Orientation");
+const p2OrientationText = document.getElementById("p2Orientation");
 
-const substatus =
-    document.getElementById(
-        "substatus"
-    );
+const moveCountText = document.getElementById("moveCount");
 
-const p1OrientationText =
-    document.getElementById(
-        "p1Orientation"
-    );
+const gameOverElement = document.getElementById("gameOver");
+const gameOverTitle = document.getElementById("gameOverTitle");
+const gameOverMessage = document.getElementById("gameOverMessage");
 
-const p2OrientationText =
-    document.getElementById(
-        "p2Orientation"
-    );
+const p1Clock = document.getElementById("p1Clock");
+const p2Clock = document.getElementById("p2Clock");
 
-const moveCountText =
-    document.getElementById(
-        "moveCount"
-    );
+const p1ClockCard = document.getElementById("p1ClockCard");
+const p2ClockCard = document.getElementById("p2ClockCard");
 
-const gameOverElement =
-    document.getElementById(
-        "gameOver"
-    );
+const p1ClockTurn = document.getElementById("p1ClockTurn");
+const p2ClockTurn = document.getElementById("p2ClockTurn");
 
-const gameOverTitle =
-    document.getElementById(
-        "gameOverTitle"
-    );
+const pauseOverlay = document.getElementById("pauseOverlay");
 
-const gameOverMessage =
-    document.getElementById(
-        "gameOverMessage"
-    );
+const aiStatusText = document.getElementById("aiStatus");
 
-const p1Clock =
-    document.getElementById(
-        "p1Clock"
-    );
-
-const p2Clock =
-    document.getElementById(
-        "p2Clock"
-    );
-
-const p1ClockCard =
-    document.getElementById(
-        "p1ClockCard"
-    );
-
-const p2ClockCard =
-    document.getElementById(
-        "p2ClockCard"
-    );
-
-const p1ClockTurn =
-    document.getElementById(
-        "p1ClockTurn"
-    );
-
-const p2ClockTurn =
-    document.getElementById(
-        "p2ClockTurn"
-    );
-
-const pauseOverlay =
-    document.getElementById(
-        "pauseOverlay"
-    );
-
-
-/* =========================================================
-   SCREEN NAVIGATION
-   ========================================================= */
+/* ============================================================
+ * SCREEN MANAGEMENT
+ * ============================================================ */
 
 function showScreen(name) {
-
-    Object.values(screens)
-        .forEach(
-            screen => {
-
-                screen.classList.add(
-                    "hidden"
-                );
-
-            }
-        );
-
+    Object.values(screens).forEach(screen => {
+        screen.classList.add("hidden");
+    });
 
     if (!screens[name]) {
-
-        console.error(
-            `Unknown screen: ${name}`
-        );
-
-        screens.menu.classList.remove(
-            "hidden"
-        );
-
+        console.error(`Unknown screen: ${name}`);
+        screens.menu.classList.remove("hidden");
         return;
     }
 
-
-    screens[name].classList.remove(
-        "hidden"
-    );
-
-
-    window.scrollTo(
-        0,
-        0
-    );
+    screens[name].classList.remove("hidden");
+    window.scrollTo(0, 0);
 }
 
-
 function showMainMenu() {
-
     stopClock();
 
-    gameOverElement.classList.add(
-        "hidden"
-    );
+    aiThinking = false;
+    aiSearchGeneration++;
 
-    pauseOverlay.classList.add(
-        "hidden"
-    );
+    gameOverElement.classList.add("hidden");
+    pauseOverlay.classList.add("hidden");
 
     gamePaused = false;
 
     showScreen("menu");
 }
 
-
-/* =========================================================
-   BACK BUTTONS
-   ========================================================= */
-
-document
-    .querySelectorAll(
-        "[data-back]"
-    )
-    .forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    stopClock();
-
-                    showScreen(
-                        button.dataset.back
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-/* =========================================================
-   MAIN MENU
-   ========================================================= */
+/* ============================================================
+ * NAVIGATION
+ * ============================================================ */
 
 document
-    .getElementById(
-        "menuPlay"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            prepareSetup();
-
-            showScreen("setup");
-
-        }
-    );
-
+    .querySelectorAll("[data-back]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            stopClock();
+            showScreen(button.dataset.back);
+        });
+    });
 
 document
-    .getElementById(
-        "menuHowToPlay"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            buildHowToPlayExamples();
-
-            showScreen(
-                "howToPlay"
-            );
-
-        }
-    );
-
+    .getElementById("menuPlay")
+    .addEventListener("click", () => {
+        prepareSetup();
+        showScreen("setup");
+    });
 
 document
-    .getElementById(
-        "menuSettings"
-    )
-    .addEventListener(
-        "click",
-        openSettings
-    );
+    .getElementById("menuHowToPlay")
+    .addEventListener("click", () => {
+        buildHowToPlayExamples();
+        showScreen("howToPlay");
+    });
 
+document
+    .getElementById("menuSettings")
+    .addEventListener("click", openSettings);
 
-/* =========================================================
-   COLORS
-   ========================================================= */
+/* ============================================================
+ * COLORS
+ * ============================================================ */
 
 function applyColors() {
+    document.documentElement.style.setProperty(
+        "--p1",
+        settings.p1Color
+    );
 
-    document.documentElement
-        .style
-        .setProperty(
-            "--p1",
-            settings.p1Color
-        );
+    document.documentElement.style.setProperty(
+        "--p2",
+        settings.p2Color
+    );
 
+    document.documentElement.style.setProperty(
+        "--empty",
+        settings.emptyColor
+    );
 
-    document.documentElement
-        .style
-        .setProperty(
-            "--p2",
-            settings.p2Color
-        );
+    document.documentElement.style.setProperty(
+        "--cell-radius",
+        settings.cellStyle === "square"
+            ? "2px"
+            : "8px"
+    );
 
+    let theme = settings.theme;
 
-    document.documentElement
-        .style
-        .setProperty(
-            "--empty",
-            settings.emptyColor
-        );
-
-
-    document.documentElement
-        .style
-        .setProperty(
-            "--cell-radius",
-            settings.cellStyle === "square"
-                ? "2px"
-                : "8px"
-        );
-
-
-    let theme =
-        settings.theme;
-
-
-    if (
-        theme === "system"
-    ) {
-
+    if (theme === "system") {
         theme =
-            window.matchMedia(
-                "(prefers-color-scheme: light)"
-            ).matches
+            window.matchMedia("(prefers-color-scheme: light)").matches
                 ? "light"
                 : "dark";
     }
 
-
-    if (
-        theme === "light"
-    ) {
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--bg",
-                "#f1f3f7"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--panel",
-                "#ffffff"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--panel-2",
-                "#f1f3f7"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--border",
-                "#d7dce5"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--text",
-                "#151922"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--muted",
-                "#697386"
-            );
-
+    if (theme === "light") {
+        document.documentElement.style.setProperty("--bg", "#f1f3f7");
+        document.documentElement.style.setProperty("--panel", "#ffffff");
+        document.documentElement.style.setProperty("--panel-2", "#f1f3f7");
+        document.documentElement.style.setProperty("--border", "#d7dce5");
+        document.documentElement.style.setProperty("--text", "#151922");
+        document.documentElement.style.setProperty("--muted", "#697386");
     } else {
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--bg",
-                "#0d0f14"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--panel",
-                "#151922"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--panel-2",
-                "#1b202b"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--border",
-                "#2b3240"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--text",
-                "#f2f4f8"
-            );
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--muted",
-                "#8d96a8"
-            );
+        document.documentElement.style.setProperty("--bg", "#0d0f14");
+        document.documentElement.style.setProperty("--panel", "#151922");
+        document.documentElement.style.setProperty("--panel-2", "#1b202b");
+        document.documentElement.style.setProperty("--border", "#2b3240");
+        document.documentElement.style.setProperty("--text", "#f2f4f8");
+        document.documentElement.style.setProperty("--muted", "#8d96a8");
     }
 
-
-    document.documentElement
-        .classList.toggle(
-            "no-animations",
-            settings.animations === "off"
-        );
-
+    document.documentElement.classList.toggle(
+        "no-animations",
+        settings.animations === "off"
+    );
 
     if (
         settings.reducedMotion === "on" ||
         (
             settings.reducedMotion === "system" &&
-            window.matchMedia(
-                "(prefers-reduced-motion: reduce)"
-            ).matches
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
         )
     ) {
-
-        document.documentElement
-            .classList.add(
-                "no-animations"
-            );
+        document.documentElement.classList.add("no-animations");
     }
 }
 
-
-/* =========================================================
-   APPLY RULE SETTINGS
-   ========================================================= */
+/* ============================================================
+ * RULE SETTINGS
+ * ============================================================ */
 
 function applyRuleSettings() {
+    let length = Number(settings.pieceLength);
 
-    let length =
-        Number(
-            settings.pieceLength
-        );
-
-
-    if (
-        !Number.isFinite(length)
-    ) {
-
-        length =
-            DEFAULT_RULES.pieceLength;
+    if (!Number.isFinite(length)) {
+        length = DEFAULT_RULES.pieceLength;
     }
 
-
-    rules.pieceLength =
-        Math.max(
-            1,
-            Math.min(
-                7,
-                Math.round(length)
-            )
-        );
-
+    rules.pieceLength = Math.max(
+        1,
+        Math.min(7, Math.round(length))
+    );
 
     rules.noLegalMove =
         settings.noMove === "tie"
             ? "tie"
             : "lose";
 
-
     rules.fullBoard =
         settings.fullBoard === "win"
             ? "win"
             : "tie";
 
-
     rules.oppositeOrientations =
         settings.oppositeOrientation !== "same";
 }
 
-
-/* =========================================================
-   SETUP
-   ========================================================= */
+/* ============================================================
+ * SETUP
+ * ============================================================ */
 
 function prepareSetup() {
-
-    document.getElementById(
-        "setupP1Color"
-    ).value =
+    document.getElementById("setupP1Color").value =
         settings.p1Color;
 
-
-    document.getElementById(
-        "setupP2Color"
-    ).value =
+    document.getElementById("setupP2Color").value =
         settings.p2Color;
 
+    document.getElementById("setupP1Type").value =
+        "human";
 
-    document.getElementById(
-        "setupP1Orientation"
-    ).value =
+    document.getElementById("setupP2Type").value =
+        "human";
+
+    document.getElementById("setupP1Orientation").value =
         "random";
 
-
-    document.getElementById(
-        "setupStartingPlayer"
-    ).value =
+    document.getElementById("setupStartingPlayer").value =
         "1";
 
+    document.getElementById("setupAiDifficulty").value =
+        settings.aiDifficulty;
 
     const timeLabel =
         settings.timeControl === "stopwatch"
             ? "Stopwatch"
-            : `Countdown — ${
-                formatDuration(
-                    getCountdownStart()
-                )
-            }`;
+            : `Countdown — ${formatDuration(getCountdownStart())}`;
 
-
-    document.getElementById(
-        "setupTimeControl"
-    ).textContent =
+    document.getElementById("setupTimeControl").textContent =
         timeLabel;
-
 
     updateSetupPreviews();
 }
 
-
 function updateSetupPreviews() {
-
     const p1Color =
-        document.getElementById(
-            "setupP1Color"
-        ).value;
-
+        document.getElementById("setupP1Color").value;
 
     const p2Color =
-        document.getElementById(
-            "setupP2Color"
-        ).value;
+        document.getElementById("setupP2Color").value;
 
-
-    document.getElementById(
-        "setupP1Preview"
-    ).style.background =
+    document.getElementById("setupP1Preview").style.background =
         p1Color;
 
-
-    document.getElementById(
-        "setupP2Preview"
-    ).style.background =
+    document.getElementById("setupP2Preview").style.background =
         p2Color;
 }
 
+document
+    .getElementById("setupP1Color")
+    .addEventListener("input", updateSetupPreviews);
 
 document
-    .getElementById(
-        "setupP1Color"
-    )
-    .addEventListener(
-        "input",
-        updateSetupPreviews
-    );
-
+    .getElementById("setupP2Color")
+    .addEventListener("input", updateSetupPreviews);
 
 document
-    .getElementById(
-        "setupP2Color"
-    )
-    .addEventListener(
-        "input",
-        updateSetupPreviews
-    );
+    .getElementById("startGameButton")
+    .addEventListener("click", startGameFromSetup);
 
-
-/* =========================================================
-   START GAME
-   ========================================================= */
-
-document
-    .getElementById(
-        "startGameButton"
-    )
-    .addEventListener(
-        "click",
-        startGameFromSetup
-    );
-
+/* ============================================================
+ * START GAME
+ * ============================================================ */
 
 function startGameFromSetup() {
-
     const p1Color =
-        document.getElementById(
-            "setupP1Color"
-        ).value;
-
+        document.getElementById("setupP1Color").value;
 
     const p2Color =
-        document.getElementById(
-            "setupP2Color"
-        ).value;
+        document.getElementById("setupP2Color").value;
 
+    const p1Type =
+        document.getElementById("setupP1Type").value;
+
+    const p2Type =
+        document.getElementById("setupP2Type").value;
 
     const orientationSetting =
-        document.getElementById(
-            "setupP1Orientation"
-        ).value;
-
+        document.getElementById("setupP1Orientation").value;
 
     const startingPlayer =
-        document.getElementById(
-            "setupStartingPlayer"
-        ).value;
+        document.getElementById("setupStartingPlayer").value;
 
+    const aiDifficulty =
+        document.getElementById("setupAiDifficulty").value;
 
-    settings.p1Color =
-        p1Color;
-
-
-    settings.p2Color =
-        p2Color;
-
+    settings.p1Color = p1Color;
+    settings.p2Color = p2Color;
+    settings.aiDifficulty = aiDifficulty;
 
     saveSettings();
 
     applyColors();
-
     applyRuleSettings();
 
+    let p1Orientation = orientationSetting;
 
-    let p1Orientation =
-        orientationSetting;
-
-
-    if (
-        p1Orientation === "random"
-    ) {
-
-        p1Orientation =
-            randomOrientation();
+    if (p1Orientation === "random") {
+        p1Orientation = randomOrientation();
     }
 
+    orientations[P1] = p1Orientation;
 
-    orientations[P1] =
-        p1Orientation;
-
-
-    if (
-        rules.oppositeOrientations
-    ) {
-
+    if (rules.oppositeOrientations) {
         orientations[P2] =
-            oppositeOrientation(
-                p1Orientation
-            );
-
+            oppositeOrientation(p1Orientation);
     } else {
-
         orientations[P2] =
             p1Orientation;
     }
 
+    playerTypes[P1] = p1Type;
+    playerTypes[P2] = p2Type;
 
-    if (
-        startingPlayer === "random"
-    ) {
+    currentAiDifficulty = aiDifficulty;
 
+    if (startingPlayer === "random") {
         currentPlayer =
             Math.random() < 0.5
                 ? P1
                 : P2;
-
     } else {
-
-        currentPlayer =
-            Number(
-                startingPlayer
-            );
+        currentPlayer = Number(startingPlayer);
     }
 
+    board = createEmptyBoard();
 
-    board =
-        createEmptyBoard();
+    moveCount = 0;
+    gameOver = false;
+    hoverCell = null;
+    pendingMove = null;
+    gamePaused = false;
 
-
-    moveCount =
-        0;
-
-
-    gameOver =
-        false;
-
-
-    hoverCell =
-        null;
-
-
-    pendingMove =
-        null;
-
-
-    gamePaused =
-        false;
-
+    aiThinking = false;
+    aiSearchGeneration++;
 
     initializeClocks();
 
-
-    gameOverElement.classList.add(
-        "hidden"
-    );
-
-
-    pauseOverlay.classList.add(
-        "hidden"
-    );
-
+    gameOverElement.classList.add("hidden");
+    pauseOverlay.classList.add("hidden");
 
     showScreen("game");
 
-
     render();
-
     startClock();
+
+    scheduleAiTurnIfNeeded();
 }
 
-
-/* =========================================================
-   BOARD CREATION
-   ========================================================= */
+/* ============================================================
+ * BASIC GAME HELPERS
+ * ============================================================ */
 
 function createEmptyBoard() {
-
     return Array.from(
         {
-            length:
-                rules.boardHeight
+            length: rules.boardHeight
         },
-
         () =>
-            Array(
-                rules.boardWidth
-            ).fill(EMPTY)
+            Array(rules.boardWidth).fill(EMPTY)
     );
 }
 
-
-/* =========================================================
-   ORIENTATION
-   ========================================================= */
+function cloneBoard(stateBoard) {
+    return stateBoard.map(row => row.slice());
+}
 
 function randomOrientation() {
-
     return Math.random() < 0.5
         ? "H"
         : "V";
 }
 
-
-function oppositeOrientation(
-    orientation
-) {
-
+function oppositeOrientation(orientation) {
     return orientation === "H"
         ? "V"
         : "H";
 }
 
-
-function orientationName(
-    orientation
-) {
-
+function orientationName(orientation) {
     return orientation === "H"
         ? "Horizontal"
         : "Vertical";
 }
 
-
-/* =========================================================
-   PLAYER
-   ========================================================= */
-
 function playerName(player) {
-
     return player === P1
         ? "Player 1"
         : "Player 2";
 }
 
-
 function getPlayerColor(player) {
-
     return player === P1
         ? settings.p1Color
         : settings.p2Color;
 }
 
-
-/* =========================================================
-   TIME
-   ========================================================= */
+function otherPlayer(player) {
+    return player === P1
+        ? P2
+        : P1;
+}
 
 function getCountdownStart() {
-
     const minutes =
         Math.max(
             0,
-            Number(
-                settings.countdownMinutes
-            ) || 0
+            Number(settings.countdownMinutes) || 0
         );
-
 
     const seconds =
         Math.max(
             0,
             Math.min(
                 59,
-                Number(
-                    settings.countdownSeconds
-                ) || 0
+                Number(settings.countdownSeconds) || 0
             )
         );
 
-
-    return (
-        minutes * 60 +
-        seconds
-    );
+    return minutes * 60 + seconds;
 }
 
+/* ============================================================
+ * CLOCKS
+ * ============================================================ */
 
 function initializeClocks() {
-
     const initial =
         settings.timeControl === "countdown"
             ? getCountdownStart()
             : 0;
 
+    playerTime[P1] = initial;
+    playerTime[P2] = initial;
 
-    playerTime[P1] =
-        initial;
+    clockRunning = false;
+    lastClockUpdate = null;
 
-
-    playerTime[P2] =
-        initial;
-
-
-    clockRunning =
-        false;
-
-
-    lastClockUpdate =
-        null;
-
-
-    cancelAnimationFrame(
-        clockAnimationFrame
-    );
-
+    cancelAnimationFrame(clockAnimationFrame);
 
     renderClocks();
 }
 
-
 function formatDuration(seconds) {
+    seconds = Math.max(0, seconds);
 
-    seconds =
-        Math.max(
-            0,
-            seconds
-        );
-
-
-    const totalSeconds =
-        Math.floor(seconds);
-
+    const totalSeconds = Math.floor(seconds);
 
     const minutes =
-        Math.floor(
-            totalSeconds / 60
-        );
-
+        Math.floor(totalSeconds / 60);
 
     const remainingSeconds =
         totalSeconds % 60;
 
-
-    if (
-        minutes >= 60
-    ) {
-
+    if (minutes >= 60) {
         const hours =
-            Math.floor(
-                minutes / 60
-            );
-
+            Math.floor(minutes / 60);
 
         const remainingMinutes =
             minutes % 60;
 
-
         return (
             `${hours}:` +
-            `${String(
-                remainingMinutes
-            ).padStart(2, "0")}:` +
-            `${String(
-                remainingSeconds
-            ).padStart(2, "0")}`
+            `${String(remainingMinutes).padStart(2, "0")}:` +
+            `${String(remainingSeconds).padStart(2, "0")}`
         );
     }
 
-
     return (
         `${minutes}:` +
-        `${String(
-            remainingSeconds
-        ).padStart(2, "0")}`
+        `${String(remainingSeconds).padStart(2, "0")}`
     );
 }
 
-
 function renderClocks() {
-
     p1Clock.textContent =
-        formatDuration(
-            playerTime[P1]
-        );
-
+        formatDuration(playerTime[P1]);
 
     p2Clock.textContent =
-        formatDuration(
-            playerTime[P2]
-        );
-
+        formatDuration(playerTime[P2]);
 
     const p1Active =
         !gameOver &&
         !gamePaused &&
         currentPlayer === P1;
 
-
     const p2Active =
         !gameOver &&
         !gamePaused &&
         currentPlayer === P2;
-
 
     p1ClockCard.classList.toggle(
         "active",
         p1Active
     );
 
-
     p2ClockCard.classList.toggle(
         "active",
         p2Active
     );
 
-
     p1ClockTurn.textContent =
         p1Active
-            ? "Your turn"
+            ? playerTypes[P1] === "ai"
+                ? "Computer"
+                : "Your turn"
             : "Waiting";
-
 
     p2ClockTurn.textContent =
         p2Active
-            ? "Your turn"
+            ? playerTypes[P2] === "ai"
+                ? "Computer"
+                : "Your turn"
             : "Waiting";
-
 
     p1Clock.classList.toggle(
         "paused",
         gamePaused
     );
-
 
     p2Clock.classList.toggle(
         "paused",
@@ -3480,381 +1977,254 @@ function renderClocks() {
     );
 }
 
-
 function startClock() {
-
     if (
         gameOver ||
         gamePaused ||
         clockRunning
     ) {
-
         return;
     }
 
+    clockRunning = true;
+    lastClockUpdate = performance.now();
 
-    clockRunning =
-        true;
-
-
-    lastClockUpdate =
-        performance.now();
-
-
-    cancelAnimationFrame(
-        clockAnimationFrame
-    );
-
+    cancelAnimationFrame(clockAnimationFrame);
 
     clockTick();
 }
 
-
 function stopClock() {
-
     if (
         clockRunning &&
         lastClockUpdate !== null
     ) {
-
-        const now =
-            performance.now();
-
+        const now = performance.now();
 
         addElapsedTime(
             now - lastClockUpdate
         );
     }
 
+    clockRunning = false;
+    lastClockUpdate = null;
 
-    clockRunning =
-        false;
-
-
-    lastClockUpdate =
-        null;
-
-
-    cancelAnimationFrame(
-        clockAnimationFrame
-    );
-
+    cancelAnimationFrame(clockAnimationFrame);
 
     renderClocks();
 }
 
-
-function addElapsedTime(
-    milliseconds
-) {
-
+function addElapsedTime(milliseconds) {
     const seconds =
         milliseconds / 1000;
-
 
     if (
         settings.timeControl === "stopwatch"
     ) {
-
-        playerTime[currentPlayer] +=
-            seconds;
-
+        playerTime[currentPlayer] += seconds;
         return;
     }
-
 
     playerTime[currentPlayer] =
         Math.max(
             0,
-            playerTime[currentPlayer] -
-                seconds
+            playerTime[currentPlayer] - seconds
         );
-
 
     if (
         playerTime[currentPlayer] <= 0 &&
         !gameOver
     ) {
-
-        finishTimeLoss(
-            currentPlayer
-        );
+        finishTimeLoss(currentPlayer);
     }
 }
 
-
 function clockTick() {
-
     if (
         !clockRunning ||
         gameOver ||
         gamePaused
     ) {
-
         return;
     }
 
-
-    const now =
-        performance.now();
-
+    const now = performance.now();
 
     const elapsed =
-        now -
-        lastClockUpdate;
+        now - lastClockUpdate;
 
+    lastClockUpdate = now;
 
-    lastClockUpdate =
-        now;
-
-
-    addElapsedTime(
-        elapsed
-    );
-
+    addElapsedTime(elapsed);
 
     renderClocks();
-
 
     if (
         clockRunning &&
         !gameOver &&
         !gamePaused
     ) {
-
         clockAnimationFrame =
-            requestAnimationFrame(
-                clockTick
-            );
+            requestAnimationFrame(clockTick);
     }
 }
 
-
-/* =========================================================
-   PAUSE
-   ========================================================= */
+/* ============================================================
+ * PAUSE
+ * ============================================================ */
 
 function pauseGame() {
-
     if (
         gameOver ||
-        gamePaused
+        gamePaused ||
+        aiThinking
     ) {
-
         return;
     }
 
-
     stopClock();
 
-    gamePaused =
-        true;
-
+    gamePaused = true;
 
     pauseOverlay.classList.remove(
         "hidden"
     );
 
-
     document.getElementById(
         "gamePauseButton"
-    ).textContent =
-        "Resume";
-
+    ).textContent = "Resume";
 
     renderClocks();
+    render();
 }
 
-
 function resumeGame() {
-
     if (
         gameOver ||
         !gamePaused
     ) {
-
         return;
     }
 
-
-    gamePaused =
-        false;
-
+    gamePaused = false;
 
     pauseOverlay.classList.add(
         "hidden"
     );
 
-
     document.getElementById(
         "gamePauseButton"
-    ).textContent =
-        "Pause";
-
+    ).textContent = "Pause";
 
     renderClocks();
+    render();
 
     startClock();
+
+    scheduleAiTurnIfNeeded();
 }
 
-
 document
-    .getElementById(
-        "gamePauseButton"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            if (gamePaused) {
-
-                resumeGame();
-
-            } else {
-
-                pauseGame();
-
-            }
-
+    .getElementById("gamePauseButton")
+    .addEventListener("click", () => {
+        if (gamePaused) {
+            resumeGame();
+        } else {
+            pauseGame();
         }
-    );
-
-
-document
-    .getElementById(
-        "resumeButton"
-    )
-    .addEventListener(
-        "click",
-        resumeGame
-    );
-
+    });
 
 document
-    .getElementById(
-        "pauseMenuButton"
-    )
-    .addEventListener(
-        "click",
-        showMainMenu
-    );
+    .getElementById("resumeButton")
+    .addEventListener("click", resumeGame);
 
-
-/* =========================================================
-   VISIBILITY AUTO-PAUSE
-   ========================================================= */
+document
+    .getElementById("pauseMenuButton")
+    .addEventListener("click", showMainMenu);
 
 document.addEventListener(
     "visibilitychange",
     () => {
-
         if (
             document.hidden &&
             settings.autoPause === "on" &&
             !gameOver &&
-            screens.game.classList.contains(
-                "hidden"
-            ) === false
+            !screens.game.classList.contains("hidden")
         ) {
-
             pauseGame();
         }
-
     }
 );
 
+/* ============================================================
+ * LEGAL MOVE GENERATION
+ * ============================================================ */
 
-/* =========================================================
-   LEGAL MOVES
-   ========================================================= */
-
-function getLegalMoves(
-    stateBoard,
-    player
-) {
-
+/*
+ * This is intentionally the same move-generation behavior as
+ * the original game.
+ *
+ * A move begins at r,c and occupies pieceLength cells in the
+ * player's orientation.
+ */
+function getLegalMoves(stateBoard, player) {
     const moves = [];
 
     const orientation =
         orientations[player];
-
 
     for (
         let r = 0;
         r < rules.boardHeight;
         r++
     ) {
-
         for (
             let c = 0;
             c < rules.boardWidth;
             c++
         ) {
-
             const cells = [];
-
 
             for (
                 let i = 0;
                 i < rules.pieceLength;
                 i++
             ) {
-
                 const cellR =
                     orientation === "H"
                         ? r
                         : r + i;
-
 
                 const cellC =
                     orientation === "H"
                         ? c + i
                         : c;
 
-
                 cells.push({
-
                     r: cellR,
-
                     c: cellC
-
                 });
             }
 
-
             const inside =
-                cells.every(
-                    cell =>
-
-                        cell.r >= 0 &&
-                        cell.r <
-                            rules.boardHeight &&
-
-                        cell.c >= 0 &&
-                        cell.c <
-                            rules.boardWidth
+                cells.every(cell =>
+                    cell.r >= 0 &&
+                    cell.r < rules.boardHeight &&
+                    cell.c >= 0 &&
+                    cell.c < rules.boardWidth
                 );
 
-
             if (!inside) {
-
                 continue;
             }
-
 
             const empty =
                 cells.every(
                     cell =>
-                        stateBoard[
-                            cell.r
-                        ][
-                            cell.c
-                        ] === EMPTY
+                        stateBoard[cell.r][cell.c] === EMPTY
                 );
 
-
             if (empty) {
-
                 moves.push({
                     cells
                 });
@@ -3862,214 +2232,1638 @@ function getLegalMoves(
         }
     }
 
-
     return moves;
 }
 
-
-/* =========================================================
-   BOARD FULL
-   ========================================================= */
+/* ============================================================
+ * BOARD FULL
+ * ============================================================ */
 
 function isBoardFull() {
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
+            if (board[r][c] === EMPTY) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function isStateBoardFull(stateBoard) {
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
+            if (
+                stateBoard[r][c] === EMPTY
+            ) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/* ============================================================
+ * SIMULATED MOVE
+ * ============================================================ */
+
+function applyMoveToState(
+    stateBoard,
+    move,
+    player
+) {
+    const nextBoard =
+        cloneBoard(stateBoard);
+
+    for (const cell of move.cells) {
+        nextBoard[cell.r][cell.c] =
+            player;
+    }
+
+    return nextBoard;
+}
+
+/* ============================================================
+ * TERMINAL STATE
+ * ============================================================ */
+
+/*
+ * stateBoard is the board AFTER the previous player moved.
+ *
+ * playerToMove is therefore the player whose turn would be next.
+ *
+ * This matters for the full-board "last player wins" rule:
+ * the last player was otherPlayer(playerToMove).
+ */
+function getTerminalScore(
+    stateBoard,
+    playerToMove,
+    aiPlayer
+) {
+    const opponent =
+        otherPlayer(aiPlayer);
+
+    if (isStateBoardFull(stateBoard)) {
+        if (rules.fullBoard === "tie") {
+            return 0;
+        }
+
+        const lastMover =
+            otherPlayer(playerToMove);
+
+        return lastMover === aiPlayer
+            ? AI_WIN_SCORE
+            : AI_LOSS_SCORE;
+    }
+
+    const legalMoves =
+        getLegalMoves(
+            stateBoard,
+            playerToMove
+        );
+
+    if (legalMoves.length === 0) {
+        if (rules.noLegalMove === "tie") {
+            return 0;
+        }
+
+        return playerToMove === aiPlayer
+            ? AI_LOSS_SCORE
+            : AI_WIN_SCORE;
+    }
+
+    return null;
+}
+
+/* ============================================================
+ * AI CONFIGURATION
+ * ============================================================ */
+
+const AI_WIN_SCORE = 100000000;
+const AI_LOSS_SCORE = -100000000;
+
+const AI_CONFIG = {
+    easy: {
+        timeLimit: 80,
+        maxDepth: 3,
+        randomness: 0.10
+    },
+
+    normal: {
+        timeLimit: 300,
+        maxDepth: 7,
+        randomness: 0
+    },
+
+    hard: {
+        timeLimit: 900,
+        maxDepth: 10,
+        randomness: 0
+    }
+};
+
+/*
+ * The table is deliberately bounded.
+ *
+ * It is a search cache, not a giant precomputed game-state table.
+ */
+const AI_TABLE_MAX_SIZE = 30000;
+
+/* ============================================================
+ * TRANSPOSITION TABLE
+ * ============================================================ */
+
+class TranspositionTable {
+    constructor(maxSize) {
+        this.maxSize = maxSize;
+        this.map = new Map();
+    }
+
+    get(key) {
+        return this.map.get(key);
+    }
+
+    set(key, value) {
+        if (this.map.size >= this.maxSize) {
+            const oldestKey =
+                this.map.keys().next().value;
+
+            if (oldestKey !== undefined) {
+                this.map.delete(oldestKey);
+            }
+        }
+
+        this.map.set(key, value);
+    }
+
+    clear() {
+        this.map.clear();
+    }
+
+    get size() {
+        return this.map.size;
+    }
+}
+
+/* ============================================================
+ * AI SEARCH STATE
+ * ============================================================ */
+
+class AISearchContext {
+    constructor(aiPlayer, difficulty) {
+        this.aiPlayer = aiPlayer;
+        this.opponent =
+            otherPlayer(aiPlayer);
+
+        this.config =
+            AI_CONFIG[difficulty] ||
+            AI_CONFIG.normal;
+
+        this.startTime =
+            performance.now();
+
+        this.deadline =
+            this.startTime +
+            this.config.timeLimit;
+
+        this.maxDepth =
+            this.config.maxDepth;
+
+        this.timedOut = false;
+
+        this.nodes = 0;
+
+        this.table =
+            new TranspositionTable(
+                AI_TABLE_MAX_SIZE
+            );
+
+        this.previousBestMoveKey =
+            null;
+    }
+
+    shouldStop() {
+        if (
+            (this.nodes & 255) === 0 &&
+            performance.now() >= this.deadline
+        ) {
+            this.timedOut = true;
+            return true;
+        }
+
+        return false;
+    }
+}
+
+/* ============================================================
+ * TRANSPOSITION KEY
+ * ============================================================ */
+
+/*
+ * Every rule/configuration that can change the result is included.
+ */
+function createTranspositionKey(
+    stateBoard,
+    playerToMove
+) {
+    let boardString = "";
 
     for (
         let r = 0;
         r < rules.boardHeight;
         r++
     ) {
-
         for (
             let c = 0;
             c < rules.boardWidth;
             c++
         ) {
+            boardString +=
+                stateBoard[r][c];
+        }
+    }
 
+    return [
+        rules.boardWidth,
+        rules.boardHeight,
+        rules.pieceLength,
+        rules.noLegalMove,
+        rules.fullBoard,
+        rules.oppositeOrientations,
+        orientations[P1],
+        orientations[P2],
+        playerToMove,
+        boardString
+    ].join("|");
+}
+
+/* ============================================================
+ * MOVE KEY
+ * ============================================================ */
+
+function moveKey(move) {
+    if (!move || !move.cells) {
+        return "";
+    }
+
+    const first =
+        move.cells[0];
+
+    return `${first.r},${first.c}`;
+}
+
+/* ============================================================
+ * EVALUATOR
+ * ============================================================ */
+
+/*
+ * Central evaluator interface.
+ *
+ * It is intentionally separate from minimax so a future learned
+ * evaluator can replace or augment this function without changing
+ * the search algorithm.
+ */
+function evaluatePosition(
+    stateBoard,
+    aiPlayer
+) {
+    const opponent =
+        otherPlayer(aiPlayer);
+
+    const aiMoves =
+        getLegalMoves(
+            stateBoard,
+            aiPlayer
+        );
+
+    const opponentMoves =
+        getLegalMoves(
+            stateBoard,
+            opponent
+        );
+
+    /*
+     * Mobility is the primary feature because the actual game
+     * objective revolves around eventually running out of moves.
+     */
+    const aiMobility =
+        aiMoves.length;
+
+    const opponentMobility =
+        opponentMoves.length;
+
+    let score =
+        (aiMobility - opponentMobility) * 45;
+
+    /*
+     * A position in which the opponent has no move is nearly
+     * terminal and should be heavily preferred.
+     */
+    if (opponentMobility === 0) {
+        if (rules.noLegalMove === "lose") {
+            score += 90000;
+        }
+    }
+
+    if (aiMobility === 0) {
+        if (rules.noLegalMove === "lose") {
+            score -= 90000;
+        }
+    }
+
+    /*
+     * Count how many empty cells are still available.
+     *
+     * This is deliberately a secondary feature rather than a
+     * "more pieces = better" score.
+     */
+    let emptyCells = 0;
+
+    for (
+        let r = 0;
+        r < rules.boardHeight;
+        r++
+    ) {
+        for (
+            let c = 0;
+            c < rules.boardWidth;
+            c++
+        ) {
             if (
-                board[r][c] === EMPTY
+                stateBoard[r][c] === EMPTY
             ) {
-
-                return false;
+                emptyCells++;
             }
         }
     }
 
+    /*
+     * Smaller remaining space magnifies mobility differences.
+     */
+    if (emptyCells > 0) {
+        const pressure =
+            1 +
+            (
+                (
+                    rules.boardWidth *
+                    rules.boardHeight
+                ) -
+                emptyCells
+            ) /
+            (
+                rules.boardWidth *
+                rules.boardHeight
+            );
+
+        score *= pressure;
+    }
+
+    /*
+     * Compare the actual cells involved in available moves.
+     *
+     * This helps distinguish a large number of highly-overlapping
+     * moves from a position with genuinely varied placement areas.
+     */
+    const aiCoverage =
+        countMoveCoverage(
+            aiMoves
+        );
+
+    const opponentCoverage =
+        countMoveCoverage(
+            opponentMoves
+        );
+
+    score +=
+        (aiCoverage - opponentCoverage) *
+        4;
+
+    /*
+     * Give a small bonus to positions with more separated legal
+     * starting points. This is still based entirely on legal moves.
+     */
+    const aiSpread =
+        countMoveSpread(
+            aiMoves
+        );
+
+    const opponentSpread =
+        countMoveSpread(
+            opponentMoves
+        );
+
+    score +=
+        (aiSpread - opponentSpread) *
+        2;
+
+    return score;
+}
+
+function countMoveCoverage(moves) {
+    const cells = new Set();
+
+    for (const move of moves) {
+        for (const cell of move.cells) {
+            cells.add(
+                `${cell.r},${cell.c}`
+            );
+        }
+    }
+
+    return cells.size;
+}
+
+function countMoveSpread(moves) {
+    const starts = new Set();
+
+    for (const move of moves) {
+        if (move.cells.length === 0) {
+            continue;
+        }
+
+        const first =
+            move.cells[0];
+
+        starts.add(
+            `${first.r},${first.c}`
+        );
+    }
+
+    return starts.size;
+}
+
+/* ============================================================
+ * APPLY MOVE KEY FOR ORDERING
+ * ============================================================ */
+
+function isImmediateWinningMove(
+    stateBoard,
+    move,
+    player
+) {
+    const nextBoard =
+        applyMoveToState(
+            stateBoard,
+            move,
+            player
+        );
+
+    const nextPlayer =
+        otherPlayer(player);
+
+    const terminal =
+        getTerminalScore(
+            nextBoard,
+            nextPlayer,
+            player
+        );
+
+    return (
+        terminal !== null &&
+        terminal >= AI_WIN_SCORE
+    );
+}
+
+function preventsImmediateLoss(
+    stateBoard,
+    move,
+    player
+) {
+    const nextBoard =
+        applyMoveToState(
+            stateBoard,
+            move,
+            player
+        );
+
+    const opponent =
+        otherPlayer(player);
+
+    const opponentMoves =
+        getLegalMoves(
+            nextBoard,
+            opponent
+        );
+
+    if (opponentMoves.length === 0) {
+        return false;
+    }
+
+    /*
+     * If any opponent move immediately wins, this move does not
+     * fully prevent the threat. Otherwise it is considered useful.
+     */
+    for (const opponentMove of opponentMoves) {
+        if (
+            isImmediateWinningMove(
+                nextBoard,
+                opponentMove,
+                opponent
+            )
+        ) {
+            return false;
+        }
+    }
 
     return true;
 }
 
+/* ============================================================
+ * MOVE ORDERING
+ * ============================================================ */
 
-/* =========================================================
-   PREVIEW
-   ========================================================= */
+function orderMoves(
+    stateBoard,
+    moves,
+    player,
+    context,
+    preferredMoveKey = null
+) {
+    const scored = [];
+
+    for (const move of moves) {
+        if (context.shouldStop()) {
+            break;
+        }
+
+        const key =
+            moveKey(move);
+
+        let score = 0;
+
+        /*
+         * 1. Previously best move.
+         */
+        if (
+            preferredMoveKey &&
+            key === preferredMoveKey
+        ) {
+            score += 10000000;
+        }
+
+        /*
+         * 2. Immediate winning move.
+         */
+        if (
+            isImmediateWinningMove(
+                stateBoard,
+                move,
+                player
+            )
+        ) {
+            score += 5000000;
+        }
+
+        /*
+         * 3. Evaluate resulting position.
+         */
+        const nextBoard =
+            applyMoveToState(
+                stateBoard,
+                move,
+                player
+            );
+
+        const evaluation =
+            evaluatePosition(
+                nextBoard,
+                context.aiPlayer
+            );
+
+        if (player === context.aiPlayer) {
+            score += evaluation;
+        } else {
+            score -= evaluation;
+        }
+
+        /*
+         * 4. Moves that remove an opponent's immediate win
+         * are prioritized.
+         */
+        if (
+            preventsImmediateLoss(
+                stateBoard,
+                move,
+                player
+            )
+        ) {
+            score += 500;
+        }
+
+        /*
+         * Stable deterministic tie-breaker.
+         */
+        score -=
+            (
+                move.cells[0].r *
+                rules.boardWidth +
+                move.cells[0].c
+            ) *
+            0.001;
+
+        scored.push({
+            move,
+            score
+        });
+    }
+
+    scored.sort(
+        (a, b) =>
+            b.score - a.score
+    );
+
+    return scored.map(
+        item => item.move
+    );
+}
+
+/* ============================================================
+ * MINIMAX
+ * ============================================================ */
+
+function minimax(
+    stateBoard,
+    playerToMove,
+    depth,
+    alpha,
+    beta,
+    context
+) {
+    context.nodes++;
+
+    if (context.shouldStop()) {
+        return {
+            complete: false,
+            score: 0,
+            move: null
+        };
+    }
+
+    const terminal =
+        getTerminalScore(
+            stateBoard,
+            playerToMove,
+            context.aiPlayer
+        );
+
+    if (terminal !== null) {
+        return {
+            complete: true,
+            score: terminal,
+            move: null
+        };
+    }
+
+    if (depth <= 0) {
+        return {
+            complete: true,
+            score:
+                evaluatePosition(
+                    stateBoard,
+                    context.aiPlayer
+                ),
+            move: null
+        };
+    }
+
+    const key =
+        createTranspositionKey(
+            stateBoard,
+            playerToMove
+        );
+
+    const cached =
+        context.table.get(
+            `${key}|d${depth}`
+        );
+
+    if (cached) {
+        if (cached.depth >= depth) {
+            return {
+                complete: true,
+                score: cached.score,
+                move: cached.move
+                    ? {
+                        cells:
+                            cached.move.cells.map(
+                                cell => ({
+                                    r: cell.r,
+                                    c: cell.c
+                                })
+                            )
+                    }
+                    : null
+            };
+        }
+    }
+
+    let moves =
+        getLegalMoves(
+            stateBoard,
+            playerToMove
+        );
+
+    if (moves.length === 0) {
+        const score =
+            rules.noLegalMove === "tie"
+                ? 0
+                : playerToMove === context.aiPlayer
+                    ? AI_LOSS_SCORE
+                    : AI_WIN_SCORE;
+
+        return {
+            complete: true,
+            score,
+            move: null
+        };
+    }
+
+    let preferredMoveKey =
+        cached && cached.move
+            ? moveKey(cached.move)
+            : null;
+
+    moves =
+        orderMoves(
+            stateBoard,
+            moves,
+            playerToMove,
+            context,
+            preferredMoveKey
+        );
+
+    if (context.timedOut) {
+        return {
+            complete: false,
+            score: 0,
+            move: null
+        };
+    }
+
+    const maximizing =
+        playerToMove === context.aiPlayer;
+
+    let bestScore =
+        maximizing
+            ? -Infinity
+            : Infinity;
+
+    let bestMove = null;
+
+    for (const move of moves) {
+        if (context.shouldStop()) {
+            return {
+                complete: false,
+                score: bestScore,
+                move: bestMove
+            };
+        }
+
+        const nextBoard =
+            applyMoveToState(
+                stateBoard,
+                move,
+                playerToMove
+            );
+
+        const result =
+            minimax(
+                nextBoard,
+                otherPlayer(playerToMove),
+                depth - 1,
+                alpha,
+                beta,
+                context
+            );
+
+        if (!result.complete) {
+            return {
+                complete: false,
+                score: bestScore,
+                move: bestMove
+            };
+        }
+
+        if (maximizing) {
+            if (result.score > bestScore) {
+                bestScore = result.score;
+                bestMove = move;
+            }
+
+            alpha =
+                Math.max(
+                    alpha,
+                    bestScore
+                );
+        } else {
+            if (result.score < bestScore) {
+                bestScore = result.score;
+                bestMove = move;
+            }
+
+            beta =
+                Math.min(
+                    beta,
+                    bestScore
+                );
+        }
+
+        if (beta <= alpha) {
+            break;
+        }
+    }
+
+    if (bestMove === null) {
+        return {
+            complete: false,
+            score: 0,
+            move: null
+        };
+    }
+
+    context.table.set(
+        `${key}|d${depth}`,
+        {
+            depth,
+            score: bestScore,
+            move: {
+                cells:
+                    bestMove.cells.map(
+                        cell => ({
+                            r: cell.r,
+                            c: cell.c
+                        })
+                    )
+            }
+        }
+    );
+
+    return {
+        complete: true,
+        score: bestScore,
+        move: bestMove
+    };
+}
+
+/* ============================================================
+ * ROOT SEARCH
+ * ============================================================ */
+
+function searchRoot(
+    stateBoard,
+    aiPlayer,
+    depth,
+    context,
+    previousBestMove
+) {
+    let moves =
+        getLegalMoves(
+            stateBoard,
+            aiPlayer
+        );
+
+    if (moves.length === 0) {
+        return {
+            complete: true,
+            score: AI_LOSS_SCORE,
+            move: null
+        };
+    }
+
+    const preferred =
+        previousBestMove
+            ? moveKey(previousBestMove)
+            : null;
+
+    moves =
+        orderMoves(
+            stateBoard,
+            moves,
+            aiPlayer,
+            context,
+            preferred
+        );
+
+    let bestScore = -Infinity;
+    let bestMove = null;
+
+    let alpha = -Infinity;
+    const beta = Infinity;
+
+    for (const move of moves) {
+        if (context.shouldStop()) {
+            return {
+                complete: false,
+                score: bestScore,
+                move: bestMove
+            };
+        }
+
+        const nextBoard =
+            applyMoveToState(
+                stateBoard,
+                move,
+                aiPlayer
+            );
+
+        const result =
+            minimax(
+                nextBoard,
+                otherPlayer(aiPlayer),
+                depth - 1,
+                alpha,
+                beta,
+                context
+            );
+
+        if (!result.complete) {
+            return {
+                complete: false,
+                score: bestScore,
+                move: bestMove
+            };
+        }
+
+        if (result.score > bestScore) {
+            bestScore = result.score;
+            bestMove = move;
+        }
+
+        alpha =
+            Math.max(
+                alpha,
+                bestScore
+            );
+    }
+
+    return {
+        complete: true,
+        score: bestScore,
+        move: bestMove
+    };
+}
+
+/* ============================================================
+ * FALLBACK MOVE
+ * ============================================================ */
+
+function getSafeFallbackMove(
+    stateBoard,
+    player
+) {
+    const moves =
+        getLegalMoves(
+            stateBoard,
+            player
+        );
+
+    if (moves.length === 0) {
+        return null;
+    }
+
+    /*
+     * Even the fallback is evaluated according to the actual
+     * Towels Wrap objective.
+     */
+    let bestScore = -Infinity;
+    let bestMoves = [];
+
+    for (const move of moves) {
+        const nextBoard =
+            applyMoveToState(
+                stateBoard,
+                move,
+                player
+            );
+
+        const score =
+            evaluatePosition(
+                nextBoard,
+                player
+            );
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestMoves = [move];
+        } else if (score === bestScore) {
+            bestMoves.push(move);
+        }
+    }
+
+    return bestMoves[
+        Math.floor(
+            Math.random() *
+            bestMoves.length
+        )
+    ];
+}
+
+/* ============================================================
+ * AI MOVE SEARCH
+ * ============================================================ */
+
+/*
+ * The search itself is synchronous for each individual depth,
+ * but iterative deepening yields between completed depths so
+ * the browser has opportunities to repaint and process events.
+ *
+ * Most importantly, a completed result is retained. If the next
+ * depth times out, the last completely searched depth is used.
+ */
+async function findBestAiMove(
+    stateBoard,
+    aiPlayer,
+    difficulty
+) {
+    const config =
+        AI_CONFIG[difficulty] ||
+        AI_CONFIG.normal;
+
+    const fallback =
+        getSafeFallbackMove(
+            stateBoard,
+            aiPlayer
+        );
+
+    if (!fallback) {
+        return null;
+    }
+
+    const context =
+        new AISearchContext(
+            aiPlayer,
+            difficulty
+        );
+
+    let bestMove = fallback;
+    let bestScore = -Infinity;
+    let completedDepth = 0;
+
+    let previousBestMove =
+        fallback;
+
+    for (
+        let depth = 1;
+        depth <= context.maxDepth;
+        depth++
+    ) {
+        if (
+            gameOver ||
+            gamePaused ||
+            !aiThinking
+        ) {
+            break;
+        }
+
+        if (
+            performance.now() >=
+            context.deadline
+        ) {
+            break;
+        }
+
+        const result =
+            searchRoot(
+                stateBoard,
+                aiPlayer,
+                depth,
+                context,
+                previousBestMove
+            );
+
+        if (!result.complete) {
+            break;
+        }
+
+        if (result.move) {
+            bestMove = result.move;
+            bestScore = result.score;
+            previousBestMove = result.move;
+            completedDepth = depth;
+        }
+
+        /*
+         * Easy intentionally adds only controlled choice among
+         * similarly evaluated first-depth alternatives. It never
+         * produces an illegal move.
+         */
+        if (
+            difficulty === "easy" &&
+            depth >= 2
+        ) {
+            break;
+        }
+
+        /*
+         * Allow rendering and UI events between completed depths.
+         */
+        await yieldToBrowser();
+    }
+
+    /*
+     * Verify the chosen move is still legal against the actual
+     * current board before returning it.
+     */
+    const legalMoves =
+        getLegalMoves(
+            board,
+            aiPlayer
+        );
+
+    const legalKeySet =
+        new Set(
+            legalMoves.map(moveKey)
+        );
+
+    if (
+        bestMove &&
+        legalKeySet.has(
+            moveKey(bestMove)
+        )
+    ) {
+        /*
+         * Easy mode gets a small amount of controlled randomness,
+         * but only among legal moves that are close to the chosen
+         * evaluator value.
+         */
+        if (
+            config.randomness > 0 &&
+            legalMoves.length > 1 &&
+            Math.random() <
+                config.randomness
+        ) {
+            const candidates =
+                getEasyCandidates(
+                    board,
+                    aiPlayer,
+                    legalMoves,
+                    bestMove
+                );
+
+            if (candidates.length > 0) {
+                bestMove =
+                    candidates[
+                        Math.floor(
+                            Math.random() *
+                            candidates.length
+                        )
+                    ];
+            }
+        }
+
+        return bestMove;
+    }
+
+    /*
+     * Absolute final safety fallback.
+     */
+    return legalMoves.length > 0
+        ? legalMoves[0]
+        : null;
+}
+
+function getEasyCandidates(
+    stateBoard,
+    player,
+    legalMoves,
+    bestMove
+) {
+    const scored = [];
+
+    let bestScore = -Infinity;
+
+    for (const move of legalMoves) {
+        const nextBoard =
+            applyMoveToState(
+                stateBoard,
+                move,
+                player
+            );
+
+        const score =
+            evaluatePosition(
+                nextBoard,
+                player
+            );
+
+        if (score > bestScore) {
+            bestScore = score;
+        }
+
+        scored.push({
+            move,
+            score
+        });
+    }
+
+    const threshold =
+        bestScore - 20;
+
+    const candidates =
+        scored
+            .filter(
+                item =>
+                    item.score >= threshold
+            )
+            .map(
+                item =>
+                    item.move
+            );
+
+    if (
+        candidates.length === 0
+    ) {
+        return [bestMove];
+    }
+
+    return candidates;
+}
+
+function yieldToBrowser() {
+    return new Promise(resolve => {
+        setTimeout(resolve, 0);
+    });
+}
+
+/* ============================================================
+ * AI TURN INTEGRATION
+ * ============================================================ */
+
+function isCurrentPlayerAi() {
+    return (
+        playerTypes[currentPlayer] === "ai"
+    );
+}
+
+function scheduleAiTurnIfNeeded() {
+    if (
+        gameOver ||
+        gamePaused ||
+        aiThinking
+    ) {
+        return;
+    }
+
+    if (!isCurrentPlayerAi()) {
+        return;
+    }
+
+    /*
+     * Let the current render finish before beginning the search.
+     */
+    setTimeout(() => {
+        runAiTurn();
+    }, 20);
+}
+
+async function runAiTurn() {
+    if (
+        gameOver ||
+        gamePaused ||
+        aiThinking ||
+        !isCurrentPlayerAi()
+    ) {
+        return;
+    }
+
+    const aiPlayer =
+        currentPlayer;
+
+    const legalMoves =
+        getLegalMoves(
+            board,
+            aiPlayer
+        );
+
+    if (legalMoves.length === 0) {
+        handleNoLegalMoves();
+        return;
+    }
+
+    aiThinking = true;
+
+    const searchGeneration =
+        ++aiSearchGeneration;
+
+    hoverCell = null;
+    pendingMove = null;
+
+    aiStatusText.textContent =
+        `${difficultyName(currentAiDifficulty)} thinking`;
+
+    turnText.textContent =
+        `${playerName(aiPlayer)} is thinking`;
+
+    substatus.innerHTML =
+        `<span class="ai-thinking">Computer is searching...</span>`;
+
+    renderClocks();
+
+    /*
+     * The real clock keeps running during the AI search.
+     * We do not stop it here.
+     */
+    const searchBoard =
+        cloneBoard(board);
+
+    const chosenMove =
+        await findBestAiMove(
+            searchBoard,
+            aiPlayer,
+            currentAiDifficulty
+        );
+
+    /*
+     * The game may have ended while search was yielding.
+     */
+    if (
+        gameOver ||
+        gamePaused ||
+        !aiThinking ||
+        searchGeneration !== aiSearchGeneration ||
+        currentPlayer !== aiPlayer
+    ) {
+        aiThinking = false;
+        updateAiStatus();
+        return;
+    }
+
+    aiThinking = false;
+
+    /*
+     * Validate against the REAL board one final time.
+     */
+    const currentLegalMoves =
+        getLegalMoves(
+            board,
+            aiPlayer
+        );
+
+    let finalMove = null;
+
+    if (chosenMove) {
+        const chosenKey =
+            moveKey(chosenMove);
+
+        finalMove =
+            currentLegalMoves.find(
+                move =>
+                    moveKey(move) === chosenKey
+            ) || null;
+    }
+
+    if (!finalMove) {
+        finalMove =
+            currentLegalMoves[0] ||
+            null;
+    }
+
+    if (!finalMove) {
+        handleNoLegalMoves();
+        return;
+    }
+
+    applyAiMove(finalMove);
+}
+
+function difficultyName(difficulty) {
+    if (difficulty === "easy") {
+        return "Easy";
+    }
+
+    if (difficulty === "hard") {
+        return "Hard";
+    }
+
+    return "Normal";
+}
+
+function updateAiStatus() {
+    const p1Ai =
+        playerTypes[P1] === "ai";
+
+    const p2Ai =
+        playerTypes[P2] === "ai";
+
+    if (!p1Ai && !p2Ai) {
+        aiStatusText.textContent = "Off";
+        return;
+    }
+
+    if (aiThinking) {
+        aiStatusText.textContent =
+            `${difficultyName(currentAiDifficulty)} thinking`;
+        return;
+    }
+
+    aiStatusText.textContent =
+        difficultyName(currentAiDifficulty);
+}
+
+/* ============================================================
+ * APPLY AI MOVE THROUGH NORMAL GAME FLOW
+ * ============================================================ */
+
+function applyAiMove(move) {
+    if (
+        gameOver ||
+        gamePaused
+    ) {
+        return;
+    }
+
+    const player =
+        currentPlayer;
+
+    /*
+     * Verify every cell is still empty.
+     */
+    const valid =
+        move.cells.every(
+            cell =>
+                cell.r >= 0 &&
+                cell.r < rules.boardHeight &&
+                cell.c >= 0 &&
+                cell.c < rules.boardWidth &&
+                board[cell.r][cell.c] === EMPTY
+        );
+
+    if (!valid) {
+        const fallback =
+            getSafeFallbackMove(
+                board,
+                player
+            );
+
+        if (!fallback) {
+            handleNoLegalMoves();
+            return;
+        }
+
+        move = fallback;
+    }
+
+    move.cells.forEach(cell => {
+        board[cell.r][cell.c] =
+            player;
+    });
+
+    moveCount++;
+
+    hoverCell = null;
+    pendingMove = null;
+
+    /*
+     * Account for the actual time consumed by AI thinking.
+     * The clock has continued running while the search executed,
+     * but the animation frame cannot repaint during synchronous
+     * portions of the search. Updating here synchronizes it.
+     */
+    if (clockRunning) {
+        const now =
+            performance.now();
+
+        addElapsedTime(
+            now - lastClockUpdate
+        );
+
+        lastClockUpdate = now;
+    }
+
+    nextTurn();
+}
+
+/* ============================================================
+ * PREVIEW
+ * ============================================================ */
 
 function getPreview() {
-
     if (
         !hoverCell ||
         gameOver ||
         gamePaused ||
+        aiThinking ||
         settings.preview === "off"
     ) {
-
         return null;
     }
 
-
-    const r =
-        hoverCell.r;
-
-    const c =
-        hoverCell.c;
-
+    const r = hoverCell.r;
+    const c = hoverCell.c;
 
     const orientation =
         orientations[currentPlayer];
 
-
     const cells = [];
-
 
     for (
         let i = 0;
         i < rules.pieceLength;
         i++
     ) {
-
         const cellR =
             orientation === "H"
                 ? r
                 : r + i;
-
 
         const cellC =
             orientation === "H"
                 ? c + i
                 : c;
 
-
         cells.push({
-
             r: cellR,
-
             c: cellC
-
         });
     }
-
 
     const valid =
         cells.every(
             cell =>
-
                 cell.r >= 0 &&
-                cell.r <
-                    rules.boardHeight &&
-
+                cell.r < rules.boardHeight &&
                 cell.c >= 0 &&
-                cell.c <
-                    rules.boardWidth &&
-
-                board[
-                    cell.r
-                ][
-                    cell.c
-                ] === EMPTY
+                cell.c < rules.boardWidth &&
+                board[cell.r][cell.c] === EMPTY
         );
 
-
     return {
-
         cells,
-
         valid
-
     };
 }
 
-
-/* =========================================================
-   RENDER
-   ========================================================= */
+/* ============================================================
+ * RENDER
+ * ============================================================ */
 
 function render() {
-
     boardElement.innerHTML = "";
-
 
     const preview =
         getPreview();
-
 
     for (
         let r = 0;
         r < rules.boardHeight;
         r++
     ) {
-
         for (
             let c = 0;
             c < rules.boardWidth;
             c++
         ) {
-
             const cell =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
-
-            cell.className =
-                "cell";
-
+            cell.className = "cell";
 
             const value =
                 board[r][c];
 
-
-            if (
-                value === P1
-            ) {
-
-                cell.classList.add(
-                    "p1"
-                );
-
-            } else if (
-                value === P2
-            ) {
-
-                cell.classList.add(
-                    "p2"
-                );
+            if (value === P1) {
+                cell.classList.add("p1");
+            } else if (value === P2) {
+                cell.classList.add("p2");
             }
-
 
             if (
                 !gameOver &&
                 !gamePaused &&
-                value === EMPTY
+                !aiThinking &&
+                value === EMPTY &&
+                playerTypes[currentPlayer] === "human"
             ) {
-
-                cell.classList.add(
-                    "clickable"
-                );
+                cell.classList.add("clickable");
             }
 
-
             if (preview) {
-
                 const isPreview =
                     preview.cells.some(
                         previewCell =>
-
                             previewCell.r === r &&
                             previewCell.c === c
                     );
 
-
                 if (isPreview) {
-
                     cell.classList.add(
                         preview.valid
                             ? "preview"
@@ -4078,39 +3872,27 @@ function render() {
                 }
             }
 
+            cell.dataset.row = r;
+            cell.dataset.col = c;
 
-            cell.dataset.row =
-                r;
-
-            cell.dataset.col =
-                c;
-
-
-            boardElement.appendChild(
-                cell
-            );
+            boardElement.appendChild(cell);
         }
     }
 
-
     updateStatus();
-
 
     p1OrientationText.textContent =
         orientationName(
             orientations[P1]
         );
 
-
     p2OrientationText.textContent =
         orientationName(
             orientations[P2]
         );
 
-
     moveCountText.textContent =
         moveCount;
-
 
     document.getElementById(
         "timeControlLabel"
@@ -4119,35 +3901,25 @@ function render() {
             ? "Stopwatch"
             : "Countdown";
 
-
-    document.documentElement
-        .style
-        .setProperty(
-            "--current-player-color",
-            getPlayerColor(
-                currentPlayer
-            )
-        );
-
+    document.documentElement.style.setProperty(
+        "--current-player-color",
+        getPlayerColor(currentPlayer)
+    );
 
     renderClocks();
+    updateAiStatus();
 }
 
-
-/* =========================================================
-   STATUS
-   ========================================================= */
+/* ============================================================
+ * GAME STATUS
+ * ============================================================ */
 
 function updateStatus() {
-
     if (gameOver) {
-
         return;
     }
 
-
     if (gamePaused) {
-
         turnText.textContent =
             "Game paused";
 
@@ -4157,32 +3929,25 @@ function updateStatus() {
         return;
     }
 
+    if (aiThinking) {
+        turnText.textContent =
+            `${playerName(currentPlayer)} is thinking`;
 
-    /*
-        FULL BOARD
-    */
+        substatus.innerHTML =
+            `<span class="ai-thinking">Computer is searching...</span>`;
 
-    if (
-        isBoardFull()
-    ) {
+        return;
+    }
 
-        if (
-            rules.fullBoard === "tie"
-        ) {
-
+    if (isBoardFull()) {
+        if (rules.fullBoard === "tie") {
             finishTie();
-
             return;
         }
 
-
-        if (
-            rules.fullBoard === "win"
-        ) {
-
+        if (rules.fullBoard === "win") {
             const winner =
                 currentPlayer;
-
 
             finishWin(
                 winner,
@@ -4193,281 +3958,218 @@ function updateStatus() {
         }
     }
 
-
     const legalMoves =
         getLegalMoves(
             board,
             currentPlayer
         );
 
-
-    /*
-        NO MOVE
-    */
-
-    if (
-        legalMoves.length === 0
-    ) {
-
-        if (
-            rules.noLegalMove === "lose"
-        ) {
-
-            const winner =
-                currentPlayer === P1
-                    ? P2
-                    : P1;
-
-
-            finishWin(
-                winner,
-                `${playerName(
-                    currentPlayer
-                )} has no legal moves.`
-            );
-
-        } else {
-
-            finishTie();
-
-        }
-
+    if (legalMoves.length === 0) {
+        handleNoLegalMoves();
         return;
     }
 
-
     turnText.textContent =
-        `${playerName(
-            currentPlayer
-        )}'s turn`;
-
+        `${playerName(currentPlayer)}'s turn`;
 
     substatus.textContent =
         orientationName(
-            orientations[
-                currentPlayer
-            ]
+            orientations[currentPlayer]
         );
+
+    if (
+        playerTypes[currentPlayer] === "ai"
+    ) {
+        substatus.textContent =
+            `${orientationName(orientations[currentPlayer])} • Computer`;
+    }
 }
 
+function handleNoLegalMoves() {
+    if (gameOver) {
+        return;
+    }
 
-/* =========================================================
-   WIN
-   ========================================================= */
+    if (
+        rules.noLegalMove === "lose"
+    ) {
+        const winner =
+            otherPlayer(currentPlayer);
+
+        finishWin(
+            winner,
+            `${playerName(currentPlayer)} has no legal moves.`
+        );
+    } else {
+        finishTie();
+    }
+}
+
+/* ============================================================
+ * GAME END
+ * ============================================================ */
 
 function finishWin(
     winner,
     message = null
 ) {
+    aiThinking = false;
+    aiSearchGeneration++;
 
     stopClock();
 
     gameOver = true;
-
     gamePaused = false;
 
-
     const loser =
-        winner === P1
-            ? P2
-            : P1;
-
+        otherPlayer(winner);
 
     gameOverTitle.textContent =
         `${playerName(winner)} Wins!`;
 
-
     gameOverMessage.textContent =
         message ||
-        `${playerName(
-            loser
-        )} has no legal moves.`;
-
+        `${playerName(loser)} has no legal moves.`;
 
     gameOverElement.classList.remove(
         "hidden"
     );
 
-
     pauseOverlay.classList.add(
         "hidden"
     );
 
-
     turnText.textContent =
         `${playerName(winner)} wins!`;
-
 
     substatus.textContent =
         message ||
         "Game over.";
 
-
     renderClocks();
+    updateAiStatus();
 }
 
-
-/* =========================================================
-   TIME LOSS
-   ========================================================= */
-
-function finishTimeLoss(
-    loser
-) {
+function finishTimeLoss(loser) {
+    aiThinking = false;
+    aiSearchGeneration++;
 
     stopClock();
 
-
     gameOver = true;
-
     gamePaused = false;
 
-
     const winner =
-        loser === P1
-            ? P2
-            : P1;
-
+        otherPlayer(loser);
 
     gameOverTitle.textContent =
         `${playerName(winner)} Wins!`;
 
-
     gameOverMessage.textContent =
-        `${playerName(
-            loser
-        )}'s clock reached zero.`;
-
+        `${playerName(loser)}'s clock reached zero.`;
 
     gameOverElement.classList.remove(
         "hidden"
     );
-
 
     turnText.textContent =
         `${playerName(winner)} wins!`;
 
-
     substatus.textContent =
         "Time expired.";
 
-
     renderClocks();
+    updateAiStatus();
 }
 
-
-/* =========================================================
-   TIE
-   ========================================================= */
-
 function finishTie() {
+    aiThinking = false;
+    aiSearchGeneration++;
 
     stopClock();
 
     gameOver = true;
-
     gamePaused = false;
-
 
     gameOverTitle.textContent =
         "It's a Tie!";
 
-
-    gameOverMessage.textContent =
-        "The board is completely full.";
-
+    if (isBoardFull()) {
+        gameOverMessage.textContent =
+            "The board is completely full.";
+    } else {
+        gameOverMessage.textContent =
+            "The configured no-legal-move rule makes this game a tie.";
+    }
 
     gameOverElement.classList.remove(
         "hidden"
     );
-
 
     pauseOverlay.classList.add(
         "hidden"
     );
 
-
     turnText.textContent =
         "It's a tie!";
 
-
     substatus.textContent =
-        "The board is completely full.";
-
+        "Game over.";
 
     renderClocks();
+    updateAiStatus();
 }
 
+/* ============================================================
+ * HUMAN MOVE
+ * ============================================================ */
 
-/* =========================================================
-   MAKE MOVE
-   ========================================================= */
-
-function humanMove(
-    r,
-    c
-) {
-
+function humanMove(r, c) {
     if (
         gameOver ||
-        gamePaused
+        gamePaused ||
+        aiThinking ||
+        playerTypes[currentPlayer] !== "human"
     ) {
-
         return;
     }
-
 
     const orientation =
         orientations[currentPlayer];
 
-
     const cells = [];
-
 
     for (
         let i = 0;
         i < rules.pieceLength;
         i++
     ) {
-
         const cellR =
             orientation === "H"
                 ? r
                 : r + i;
-
 
         const cellC =
             orientation === "H"
                 ? c + i
                 : c;
 
-
         cells.push({
-
             r: cellR,
-
             c: cellC
-
         });
     }
-
 
     const inside =
         cells.every(
             cell =>
-
                 cell.r >= 0 &&
-                cell.r <
-                    rules.boardHeight &&
-
+                cell.r < rules.boardHeight &&
                 cell.c >= 0 &&
-                cell.c <
-                    rules.boardWidth
+                cell.c < rules.boardWidth
         );
 
-
     if (!inside) {
-
         hoverCell = {
             r,
             c
@@ -4477,21 +4179,14 @@ function humanMove(
 
         return;
     }
-
 
     const empty =
         cells.every(
             cell =>
-                board[
-                    cell.r
-                ][
-                    cell.c
-                ] === EMPTY
+                board[cell.r][cell.c] === EMPTY
         );
 
-
     if (!empty) {
-
         hoverCell = {
             r,
             c
@@ -4502,25 +4197,16 @@ function humanMove(
         return;
     }
 
-
-    /*
-        Optional confirmation.
-    */
-
     if (
         settings.confirmMove === "on"
     ) {
-
         if (
             pendingMove &&
             pendingMove.r === r &&
             pendingMove.c === c
         ) {
-
             pendingMove = null;
-
         } else {
-
             pendingMove = {
                 r,
                 c
@@ -4540,120 +4226,57 @@ function humanMove(
         }
     }
 
-
     pendingMove = null;
 
-
-    /*
-        Place piece.
-    */
-
-    cells.forEach(
-        cell => {
-
-            board[
-                cell.r
-            ][
-                cell.c
-            ] =
-                currentPlayer;
-
-        }
-    );
-
+    cells.forEach(cell => {
+        board[cell.r][cell.c] =
+            currentPlayer;
+    });
 
     moveCount++;
 
+    hoverCell = null;
 
-    hoverCell =
-        null;
-
-
-    /*
-        Clock must be updated before
-        changing the current player.
-    */
-
-    if (
-        clockRunning
-    ) {
-
+    if (clockRunning) {
         const now =
             performance.now();
-
 
         addElapsedTime(
             now - lastClockUpdate
         );
 
-
-        lastClockUpdate =
-            now;
+        lastClockUpdate = now;
     }
-
 
     nextTurn();
 }
 
-
-/* =========================================================
-   NEXT TURN
-   ========================================================= */
+/* ============================================================
+ * NEXT TURN
+ * ============================================================ */
 
 function nextTurn() {
-
-    if (
-        gameOver
-    ) {
-
+    if (gameOver) {
         render();
-
         return;
     }
 
-
-    /*
-        Check full board immediately.
-    */
-
-    if (
-        isBoardFull()
-    ) {
-
-        if (
-            rules.fullBoard === "tie"
-        ) {
-
+    if (isBoardFull()) {
+        if (rules.fullBoard === "tie") {
             finishTie();
-
         } else {
-
             finishWin(
                 currentPlayer,
                 "The board is completely full."
             );
         }
 
-
         render();
-
         return;
     }
 
-
-    /*
-        Switch player.
-    */
-
     currentPlayer =
-        currentPlayer === P1
-            ? P2
-            : P1;
-
-
-    /*
-        Check new player.
-    */
+        otherPlayer(currentPlayer);
 
     const legalMoves =
         getLegalMoves(
@@ -4661,382 +4284,267 @@ function nextTurn() {
             currentPlayer
         );
 
-
-    if (
-        legalMoves.length === 0
-    ) {
-
+    if (legalMoves.length === 0) {
         if (
             rules.noLegalMove === "lose"
         ) {
-
             const winner =
-                currentPlayer === P1
-                    ? P2
-                    : P1;
-
+                otherPlayer(currentPlayer);
 
             finishWin(
                 winner,
-                `${playerName(
-                    currentPlayer
-                )} has no legal moves.`
+                `${playerName(currentPlayer)} has no legal moves.`
             );
-
         } else {
-
             finishTie();
-
         }
 
-
         render();
-
         return;
     }
-
-
-    /*
-        Continue clock with new player.
-    */
 
     lastClockUpdate =
         performance.now();
 
-
     render();
+
+    scheduleAiTurnIfNeeded();
 }
 
-
-/* =========================================================
-   BOARD MOUSE MOVE
-   ========================================================= */
+/* ============================================================
+ * BOARD INPUT
+ * ============================================================ */
 
 boardElement.addEventListener(
     "mousemove",
     event => {
-
         if (
             gamePaused ||
-            gameOver
+            gameOver ||
+            aiThinking ||
+            playerTypes[currentPlayer] !== "human"
         ) {
-
             return;
         }
 
-
         const cell =
-            event.target.closest(
-                ".cell"
-            );
-
+            event.target.closest(".cell");
 
         if (!cell) {
-
-            if (
-                hoverCell !== null
-            ) {
-
+            if (hoverCell !== null) {
                 hoverCell = null;
-
                 render();
             }
 
             return;
         }
 
-
         const nextHover = {
-
-            r: Number(
-                cell.dataset.row
-            ),
-
-            c: Number(
-                cell.dataset.col
-            )
-
+            r: Number(cell.dataset.row),
+            c: Number(cell.dataset.col)
         };
-
 
         if (
             hoverCell &&
             hoverCell.r === nextHover.r &&
             hoverCell.c === nextHover.c
         ) {
-
             return;
         }
 
-
         hoverCell =
             nextHover;
-
 
         render();
     }
 );
 
-
-/* =========================================================
-   BOARD MOUSE LEAVE
-   ========================================================= */
-
 boardElement.addEventListener(
     "mouseleave",
     () => {
-
         if (
             hoverCell !== null
         ) {
-
             hoverCell = null;
-
             render();
         }
     }
 );
 
-
-/* =========================================================
-   BOARD CLICK
-   ========================================================= */
-
 boardElement.addEventListener(
     "click",
     event => {
-
         const cell =
-            event.target.closest(
-                ".cell"
-            );
-
+            event.target.closest(".cell");
 
         if (!cell) {
-
             return;
         }
 
-
         humanMove(
-
-            Number(
-                cell.dataset.row
-            ),
-
-            Number(
-                cell.dataset.col
-            )
-
+            Number(cell.dataset.row),
+            Number(cell.dataset.col)
         );
     }
 );
 
-
-/* =========================================================
-   GAME MENU
-   ========================================================= */
+/* ============================================================
+ * GAME BUTTONS
+ * ============================================================ */
 
 document
-    .getElementById(
-        "gameMenuButton"
-    )
+    .getElementById("gameMenuButton")
     .addEventListener(
         "click",
         () => {
-
             showMainMenu();
-
         }
     );
 
-
-/* =========================================================
-   GAME NEW
-   ========================================================= */
-
 document
-    .getElementById(
-        "gameNewButton"
-    )
+    .getElementById("gameNewButton")
     .addEventListener(
         "click",
         () => {
-
             stopClock();
 
+            aiThinking = false;
+            aiSearchGeneration++;
+
             prepareSetup();
-
             showScreen("setup");
-
         }
     );
 
-
-/* =========================================================
-   GAME OVER: PLAY AGAIN
-   ========================================================= */
-
 document
-    .getElementById(
-        "playAgainButton"
-    )
+    .getElementById("playAgainButton")
     .addEventListener(
         "click",
         () => {
-
             gameOverElement.classList.add(
                 "hidden"
             );
 
+            aiThinking = false;
+            aiSearchGeneration++;
 
             prepareSetup();
-
             showScreen("setup");
-
         }
     );
 
-
-/* =========================================================
-   GAME OVER: MENU
-   ========================================================= */
-
 document
-    .getElementById(
-        "gameOverMenuButton"
-    )
+    .getElementById("gameOverMenuButton")
     .addEventListener(
         "click",
         showMainMenu
     );
 
-
-/* =========================================================
-   SETTINGS
-   ========================================================= */
+/* ============================================================
+ * SETTINGS UI
+ * ============================================================ */
 
 function openSettings() {
-
     document.getElementById(
         "themeSetting"
     ).value =
         settings.theme;
-
 
     document.getElementById(
         "cellStyleSetting"
     ).value =
         settings.cellStyle;
 
-
     document.getElementById(
         "animationSetting"
     ).value =
         settings.animations;
-
 
     document.getElementById(
         "previewSetting"
     ).value =
         settings.preview;
 
-
     document.getElementById(
         "settingsP1Color"
     ).value =
         settings.p1Color;
-
 
     document.getElementById(
         "settingsP2Color"
     ).value =
         settings.p2Color;
 
-
     document.getElementById(
         "settingsEmptyColor"
     ).value =
         settings.emptyColor;
-
 
     document.getElementById(
         "timeControlSetting"
     ).value =
         settings.timeControl;
 
-
     document.getElementById(
         "countdownMinutesSetting"
     ).value =
         settings.countdownMinutes;
-
 
     document.getElementById(
         "countdownSecondsSetting"
     ).value =
         settings.countdownSeconds;
 
-
     document.getElementById(
         "pieceLengthSetting"
     ).value =
         settings.pieceLength;
-
 
     document.getElementById(
         "noMoveSetting"
     ).value =
         settings.noMove;
 
-
     document.getElementById(
         "fullBoardSetting"
     ).value =
         settings.fullBoard;
-
 
     document.getElementById(
         "oppositeOrientationSetting"
     ).value =
         settings.oppositeOrientation;
 
-
     document.getElementById(
         "confirmMoveSetting"
     ).value =
         settings.confirmMove;
-
 
     document.getElementById(
         "autoPauseSetting"
     ).value =
         settings.autoPause;
 
-
     document.getElementById(
         "reducedMotionSetting"
     ).value =
         settings.reducedMotion;
 
+    document.getElementById(
+        "aiDifficultySetting"
+    ).value =
+        settings.aiDifficulty;
 
     updateCountdownVisibility();
 
     showScreen("settings");
 }
 
-
-/* =========================================================
-   COUNTDOWN SETTINGS VISIBILITY
-   ========================================================= */
-
 function updateCountdownVisibility() {
-
     const countdown =
         document.getElementById(
             "timeControlSetting"
         ).value === "countdown";
-
 
     document.getElementById(
         "countdownSettings"
@@ -5046,76 +4554,57 @@ function updateCountdownVisibility() {
     );
 }
 
-
 document
-    .getElementById(
-        "timeControlSetting"
-    )
+    .getElementById("timeControlSetting")
     .addEventListener(
         "change",
         updateCountdownVisibility
     );
 
-
-/* =========================================================
-   SAVE SETTINGS
-   ========================================================= */
-
 document
-    .getElementById(
-        "saveSettingsButton"
-    )
+    .getElementById("saveSettingsButton")
     .addEventListener(
         "click",
         () => {
-
             settings.theme =
                 document.getElementById(
                     "themeSetting"
                 ).value;
-
 
             settings.cellStyle =
                 document.getElementById(
                     "cellStyleSetting"
                 ).value;
 
-
             settings.animations =
                 document.getElementById(
                     "animationSetting"
                 ).value;
-
 
             settings.preview =
                 document.getElementById(
                     "previewSetting"
                 ).value;
 
-
             settings.p1Color =
                 document.getElementById(
                     "settingsP1Color"
                 ).value;
-
 
             settings.p2Color =
                 document.getElementById(
                     "settingsP2Color"
                 ).value;
 
-
             settings.emptyColor =
                 document.getElementById(
                     "settingsEmptyColor"
                 ).value;
 
-
             settings.timeControl =
                 document.getElementById(
                     "timeControlSetting"
                 ).value;
-
 
             settings.countdownMinutes =
                 Math.max(
@@ -5128,7 +4617,6 @@ document
                         ) || 0
                     )
                 );
-
 
             settings.countdownSeconds =
                 Math.max(
@@ -5145,24 +4633,13 @@ document
                     )
                 );
 
-
-            /*
-                Do not allow a countdown
-                of 0:00.
-            */
-
             if (
                 settings.timeControl === "countdown" &&
                 getCountdownStart() <= 0
             ) {
-
-                settings.countdownMinutes =
-                    10;
-
-                settings.countdownSeconds =
-                    0;
+                settings.countdownMinutes = 10;
+                settings.countdownSeconds = 0;
             }
-
 
             settings.pieceLength =
                 Math.max(
@@ -5179,249 +4656,157 @@ document
                     )
                 );
 
-
             settings.noMove =
                 document.getElementById(
                     "noMoveSetting"
                 ).value;
-
 
             settings.fullBoard =
                 document.getElementById(
                     "fullBoardSetting"
                 ).value;
 
-
             settings.oppositeOrientation =
                 document.getElementById(
                     "oppositeOrientationSetting"
                 ).value;
-
 
             settings.confirmMove =
                 document.getElementById(
                     "confirmMoveSetting"
                 ).value;
 
-
             settings.autoPause =
                 document.getElementById(
                     "autoPauseSetting"
                 ).value;
-
 
             settings.reducedMotion =
                 document.getElementById(
                     "reducedMotionSetting"
                 ).value;
 
+            settings.aiDifficulty =
+                document.getElementById(
+                    "aiDifficultySetting"
+                ).value;
 
             saveSettings();
 
             applyColors();
-
             applyRuleSettings();
 
-
             showMainMenu();
-
         }
     );
+
 document
-    .getElementById(
-        "resetSettingsButton"
-    )
+    .getElementById("resetSettingsButton")
     .addEventListener(
         "click",
         () => {
-
             const confirmed =
                 confirm(
                     "Reset all settings to their defaults?\n\nThis cannot be undone."
                 );
 
-
             if (!confirmed) {
-
                 return;
             }
 
-
-            /*
-                Reset settings.
-            */
-
-            settings =
-                {
-                    ...DEFAULT_SETTINGS
-                };
-
-
-            /*
-                Reset the mutable rules object.
-                `rules` is const, so we change its
-                properties instead of replacing it.
-            */
+            settings = {
+                ...DEFAULT_SETTINGS
+            };
 
             Object.assign(
                 rules,
                 DEFAULT_RULES
             );
 
-
-            /*
-                Save the defaults.
-            */
-
             saveSettings();
 
-
-            /*
-                Apply everything immediately.
-            */
-
             applyColors();
-
             applyRuleSettings();
 
-
-            /*
-                Reload the Settings screen so every
-                control displays its default value.
-            */
-
             openSettings();
-
         }
     );
 
-/* =========================================================
-   HOW TO PLAY EXAMPLES
-   ========================================================= */
+/* ============================================================
+ * HOW TO PLAY EXAMPLES
+ * ============================================================ */
 
 function createExampleBoard(
     elementId,
     cells
 ) {
-
     const element =
         document.getElementById(
             elementId
         );
 
-
     element.innerHTML = "";
 
-
     const width = 5;
-
     const height = 4;
-
 
     for (
         let r = 0;
         r < height;
         r++
     ) {
-
         for (
             let c = 0;
             c < width;
             c++
         ) {
-
             const cell =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             cell.className =
                 "example-cell";
 
-
             const value =
-                cells[
-                    `${r},${c}`
-                ];
+                cells[`${r},${c}`];
 
-
-            if (
-                value === P1
-            ) {
-
-                cell.classList.add(
-                    "p1"
-                );
-
-            } else if (
-                value === P2
-            ) {
-
-                cell.classList.add(
-                    "p2"
-                );
+            if (value === P1) {
+                cell.classList.add("p1");
+            } else if (value === P2) {
+                cell.classList.add("p2");
             }
 
-
-            element.appendChild(
-                cell
-            );
+            element.appendChild(cell);
         }
     }
 }
 
-
 function buildHowToPlayExamples() {
-
     const horizontal = {};
 
-
-    horizontal["1,1"] =
-        P1;
-
-    horizontal["1,2"] =
-        P1;
-
+    horizontal["1,1"] = P1;
+    horizontal["1,2"] = P1;
 
     createExampleBoard(
         "horizontalExample",
         horizontal
     );
 
-
     const vertical = {};
 
-
-    vertical["0,2"] =
-        P2;
-
-    vertical["1,2"] =
-        P2;
-
+    vertical["0,2"] = P2;
+    vertical["1,2"] = P2;
 
     createExampleBoard(
         "verticalExample",
         vertical
     );
 
-
     const blocked = {};
 
-
-    blocked["1,1"] =
-        P1;
-
-    blocked["1,2"] =
-        P1;
-
-
-    blocked["2,3"] =
-        P2;
-
-    blocked["2,4"] =
-        P2;
-
+    blocked["1,1"] = P1;
+    blocked["1,2"] = P1;
+    blocked["2,3"] = P2;
+    blocked["2,4"] = P2;
 
     createExampleBoard(
         "blockedExample",
@@ -5429,18 +4814,14 @@ function buildHowToPlayExamples() {
     );
 }
 
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
+/* ============================================================
+ * INITIALIZATION
+ * ============================================================ */
 
 applyColors();
-
 applyRuleSettings();
-
 showMainMenu();
 
 </script>
-
 </body>
 </html>
