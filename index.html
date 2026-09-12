@@ -1979,6 +1979,7 @@
             >
                 Save Settings
             </button>
+            <button class="button primary large" id="resetSettingsButton">Reset Settings</button>
 
         </div>
 
@@ -5214,7 +5215,73 @@ document
 
         }
     );
+document
+    .getElementById(
+        "resetSettingsButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
 
+            const confirmed =
+                confirm(
+                    "Reset all settings to their defaults?\n\nThis cannot be undone."
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            /*
+                Reset settings.
+            */
+
+            settings =
+                {
+                    ...DEFAULT_SETTINGS
+                };
+
+
+            /*
+                Reset the mutable rules object.
+                `rules` is const, so we change its
+                properties instead of replacing it.
+            */
+
+            Object.assign(
+                rules,
+                DEFAULT_RULES
+            );
+
+
+            /*
+                Save the defaults.
+            */
+
+            saveSettings();
+
+
+            /*
+                Apply everything immediately.
+            */
+
+            applyColors();
+
+            applyRuleSettings();
+
+
+            /*
+                Reload the Settings screen so every
+                control displays its default value.
+            */
+
+            openSettings();
+
+        }
+    );
 
 /* =========================================================
    HOW TO PLAY EXAMPLES
