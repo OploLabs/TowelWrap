@@ -413,7 +413,8 @@
             display: grid;
 
             grid-template-columns:
-                repeat(5, minmax(0, 1fr));
+                repeat(var(--board-width), minmax(0, 1fr));
+
 
             gap: 4px;
         }
@@ -767,7 +768,8 @@
             display: grid;
 
             grid-template-columns:
-                repeat(7, minmax(0, 1fr));
+                repeat(var(--board-width), minmax(0, 1fr));
+
 
             gap:
                 clamp(3px, 1vw, 6px);
@@ -1692,6 +1694,62 @@
                 </div>
 
             </div>
+            <!-- BOARD SIZE -->
+            
+            <div class="settings-section">
+            
+                <h3>Board Size</h3>
+            
+                <p class="settings-description">
+                    Choose the width and height of the board.
+                    Changes apply to new games.
+                </p>
+            
+                <div class="setting-row">
+            
+                    <div class="setting">
+            
+                        <label for="boardWidthSetting">
+                            Width
+                        </label>
+            
+                        <input
+                            type="number"
+                            id="boardWidthSetting"
+                            min="2"
+                            max="20"
+                            step="1"
+                        >
+            
+                    </div>
+            
+                    <div class="setting">
+            
+                        <label for="boardHeightSetting">
+                            Height
+                        </label>
+            
+                        <input
+                            type="number"
+                            id="boardHeightSetting"
+                            min="2"
+                            max="20"
+                            step="1"
+                        >
+            
+                    </div>
+            
+                </div>
+            
+                <div class="rule-status">
+            
+                    <span class="rule-status-dot"></span>
+            
+                    Board size applies to new games.
+            
+                </div>
+            
+            </div>
 
 
             <!-- BOARD COLORS -->
@@ -2436,7 +2494,12 @@ const DEFAULT_SETTINGS = {
 
     fullBoard: "tie",
 
-    oppositeOrientation: "opposite"
+    oppositeOrientation: "opposite",
+    
+    boardWidth: 7,
+    
+    boardHeight: 8
+
 
 };
 
@@ -4826,6 +4889,60 @@ function applyColors() {
 
 function applyRuleSettings() {
 
+    let width =
+        Number(
+            settings.boardWidth
+        );
+
+    let height =
+        Number(
+            settings.boardHeight
+        );
+
+
+    if (
+        !Number.isFinite(width)
+    ) {
+
+        width =
+            DEFAULT_RULES.boardWidth;
+    }
+
+
+    if (
+        !Number.isFinite(height)
+    ) {
+
+        height =
+            DEFAULT_RULES.boardHeight;
+    }
+
+
+    rules.boardWidth =
+        Math.max(
+            2,
+            Math.min(
+                20,
+                Math.round(width)
+            )
+        );
+
+
+    rules.boardHeight =
+        Math.max(
+            2,
+            Math.min(
+                20,
+                Math.round(height)
+            )
+        );
+    document.documentElement.style.setProperty(
+        "--board-width",
+        rules.boardWidth
+    );
+
+
+
     let length =
         Number(
             settings.pieceLength
@@ -4841,11 +4958,23 @@ function applyRuleSettings() {
     }
 
 
+    /*
+        A piece cannot be longer than the
+        smallest board dimension.
+    */
+
+    const maxPieceLength =
+        Math.min(
+            rules.boardWidth,
+            rules.boardHeight
+        );
+
+
     rules.pieceLength =
         Math.max(
             1,
             Math.min(
-                7,
+                maxPieceLength,
                 Math.round(length)
             )
         );
@@ -4866,6 +4995,7 @@ function applyRuleSettings() {
     rules.oppositeOrientations =
         settings.oppositeOrientation !== "same";
 }
+
 
 
 /* =========================================================
@@ -7055,6 +7185,18 @@ function openSettings() {
     ).value =
         settings.preview;
 
+    document.getElementById(
+        "boardWidthSetting"
+    ).value =
+        settings.boardWidth;
+    
+    
+    document.getElementById(
+        "boardHeightSetting"
+    ).value =
+        settings.boardHeight;
+
+
 
     document.getElementById(
         "settingsP1Color"
@@ -7292,6 +7434,38 @@ document
                         )
                     )
                 );
+
+            settings.boardWidth =
+                Math.max(
+                    2,
+                    Math.min(
+                        20,
+                        Math.round(
+                            Number(
+                                document.getElementById(
+                                    "boardWidthSetting"
+                                ).value
+                            ) || DEFAULT_RULES.boardWidth
+                        )
+                    )
+                );
+            
+            
+            settings.boardHeight =
+                Math.max(
+                    2,
+                    Math.min(
+                        20,
+                        Math.round(
+                            Number(
+                                document.getElementById(
+                                    "boardHeightSetting"
+                                ).value
+                            ) || DEFAULT_RULES.boardHeight
+                        )
+                    )
+                );
+
 
 
             settings.noMove =
