@@ -12,6 +12,7 @@
 const EMPTY = 0;
 const P1 = 1;
 const P2 = 2;
+const X = 3;
 
 const STORAGE_KEY = "towelsWrapSettings";
 
@@ -104,8 +105,10 @@ const ui = {
     setup: {
         p1Color: $("setupP1Color"),
         p2Color: $("setupP2Color"),
+
         p1Preview: $("setupP1Preview"),
         p2Preview: $("setupP2Preview"),
+
         p1Orientation: $("setupP1Orientation"),
         p2Orientation: $("setupP2Orientation"),
         startingPlayer: $("setupStartingPlayer"),
@@ -189,7 +192,9 @@ let settings = loadSettings();
 
 function loadSettings() {
     try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        const saved = JSON.parse(
+            localStorage.getItem(STORAGE_KEY)
+        );
 
         if (!saved || typeof saved !== "object") {
             return { ...DEFAULT_SETTINGS };
@@ -273,7 +278,9 @@ function otherPlayer(player) {
 }
 
 function playerName(player) {
-    return player === P1 ? "Player 1" : "Player 2";
+    return player === P1
+        ? "Player 1"
+        : "Player 2";
 }
 
 function playerColor(player) {
@@ -289,18 +296,29 @@ function orientationName(orientation) {
 }
 
 function oppositeOrientation(orientation) {
-    return orientation === "H" ? "V" : "H";
+    return orientation === "H"
+        ? "V"
+        : "H";
 }
 
 function randomOrientation() {
-    return Math.random() < 0.5 ? "H" : "V";
+    return Math.random() < 0.5
+        ? "H"
+        : "V";
 }
 
 function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+    return Math.max(
+        min,
+        Math.min(max, value)
+    );
 }
 
-function isInsideBoard(row, col, stateBoard = board) {
+function isInsideBoard(
+    row,
+    col,
+    stateBoard = board
+) {
     return (
         row >= 0 &&
         row < stateBoard.length &&
@@ -327,7 +345,10 @@ function isBoardFull(stateBoard = board) {
 ========================================================= */
 
 function showScreen(name) {
-    for (const [screenName, element] of Object.entries(ui.screens)) {
+    for (
+        const [screenName, element]
+        of Object.entries(ui.screens)
+    ) {
         element.classList.toggle(
             "hidden",
             screenName !== name
@@ -356,21 +377,29 @@ function applyTheme() {
     let theme = settings.theme;
 
     if (theme === "system") {
-        theme = window.matchMedia("(prefers-color-scheme: light)").matches
-            ? "light"
-            : "dark";
+        theme =
+            window.matchMedia(
+                "(prefers-color-scheme: light)"
+            ).matches
+                ? "light"
+                : "dark";
     }
 
-    const values = THEMES[theme] ?? THEMES.dark;
+    const values =
+        THEMES[theme] ?? THEMES.dark;
 
-    for (const [property, value] of Object.entries(values)) {
+    for (
+        const [property, value]
+        of Object.entries(values)
+    ) {
         document.documentElement.style.setProperty(
             property,
             value
         );
     }
 
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.theme =
+        theme;
 }
 
 function applyCellStyle() {
@@ -385,7 +414,9 @@ function applyMotionSettings() {
         settings.reducedMotion === "on" ||
         (
             settings.reducedMotion === "system" &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+            ).matches
         );
 
     document.body.classList.toggle(
@@ -409,6 +440,17 @@ function applyColors() {
         "--empty-color",
         settings.emptyColor
     );
+
+    /* X is always red with a white X */
+    document.documentElement.style.setProperty(
+        "--x-color",
+        "#ff0000"
+    );
+
+    document.documentElement.style.setProperty(
+        "--x-text-color",
+        "#ffffff"
+    );
 }
 
 function applySettings() {
@@ -421,83 +463,146 @@ function applySettings() {
 }
 
 function populateSettingsUI() {
-    ui.settings.theme.value = settings.theme;
-    ui.settings.cellStyle.value = settings.cellStyle;
-    ui.settings.animations.value = settings.animations;
-    ui.settings.preview.value = settings.preview;
+    ui.settings.theme.value =
+        settings.theme;
 
-    ui.settings.boardWidth.value = settings.boardWidth;
-    ui.settings.boardHeight.value = settings.boardHeight;
+    ui.settings.cellStyle.value =
+        settings.cellStyle;
 
-    ui.settings.p1Color.value = settings.p1Color;
-    ui.settings.p2Color.value = settings.p2Color;
-    ui.settings.emptyColor.value = settings.emptyColor;
+    ui.settings.animations.value =
+        settings.animations;
 
-    ui.settings.timeControl.value = settings.timeControl;
-    ui.settings.countdownMinutes.value = settings.countdownMinutes;
-    ui.settings.countdownSeconds.value = settings.countdownSeconds;
+    ui.settings.preview.value =
+        settings.preview;
 
-    ui.settings.pieceLength.value = settings.pieceLength;
-    ui.settings.noMove.value = settings.noMove;
-    ui.settings.fullBoard.value = settings.fullBoard;
-    ui.settings.oppositeOrientation.value = settings.oppositeOrientation;
+    ui.settings.boardWidth.value =
+        settings.boardWidth;
 
-    ui.settings.confirmMove.value = settings.confirmMove;
-    ui.settings.autoPause.value = settings.autoPause;
-    ui.settings.reducedMotion.value = settings.reducedMotion;
+    ui.settings.boardHeight.value =
+        settings.boardHeight;
+
+    ui.settings.p1Color.value =
+        settings.p1Color;
+
+    ui.settings.p2Color.value =
+        settings.p2Color;
+
+    ui.settings.emptyColor.value =
+        settings.emptyColor;
+
+    ui.settings.timeControl.value =
+        settings.timeControl;
+
+    ui.settings.countdownMinutes.value =
+        settings.countdownMinutes;
+
+    ui.settings.countdownSeconds.value =
+        settings.countdownSeconds;
+
+    ui.settings.pieceLength.value =
+        settings.pieceLength;
+
+    ui.settings.noMove.value =
+        settings.noMove;
+
+    ui.settings.fullBoard.value =
+        settings.fullBoard;
+
+    ui.settings.oppositeOrientation.value =
+        settings.oppositeOrientation;
+
+    ui.settings.confirmMove.value =
+        settings.confirmMove;
+
+    ui.settings.autoPause.value =
+        settings.autoPause;
+
+    ui.settings.reducedMotion.value =
+        settings.reducedMotion;
 
     updateCountdownVisibility();
 }
 
 function readSettingsUI() {
-    settings.theme = ui.settings.theme.value;
-    settings.cellStyle = ui.settings.cellStyle.value;
-    settings.animations = ui.settings.animations.value;
-    settings.preview = ui.settings.preview.value;
+    settings.theme =
+        ui.settings.theme.value;
+
+    settings.cellStyle =
+        ui.settings.cellStyle.value;
+
+    settings.animations =
+        ui.settings.animations.value;
+
+    settings.preview =
+        ui.settings.preview.value;
 
     settings.boardWidth = clamp(
-        Number(ui.settings.boardWidth.value) || DEFAULT_SETTINGS.boardWidth,
+        Number(ui.settings.boardWidth.value) ||
+            DEFAULT_SETTINGS.boardWidth,
         2,
         20
     );
 
     settings.boardHeight = clamp(
-        Number(ui.settings.boardHeight.value) || DEFAULT_SETTINGS.boardHeight,
+        Number(ui.settings.boardHeight.value) ||
+            DEFAULT_SETTINGS.boardHeight,
         2,
         20
     );
 
-    settings.p1Color = ui.settings.p1Color.value;
-    settings.p2Color = ui.settings.p2Color.value;
-    settings.emptyColor = ui.settings.emptyColor.value;
+    settings.p1Color =
+        ui.settings.p1Color.value;
 
-    settings.timeControl = ui.settings.timeControl.value;
+    settings.p2Color =
+        ui.settings.p2Color.value;
+
+    settings.emptyColor =
+        ui.settings.emptyColor.value;
+
+    settings.timeControl =
+        ui.settings.timeControl.value;
 
     settings.countdownMinutes = clamp(
-        Number(ui.settings.countdownMinutes.value) || 0,
+        Number(
+            ui.settings.countdownMinutes.value
+        ) || 0,
         0,
         999
     );
 
     settings.countdownSeconds = clamp(
-        Number(ui.settings.countdownSeconds.value) || 0,
+        Number(
+            ui.settings.countdownSeconds.value
+        ) || 0,
         0,
         59
     );
 
     settings.pieceLength = clamp(
-        Number(ui.settings.pieceLength.value) || 2,
+        Number(
+            ui.settings.pieceLength.value
+        ) || 2,
         1,
         7
     );
 
-    settings.noMove = ui.settings.noMove.value;
-    settings.fullBoard = ui.settings.fullBoard.value;
-    settings.oppositeOrientation = ui.settings.oppositeOrientation.value;
+    settings.noMove =
+        ui.settings.noMove.value;
 
-    settings.confirmMove = ui.settings.confirmMove.value;
-    settings.autoPause = ui.settings.autoPause.value;
-    settings.reducedMotion = ui.settings.reducedMotion.value;
+    settings.fullBoard =
+        ui.settings.fullBoard.value;
+
+    settings.oppositeOrientation =
+        ui.settings.oppositeOrientation.value;
+
+    settings.confirmMove =
+        ui.settings.confirmMove.value;
+
+    settings.autoPause =
+        ui.settings.autoPause.value;
+
+    settings.reducedMotion =
+        ui.settings.reducedMotion.value;
 }
 
 function openSettings() {
@@ -518,10 +623,14 @@ function updateCountdownVisibility() {
 ========================================================= */
 
 function prepareSetup() {
-    ui.setup.p1Color.value = settings.p1Color;
-    ui.setup.p2Color.value = settings.p2Color;
+    ui.setup.p1Color.value =
+        settings.p1Color;
 
-    ui.setup.p1Orientation.value = "random";
+    ui.setup.p2Color.value =
+        settings.p2Color;
+
+    ui.setup.p1Orientation.value =
+        "random";
 
     updateSetupPreviews();
     updateAIDifficultyVisibility();
@@ -529,7 +638,9 @@ function prepareSetup() {
     ui.setup.timeControl.textContent =
         settings.timeControl === "stopwatch"
             ? "Stopwatch"
-            : `Countdown (${formatDuration(getCountdownTime())})`;
+            : `Countdown (${formatDuration(
+                getCountdownTime()
+            )})`;
 }
 
 function updateSetupPreviews() {
@@ -548,17 +659,21 @@ function updateAIDifficultyVisibility() {
 }
 
 function getStartingPlayer() {
-    const value = ui.setup.startingPlayer.value;
+    const value =
+        ui.setup.startingPlayer.value;
 
     if (value === "random") {
-        return Math.random() < 0.5 ? P1 : P2;
+        return Math.random() < 0.5
+            ? P1
+            : P2;
     }
 
     return Number(value);
 }
 
 function getSetupOrientations() {
-    let p1 = ui.setup.p1Orientation.value;
+    let p1 =
+        ui.setup.p1Orientation.value;
 
     if (p1 === "random") {
         p1 = randomOrientation();
@@ -581,14 +696,19 @@ function getSetupOrientations() {
 ========================================================= */
 
 function startGameFromSetup() {
-    settings.p1Color = ui.setup.p1Color.value;
-    settings.p2Color = ui.setup.p2Color.value;
+    settings.p1Color =
+        ui.setup.p1Color.value;
+
+    settings.p2Color =
+        ui.setup.p2Color.value;
 
     applyColors();
 
-    orientations = getSetupOrientations();
+    orientations =
+        getSetupOrientations();
 
-    currentPlayer = getStartingPlayer();
+    currentPlayer =
+        getStartingPlayer();
 
     gameOver = false;
     gamePaused = false;
@@ -597,8 +717,11 @@ function startGameFromSetup() {
     pendingMove = null;
     hoverCell = null;
 
-    clocks[P1] = getInitialClock();
-    clocks[P2] = getInitialClock();
+    clocks[P1] =
+        getInitialClock();
+
+    clocks[P2] =
+        getInitialClock();
 
     createBoard();
 
@@ -607,7 +730,8 @@ function startGameFromSetup() {
     updateStatus();
     updateClocks();
 
-    ui.game.pause.textContent = "Pause";
+    ui.game.pause.textContent =
+        "Pause";
 
     showScreen("game");
 
@@ -625,8 +749,13 @@ function startGameFromSetup() {
 
 function createBoard() {
     board = Array.from(
-        { length: settings.boardHeight },
-        () => Array(settings.boardWidth).fill(EMPTY)
+        {
+            length: settings.boardHeight
+        },
+        () =>
+            Array(
+                settings.boardWidth
+            ).fill(EMPTY)
     );
 }
 
@@ -664,11 +793,12 @@ function isMoveValid(
     player,
     stateBoard = board
 ) {
-    const cells = getMoveCells(
-        row,
-        col,
-        orientations[player]
-    );
+    const cells =
+        getMoveCells(
+            row,
+            col,
+            orientations[player]
+        );
 
     return cells.every(cell =>
         isInsideBoard(
@@ -676,7 +806,8 @@ function isMoveValid(
             cell.col,
             stateBoard
         ) &&
-        stateBoard[cell.row][cell.col] === EMPTY
+        stateBoard[cell.row][cell.col] ===
+            EMPTY
     );
 }
 
@@ -686,17 +817,33 @@ function getLegalMoves(
 ) {
     const moves = [];
 
-    for (let row = 0; row < stateBoard.length; row++) {
-        for (let col = 0; col < stateBoard[row].length; col++) {
-            if (isMoveValid(row, col, player, stateBoard)) {
+    for (
+        let row = 0;
+        row < stateBoard.length;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < stateBoard[row].length;
+            col++
+        ) {
+            if (
+                isMoveValid(
+                    row,
+                    col,
+                    player,
+                    stateBoard
+                )
+            ) {
                 moves.push({
                     row,
                     col,
-                    cells: getMoveCells(
-                        row,
-                        col,
-                        orientations[player]
-                    )
+                    cells:
+                        getMoveCells(
+                            row,
+                            col,
+                            orientations[player]
+                        )
                 });
             }
         }
@@ -710,10 +857,14 @@ function applyMove(
     player,
     stateBoard = board
 ) {
-    const nextBoard = stateBoard.map(row => [...row]);
+    const nextBoard =
+        stateBoard.map(
+            row => [...row]
+        );
 
     for (const cell of move.cells) {
-        nextBoard[cell.row][cell.col] = player;
+        nextBoard[cell.row][cell.col] =
+            player;
     }
 
     return nextBoard;
@@ -736,26 +887,72 @@ function renderBoard() {
     ui.game.board.style.aspectRatio =
         `${settings.boardWidth} / ${settings.boardHeight}`;
 
-    for (let row = 0; row < settings.boardHeight; row++) {
-        for (let col = 0; col < settings.boardWidth; col++) {
-            const cell = document.createElement("button");
+    for (
+        let row = 0;
+        row < settings.boardHeight;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < settings.boardWidth;
+            col++
+        ) {
+            const cell =
+                document.createElement("button");
 
             cell.type = "button";
-            cell.className = "board-cell";
+            cell.className =
+                "board-cell";
 
             cell.dataset.row = row;
             cell.dataset.col = col;
 
-            const value = board[row][col];
+            const value =
+                board[row][col];
 
             if (value === P1) {
-                cell.classList.add("player-one");
-                cell.style.backgroundColor = settings.p1Color;
+                cell.classList.add(
+                    "player-one"
+                );
+
+                cell.style.backgroundColor =
+                    settings.p1Color;
             }
 
             if (value === P2) {
-                cell.classList.add("player-two");
-                cell.style.backgroundColor = settings.p2Color;
+                cell.classList.add(
+                    "player-two"
+                );
+
+                cell.style.backgroundColor =
+                    settings.p2Color;
+            }
+
+            /*
+             * X CELL
+             *
+             * Always:
+             * - Red background
+             * - White X
+             */
+            if (value === X) {
+                cell.classList.add(
+                    "player-x"
+                );
+
+                cell.style.backgroundColor =
+                    "#ff0000";
+
+                cell.style.color =
+                    "#ffffff";
+
+                cell.style.fontWeight =
+                    "900";
+
+                cell.style.fontSize =
+                    "1.5em";
+
+                cell.textContent = "X";
             }
 
             if (
@@ -764,22 +961,32 @@ function renderBoard() {
                 !gameOver &&
                 !gamePaused
             ) {
-                const previewCells = getMoveCells(
-                    hoverCell.row,
-                    hoverCell.col,
-                    orientations[currentPlayer]
-                );
+                const previewCells =
+                    getMoveCells(
+                        hoverCell.row,
+                        hoverCell.col,
+                        orientations[currentPlayer]
+                    );
 
-                const isPreview = previewCells.some(
-                    preview =>
-                        preview.row === row &&
-                        preview.col === col
-                );
+                const isPreview =
+                    previewCells.some(
+                        preview =>
+                            preview.row === row &&
+                            preview.col === col
+                    );
 
-                if (isPreview && value === EMPTY) {
-                    cell.classList.add("preview");
+                if (
+                    isPreview &&
+                    value === EMPTY
+                ) {
+                    cell.classList.add(
+                        "preview"
+                    );
+
                     cell.style.backgroundColor =
-                        playerColor(currentPlayer);
+                        playerColor(
+                            currentPlayer
+                        );
                 }
             }
 
@@ -791,10 +998,14 @@ function renderBoard() {
                         pending.col === col
                 )
             ) {
-                cell.classList.add("pending");
+                cell.classList.add(
+                    "pending"
+                );
             }
 
-            ui.game.board.appendChild(cell);
+            ui.game.board.appendChild(
+                cell
+            );
         }
     }
 }
@@ -810,8 +1021,12 @@ function updateStatus() {
     }
 
     if (gamePaused) {
-        ui.game.turnText.textContent = "Game Paused";
-        ui.game.substatus.textContent = "Press Resume to continue";
+        ui.game.turnText.textContent =
+            "Game Paused";
+
+        ui.game.substatus.textContent =
+            "Press Resume to continue";
+
         return;
     }
 
@@ -821,15 +1036,21 @@ function updateStatus() {
     ui.game.substatus.textContent =
         isAITurn()
             ? "AI is thinking..."
-            : orientationName(orientations[currentPlayer]);
+            : orientationName(
+                orientations[currentPlayer]
+            );
 }
 
 function updateGameInfo() {
     ui.game.p1Orientation.textContent =
-        orientationName(orientations[P1]);
+        orientationName(
+            orientations[P1]
+        );
 
     ui.game.p2Orientation.textContent =
-        orientationName(orientations[P2]);
+        orientationName(
+            orientations[P2]
+        );
 
     ui.game.moveCount.textContent =
         String(moveCount);
@@ -845,13 +1066,17 @@ function updateGameInfo() {
    GAME RESULT
 ========================================================= */
 
-function getGameResult(player = currentPlayer, stateBoard = board) {
+function getGameResult(
+    player = currentPlayer,
+    stateBoard = board
+) {
     if (isBoardFull(stateBoard)) {
         if (settings.fullBoard === "tie") {
             return {
                 type: "tie",
                 winner: null,
-                message: "The board is full. The game is a tie."
+                message:
+                    "The board is full. The game is a tie."
             };
         }
 
@@ -859,14 +1084,17 @@ function getGameResult(player = currentPlayer, stateBoard = board) {
             type: "win",
             winner: otherPlayer(player),
             message:
-                `${playerName(otherPlayer(player))} wins!`
+                `${playerName(
+                    otherPlayer(player)
+                )} wins!`
         };
     }
 
-    const legalMoves = getLegalMoves(
-        player,
-        stateBoard
-    );
+    const legalMoves =
+        getLegalMoves(
+            player,
+            stateBoard
+        );
 
     if (legalMoves.length === 0) {
         if (settings.noMove === "tie") {
@@ -874,7 +1102,9 @@ function getGameResult(player = currentPlayer, stateBoard = board) {
                 type: "tie",
                 winner: null,
                 message:
-                    `${playerName(player)} has no legal move. The game is a tie.`
+                    `${playerName(
+                        player
+                    )} has no legal move. The game is a tie.`
             };
         }
 
@@ -882,8 +1112,12 @@ function getGameResult(player = currentPlayer, stateBoard = board) {
             type: "win",
             winner: otherPlayer(player),
             message:
-                `${playerName(player)} has no legal move. ` +
-                `${playerName(otherPlayer(player))} wins!`
+                `${playerName(
+                    player
+                )} has no legal move. ` +
+                `${playerName(
+                    otherPlayer(player)
+                )} wins!`
         };
     }
 
@@ -904,19 +1138,23 @@ function finishGame(result) {
     ui.game.substatus.textContent =
         result.type === "tie"
             ? "Tie game"
-            : `${playerName(result.winner)} wins`;
+            : `${playerName(
+                result.winner
+            )} wins`;
 
     renderBoard();
 }
 
 function checkGameEnd() {
-    const result = getGameResult();
+    const result =
+        getGameResult();
 
     if (!result) {
         return false;
     }
 
     finishGame(result);
+
     return true;
 }
 
@@ -934,7 +1172,13 @@ function humanMove(row, col) {
         return;
     }
 
-    if (!isMoveValid(row, col, currentPlayer)) {
+    if (
+        !isMoveValid(
+            row,
+            col,
+            currentPlayer
+        )
+    ) {
         pendingMove = null;
         renderBoard();
         return;
@@ -943,11 +1187,12 @@ function humanMove(row, col) {
     const move = {
         row,
         col,
-        cells: getMoveCells(
-            row,
-            col,
-            orientations[currentPlayer]
-        )
+        cells:
+            getMoveCells(
+                row,
+                col,
+                orientations[currentPlayer]
+            )
     };
 
     if (
@@ -955,7 +1200,10 @@ function humanMove(row, col) {
     ) {
         if (
             pendingMove &&
-            movesEqual(pendingMove, move)
+            movesEqual(
+                pendingMove,
+                move
+            )
         ) {
             pendingMove = null;
             placeMove(move);
@@ -971,11 +1219,12 @@ function humanMove(row, col) {
 }
 
 function placeMove(move) {
-    board = applyMove(
-        move,
-        currentPlayer,
-        board
-    );
+    board =
+        applyMove(
+            move,
+            currentPlayer,
+            board
+        );
 
     moveCount++;
 
@@ -989,7 +1238,10 @@ function placeMove(move) {
         return;
     }
 
-    currentPlayer = otherPlayer(currentPlayer);
+    currentPlayer =
+        otherPlayer(
+            currentPlayer
+        );
 
     updateGameInfo();
     updateStatus();
@@ -1028,13 +1280,16 @@ function isAITurn() {
 function scheduleAI() {
     cancelAIThinking(false);
 
-    aiState.timer = setTimeout(
-        startAIThinking,
-        50
-    );
+    aiState.timer =
+        setTimeout(
+            startAIThinking,
+            50
+        );
 }
 
-function cancelAIThinking(clearTimer = true) {
+function cancelAIThinking(
+    clearTimer = true
+) {
     aiState.cancelled = true;
     aiState.thinking = false;
 
@@ -1042,7 +1297,10 @@ function cancelAIThinking(clearTimer = true) {
         clearTimer &&
         aiState.timer !== null
     ) {
-        clearTimeout(aiState.timer);
+        clearTimeout(
+            aiState.timer
+        );
+
         aiState.timer = null;
     }
 }
@@ -1069,15 +1327,17 @@ function startAIThinking() {
         AI_SETTINGS.normal;
 
     aiState.deadline =
-        performance.now() + config.time;
+        performance.now() +
+        config.time;
 
     let move;
 
     try {
-        move = findAIMove(
-            currentPlayer,
-            config.depth
-        );
+        move =
+            findAIMove(
+                currentPlayer,
+                config.depth
+            );
     } finally {
         aiState.thinking = false;
         aiState.timer = null;
@@ -1105,11 +1365,15 @@ function startAIThinking() {
    AI SEARCH
 ========================================================= */
 
-function findAIMove(player, maxDepth) {
-    const moves = getLegalMoves(
-        player,
-        board
-    );
+function findAIMove(
+    player,
+    maxDepth
+) {
+    const moves =
+        getLegalMoves(
+            player,
+            board
+        );
 
     if (moves.length === 0) {
         return null;
@@ -1126,29 +1390,36 @@ function findAIMove(player, maxDepth) {
         );
     }
 
-    let bestMove = moves[0];
+    let bestMove =
+        moves[0];
 
-    let bestScore = -Infinity;
+    let bestScore =
+        -Infinity;
 
-    for (const move of orderAIMoves(moves)) {
+    for (
+        const move
+        of orderAIMoves(moves)
+    ) {
         if (searchTimedOut()) {
             break;
         }
 
-        const nextBoard = applyMove(
-            move,
-            player,
-            board
-        );
+        const nextBoard =
+            applyMove(
+                move,
+                player,
+                board
+            );
 
-        const score = minimax(
-            nextBoard,
-            otherPlayer(player),
-            maxDepth - 1,
-            -Infinity,
-            Infinity,
-            player
-        );
+        const score =
+            minimax(
+                nextBoard,
+                otherPlayer(player),
+                maxDepth - 1,
+                -Infinity,
+                Infinity,
+                player
+            );
 
         if (score > bestScore) {
             bestScore = score;
@@ -1211,7 +1482,10 @@ function minimax(
     if (maximizing) {
         let value = -Infinity;
 
-        for (const move of orderAIMoves(moves)) {
+        for (
+            const move
+            of orderAIMoves(moves)
+        ) {
             const nextBoard =
                 applyMove(
                     move,
@@ -1219,22 +1493,24 @@ function minimax(
                     stateBoard
                 );
 
-            value = Math.max(
-                value,
-                minimax(
-                    nextBoard,
-                    otherPlayer(player),
-                    depth - 1,
-                    alpha,
-                    beta,
-                    aiPlayer
-                )
-            );
+            value =
+                Math.max(
+                    value,
+                    minimax(
+                        nextBoard,
+                        otherPlayer(player),
+                        depth - 1,
+                        alpha,
+                        beta,
+                        aiPlayer
+                    )
+                );
 
-            alpha = Math.max(
-                alpha,
-                value
-            );
+            alpha =
+                Math.max(
+                    alpha,
+                    value
+                );
 
             if (beta <= alpha) {
                 break;
@@ -1250,7 +1526,10 @@ function minimax(
 
     let value = Infinity;
 
-    for (const move of orderAIMoves(moves)) {
+    for (
+        const move
+        of orderAIMoves(moves)
+    ) {
         const nextBoard =
             applyMove(
                 move,
@@ -1258,22 +1537,24 @@ function minimax(
                 stateBoard
             );
 
-        value = Math.min(
-            value,
-            minimax(
-                nextBoard,
-                otherPlayer(player),
-                depth - 1,
-                alpha,
-                beta,
-                aiPlayer
-            )
-        );
+        value =
+            Math.min(
+                value,
+                minimax(
+                    nextBoard,
+                    otherPlayer(player),
+                    depth - 1,
+                    alpha,
+                    beta,
+                    aiPlayer
+                )
+            );
 
-        beta = Math.min(
-            beta,
-            value
-        );
+        beta =
+            Math.min(
+                beta,
+                value
+            );
 
         if (beta <= alpha) {
             break;
@@ -1290,7 +1571,8 @@ function minimax(
 function searchTimedOut() {
     return (
         aiState.cancelled ||
-        performance.now() >= aiState.deadline
+        performance.now() >=
+            aiState.deadline
     );
 }
 
@@ -1330,7 +1612,8 @@ function evaluateBoard(
         ).length;
 
     return (
-        (myMoves - opponentMoves) * 10
+        (myMoves - opponentMoves) *
+        10
     );
 }
 
@@ -1343,25 +1626,36 @@ function orderAIMoves(moves) {
             const bCenter =
                 centerDistance(b);
 
-            return aCenter - bCenter;
+            return (
+                aCenter - bCenter
+            );
         }
     );
 }
 
 function centerDistance(move) {
     const centerRow =
-        (settings.boardHeight - 1) / 2;
+        (settings.boardHeight - 1) /
+        2;
 
     const centerCol =
-        (settings.boardWidth - 1) / 2;
+        (settings.boardWidth - 1) /
+        2;
 
     return (
-        Math.abs(move.row - centerRow) +
-        Math.abs(move.col - centerCol)
+        Math.abs(
+            move.row - centerRow
+        ) +
+        Math.abs(
+            move.col - centerCol
+        )
     );
 }
 
-function chooseEasyMove(moves, player) {
+function chooseEasyMove(
+    moves,
+    player
+) {
     let bestMoves = [];
     let bestScore = -Infinity;
 
@@ -1390,7 +1684,9 @@ function chooseEasyMove(moves, player) {
             bestScore = score;
             bestMoves = [move];
         } else if (
-            Math.abs(score - bestScore) < 0.5
+            Math.abs(
+                score - bestScore
+            ) < 0.5
         ) {
             bestMoves.push(move);
         }
@@ -1413,13 +1709,15 @@ function chooseEasyMove(moves, player) {
 
 function getCountdownTime() {
     return (
-        settings.countdownMinutes * 60 +
+        settings.countdownMinutes *
+            60 +
         settings.countdownSeconds
     ) * 1000;
 }
 
 function getInitialClock() {
-    return settings.timeControl === "countdown"
+    return settings.timeControl ===
+        "countdown"
         ? getCountdownTime()
         : 0;
 }
@@ -1427,22 +1725,31 @@ function getInitialClock() {
 function startClock() {
     stopClock();
 
-    if (gameOver || gamePaused) {
+    if (
+        gameOver ||
+        gamePaused
+    ) {
         return;
     }
 
     lastClockTime =
         performance.now();
 
-    clockInterval = setInterval(
-        tickClock,
-        100
-    );
+    clockInterval =
+        setInterval(
+            tickClock,
+            100
+        );
 }
 
 function stopClock() {
-    if (clockInterval !== null) {
-        clearInterval(clockInterval);
+    if (
+        clockInterval !== null
+    ) {
+        clearInterval(
+            clockInterval
+        );
+
         clockInterval = null;
     }
 }
@@ -1460,10 +1767,11 @@ function restartClockForTurn() {
     lastClockTime =
         performance.now();
 
-    clockInterval = setInterval(
-        tickClock,
-        100
-    );
+    clockInterval =
+        setInterval(
+            tickClock,
+            100
+        );
 }
 
 function tickClock() {
@@ -1483,16 +1791,20 @@ function tickClock() {
     lastClockTime = now;
 
     if (
-        settings.timeControl === "stopwatch"
+        settings.timeControl ===
+        "stopwatch"
     ) {
-        clocks[currentPlayer] += elapsed;
+        clocks[currentPlayer] +=
+            elapsed;
     } else {
-        clocks[currentPlayer] -= elapsed;
+        clocks[currentPlayer] -=
+            elapsed;
 
         if (
             clocks[currentPlayer] <= 0
         ) {
-            clocks[currentPlayer] = 0;
+            clocks[currentPlayer] =
+                0;
 
             finishTimeLoss(
                 currentPlayer
@@ -1507,10 +1819,14 @@ function tickClock() {
 
 function updateClocks() {
     ui.game.p1Clock.textContent =
-        formatDuration(clocks[P1]);
+        formatDuration(
+            clocks[P1]
+        );
 
     ui.game.p2Clock.textContent =
-        formatDuration(clocks[P2]);
+        formatDuration(
+            clocks[P2]
+        );
 
     const p1Active =
         !gameOver &&
@@ -1547,21 +1863,29 @@ function updateClocks() {
                 : "Waiting";
 }
 
-function formatDuration(milliseconds) {
+function formatDuration(
+    milliseconds
+) {
     const totalSeconds =
         Math.max(
             0,
-            Math.ceil(milliseconds / 1000)
+            Math.ceil(
+                milliseconds / 1000
+            )
         );
 
     const minutes =
-        Math.floor(totalSeconds / 60);
+        Math.floor(
+            totalSeconds / 60
+        );
 
     const seconds =
         totalSeconds % 60;
 
     return (
-        `${minutes}:${String(seconds).padStart(2, "0")}`
+        `${minutes}:${String(
+            seconds
+        ).padStart(2, "0")}`
     );
 }
 
@@ -1570,8 +1894,12 @@ function finishTimeLoss(player) {
         type: "time",
         winner: otherPlayer(player),
         message:
-            `${playerName(player)} ran out of time. ` +
-            `${playerName(otherPlayer(player))} wins!`
+            `${playerName(
+                player
+            )} ran out of time. ` +
+            `${playerName(
+                otherPlayer(player)
+            )} wins!`
     });
 }
 
@@ -1656,8 +1984,8 @@ function buildHowToPlayExamples() {
     buildExample(
         ui.examples.blocked,
         [
-            [P1, P1, EMPTY, EMPTY],
-            [EMPTY, P2, P2, EMPTY],
+            [P1, X, EMPTY, EMPTY],
+            [EMPTY, P2, EMPTY, EMPTY],
             [EMPTY, EMPTY, EMPTY, EMPTY],
             [EMPTY, EMPTY, EMPTY, EMPTY]
         ],
@@ -1675,10 +2003,20 @@ function buildExample(
     container.style.gridTemplateColumns =
         `repeat(${size}, 1fr)`;
 
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    for (
+        let row = 0;
+        row < size;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < size;
+            col++
+        ) {
             const cell =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             cell.className =
                 "example-cell";
@@ -1696,12 +2034,39 @@ function buildExample(
                     settings.p2Color;
             }
 
+            if (value === X) {
+                cell.style.backgroundColor =
+                    "#ff0000";
+
+                cell.style.color =
+                    "#ffffff";
+
+                cell.style.fontWeight =
+                    "900";
+
+                cell.style.fontSize =
+                    "1.5em";
+
+                cell.style.display =
+                    "flex";
+
+                cell.style.alignItems =
+                    "center";
+
+                cell.style.justifyContent =
+                    "center";
+
+                cell.textContent = "X";
+            }
+
             if (value === EMPTY) {
                 cell.style.backgroundColor =
                     settings.emptyColor;
             }
 
-            container.appendChild(cell);
+            container.appendChild(
+                cell
+            );
         }
     }
 }
@@ -1724,8 +2089,12 @@ ui.game.board.addEventListener(
         }
 
         humanMove(
-            Number(cell.dataset.row),
-            Number(cell.dataset.col)
+            Number(
+                cell.dataset.row
+            ),
+            Number(
+                cell.dataset.col
+            )
         );
     }
 );
@@ -1752,8 +2121,12 @@ ui.game.board.addEventListener(
         }
 
         hoverCell = {
-            row: Number(cell.dataset.row),
-            col: Number(cell.dataset.col)
+            row: Number(
+                cell.dataset.row
+            ),
+            col: Number(
+                cell.dataset.col
+            )
         };
 
         renderBoard();
@@ -1966,11 +2339,16 @@ document.addEventListener(
 ========================================================= */
 
 window
-    .matchMedia("(prefers-color-scheme: light)")
+    .matchMedia(
+        "(prefers-color-scheme: light)"
+    )
     .addEventListener(
         "change",
         () => {
-            if (settings.theme === "system") {
+            if (
+                settings.theme ===
+                "system"
+            ) {
                 applyTheme();
             }
         }
