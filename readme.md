@@ -1,89 +1,67 @@
 # Towels Wrap
 
-A simple, modern 2-player strategy game.
+A simple, modern two-player strategy game inspired by the classic towel game.
 
-Towels Wrap is a turn-based board game where two players compete to place pieces on the board while trying to avoid being the player who runs out of legal moves.
+Towels Wrap is designed to be lightweight, easy to understand, and playable directly in a web browser.
 
 ## Features
 
-- 2-player gameplay
-- Turn-based strategy
-- Minimal, modern interface
-- Dark, light, and system themes
-- Customizable graphics settings
-- Move previews
-- Horizontal and vertical piece placement
-- Win and tie conditions
-- Built-in How to Play guide
-- Locally saved settings
-- Responsive board layout
+- Two-player local gameplay
+- Simple grid-based strategy
+- Horizontal and vertical pieces
+- Configurable board size
+- Configurable piece length
+- Custom rule settings
+- Custom win conditions
+- Player turn tracking
+- Chess-style player clocks
+- Stopwatch mode
+- Countdown mode
+- Configurable countdown duration
+- Move preview
+- Move counter
+- Player color customization
+- Empty-cell color customization
+- Multiple board cell styles
+- Light, dark, and system themes
+- Animation controls
+- Accessibility options
+- Keyboard-friendly controls
+- Responsive layout for desktop and mobile
+- No external libraries required
 
 ## How to Play
 
-Players take turns placing pieces on the board.
+Towels Wrap is played by two players on the same board.
 
-Each piece occupies two connected spaces and can be placed in one of two orientations:
+Each player places a piece of a fixed length onto the board. Depending on the configured rules, pieces can be placed horizontally, vertically, or according to the selected orientation.
 
-- Horizontal
-- Vertical
+Players take turns placing pieces.
 
-A piece cannot be placed on spaces that are already occupied.
+The goal is to make legal moves while preventing your opponent from doing so.
 
-The goal is to have a legal move available when it is your turn.
+### Default Rules
 
-### Winning
+The default configuration uses:
 
-A player loses when they have no legal moves remaining.
+- Board: `7 × 8`
+- Piece length: `2`
+- Player 1 and Player 2 use opposite orientations
+- Player 1 starts
+- A player with no legal moves loses
+- Filling the board results in a tie
 
-If the board becomes completely filled, the game ends in a tie.
+These rules can be changed through the settings.
 
-## Game Setup
+## Player Clock
 
-Before starting a game, you can configure:
+Towels Wrap includes an optional chess-style clock.
 
-- Player 1 color
-- Player 2 color
-- Player 1's piece orientation
-- Starting player
+### Stopwatch
 
-The starting player can be selected manually or randomized.
+The default clock mode is **Stopwatch**.
 
-Player orientations can also be randomized, with Player 2 automatically receiving the opposite orientation when that option is enabled.
-
-## Settings
-
-Towels Wrap includes several graphics and display settings.
-
-### Graphics
-
-- Dark / Light / System theme
-- Rounded / Square cells
-- Animations on/off
-- Move preview on/off
-- Board colors
-
-Settings are saved locally in the browser.
-
-## Running the Game
-
-Towels Wrap is currently a browser-based game.
-
-No installation or external dependencies are required.
-
-Open `index.html` in a modern web browser to play.
-
-## Browser Support
-
-Towels Wrap is designed for modern web browsers with support for:
-
-- JavaScript
-- CSS Grid
-- CSS custom properties
-- Local storage
-
-## Project Structure
+Each player's clock starts at:
 
 ```text
-Towels-Wrap/
-├── index.html
-└── README.md
+00:00
