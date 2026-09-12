@@ -2,47 +2,48 @@
 
 A simple, modern two-player strategy game inspired by the classic towel game.
 
-**Towels Wrap** is designed to be lightweight, easy to understand, and playable directly in a web browser. It requires no external libraries or dependencies.
+**Towels Wrap** is designed to be lightweight, easy to understand, and playable directly in a modern web browser. It uses plain HTML, CSS, and JavaScript with no external libraries or dependencies.
 
 ## Features
 
-* Two-player local gameplay
-* Human vs AI gameplay
-* Three AI difficulty levels
+- Two-player local gameplay
+- Human vs AI gameplay
+- Three AI difficulty levels
+  - Easy
+  - Normal
+  - Hard
 
-  * Easy
-  * Normal
-  * Hard
-* Simple grid-based strategy
-* Configurable board size
-* Configurable piece length
-* Horizontal and vertical pieces
-* Random player orientation
-* Configurable Player 2 orientation
-* Configurable starting player
-* Configurable no-move rule
-* Configurable full-board rule
-* Player turn tracking
-* Chess-style player clocks
-* Stopwatch mode
-* Countdown mode
-* Configurable countdown duration
-* Move preview
-* Optional move confirmation
-* Move counter
-* Player color customization
-* Empty-cell color customization
-* Rounded or square cells
-* Light, dark, and system themes
-* Animation controls
-* Reduced-motion accessibility option
-* Automatic pause when the browser tab is hidden
-* Manual pause and resume
-* Responsive layout for desktop and mobile
-* Keyboard-friendly controls
-* Settings saved locally in the browser
-* No external libraries required
-* No server required
+- Simple grid-based strategy
+- Configurable rectangular board size
+- Configurable piece length
+- Horizontal and vertical pieces
+- Random Player 1 orientation
+- Configurable Player 2 orientation
+- Configurable starting player
+- Configurable no-move rule
+- Configurable full-board rule
+- Player turn tracking
+- Chess-style player clocks
+- Stopwatch mode
+- Countdown mode
+- Configurable countdown duration
+- Move preview
+- Optional move confirmation
+- Move counter
+- Player color customization
+- Empty-cell color customization
+- Rounded or square cells
+- Light, dark, and system themes
+- Animation controls
+- Reduced-motion accessibility option
+- Automatic pause when the browser tab is hidden
+- Manual pause and resume
+- Responsive desktop and mobile layout
+- Keyboard-friendly controls
+- Settings saved locally in the browser
+- No external libraries
+- No server required
+- No build process required
 
 ## How to Play
 
@@ -52,10 +53,16 @@ Each player places a piece consisting of a configurable number of connected cell
 
 The piece must follow the player's assigned orientation:
 
-* **Horizontal** — cells extend from left to right
-* **Vertical** — cells extend from top to bottom
+- **Horizontal** — cells extend from left to right
+- **Vertical** — cells extend from top to bottom
 
-Players take turns placing pieces. A piece may only be placed if every cell it occupies is inside the board and currently empty.
+Players take turns placing pieces.
+
+A piece can only be placed when:
+
+1. Every cell occupied by the piece is inside the board.
+2. Every cell occupied by the piece is currently empty.
+3. The piece follows the current player's orientation.
 
 The goal is to continue making legal moves while preventing your opponent from doing so.
 
@@ -63,14 +70,14 @@ The goal is to continue making legal moves while preventing your opponent from d
 
 The default configuration uses:
 
-* Board: `7 × 8`
-* Piece length: `2`
-* Player 1 orientation: Random
-* Player 2 orientation: Opposite of Player 1
-* Starting player: Player 1
-* No legal moves: Player loses
-* Full board: Game is a tie
-* Time control: Stopwatch
+- Board: `8 × 8`
+- Piece length: `2`
+- Player 1 orientation: Random
+- Player 2 orientation: Opposite of Player 1
+- Starting player: Player 1
+- No legal moves: Player loses
+- Full board: Game is a tie
+- Time control: Stopwatch
 
 These rules can be changed through **Settings**.
 
@@ -78,13 +85,13 @@ These rules can be changed through **Settings**.
 
 ### Human vs Human
 
-Both players control their own turns locally.
+Both players control their own turns locally on the same device.
 
 ### Human vs AI
 
 Player 1 plays against an AI-controlled Player 2.
 
-The AI has three difficulty levels:
+The AI has three difficulty levels.
 
 #### Easy
 
@@ -92,17 +99,17 @@ Uses a lightweight move-selection strategy with some randomness.
 
 #### Normal
 
-Uses a deeper search with tactical move ordering and a limited search time.
+Uses a deeper search with alpha-beta pruning, move ordering, and a limited search time.
 
 #### Hard
 
-Uses iterative deepening, alpha-beta search, tactical extensions, and a strict search deadline to search substantially deeper when possible.
+Uses a deeper search with alpha-beta pruning, tactical move ordering, and a strict search deadline.
 
-The AI runs directly in the browser and does not require a server or external AI service.
+The AI runs entirely in the browser and does not require a server or external AI service.
 
 ## Player Clock
 
-Towels Wrap includes an optional chess-style clock.
+Towels Wrap includes a chess-style player clock.
 
 Only the current player's clock runs.
 
@@ -142,27 +149,40 @@ The board can be customized before starting a new game.
 
 ### Board Size
 
-The width and height can each be configured from:
+The board width and height can each be configured from:
+
+```text
+2
+```
+
+to:
+
+```text
+20
+```
+
+This allows rectangular boards such as:
 
 ```text
 2 × 2
-```
-
-up to:
-
-```text
+8 × 8
+12 × 8
+20 × 10
+10 × 20
 20 × 20
 ```
 
 The default size is:
 
 ```text
-7 × 8
+8 × 8
 ```
+
+Board-size changes apply to new games.
 
 ### Piece Length
 
-The number of connected cells in each piece can be configured.
+The number of connected cells occupied by each piece can be configured.
 
 The default is:
 
@@ -170,15 +190,17 @@ The default is:
 2
 ```
 
-The maximum usable length is automatically limited by the board dimensions.
+The available setting supports piece lengths from `1` through `7`.
+
+A piece must still fit completely inside the board to be a legal move.
 
 ## Orientation Settings
 
 Player 1 can use:
 
-* Random
-* Horizontal
-* Vertical
+- Random
+- Horizontal
+- Vertical
 
 By default, Player 2 uses the opposite orientation.
 
@@ -199,8 +221,8 @@ Towels Wrap supports configurable end-game rules.
 
 When a player has no legal moves, the game can either:
 
-* Make that player lose
-* End the game in a tie
+- Make that player lose
+- End the game in a tie
 
 The default is:
 
@@ -212,8 +234,8 @@ Player loses
 
 When every cell on the board is occupied, the game can either:
 
-* End in a tie
-* Award the win to the last player to move
+- End in a tie
+- Award the win to the last player to move
 
 The default is:
 
@@ -223,13 +245,11 @@ Game is a tie
 
 ## Move Preview
 
-When enabled, hovering over a board cell displays where the current player's piece would be placed.
+When enabled, hovering over a board cell previews where the current player's piece would be placed.
 
-Valid moves are shown using the player's color.
+The preview uses the current player's color.
 
-Invalid moves are visually marked.
-
-Move preview can be disabled in Settings.
+Move preview can be disabled in **Settings**.
 
 ## Confirm Moves
 
@@ -237,7 +257,7 @@ Move confirmation is optional.
 
 When enabled, the player must select the same starting cell twice before the piece is placed.
 
-This can help prevent accidental moves, especially on touch devices.
+This can help prevent accidental moves, especially when playing on a touch device.
 
 ## Pause
 
@@ -245,56 +265,57 @@ Games can be paused at any time.
 
 While paused:
 
-* The board cannot be played
-* Both clocks stop
-* The AI stops thinking
-* The game can be resumed from the pause screen
+- The board cannot be played
+- Both clocks stop
+- The AI stops thinking
+- The game can be resumed
 
 Towels Wrap can also automatically pause when the browser tab becomes hidden.
 
-Automatic pausing can be disabled in Settings.
+Automatic pausing can be disabled in **Settings**.
 
 ## Appearance
 
-Towels Wrap supports several visual customization options.
+Towels Wrap provides several visual customization options.
 
 ### Themes
 
-* Dark
-* Light
-* System
+- Dark
+- Light
+- System
 
 The **System** option follows the operating system's preferred color scheme.
 
 ### Cell Styles
 
-* Rounded
-* Square
+- Rounded
+- Square
 
 ### Colors
 
 You can customize:
 
-* Player 1 color
-* Player 2 color
-* Empty-cell color
+- Player 1 color
+- Player 2 color
+- Empty-cell color
 
 ## Accessibility
 
-Towels Wrap includes accessibility-focused options such as:
+Towels Wrap includes several accessibility-focused features:
 
-* Keyboard-friendly buttons and controls
-* Responsive layouts
-* Reduced-motion support
-* System reduced-motion detection
-* Optional animation disabling
-* High-contrast player colors through customization
+- Keyboard-friendly controls
+- Responsive layouts
+- Reduced-motion support
+- System reduced-motion detection
+- Optional animation disabling
+- Customizable player colors
+- Large, clearly separated controls
 
 The **Reduced Motion** setting can be configured to:
 
-* Follow System
-* On
-* Off
+- Follow System
+- On
+- Off
 
 ## Settings Storage
 
@@ -306,15 +327,17 @@ Settings are saved under:
 towelsWrapSettings
 ```
 
-This means your configuration can remain available when you return to the game using the same browser.
+This allows your configuration to remain available when you return to the game using the same browser.
 
-No account or server is required.
+No account is required.
+
+No game data needs to be uploaded to a server.
 
 ## Running the Game
 
-Towels Wrap is a standalone HTML application.
+Towels Wrap is a standalone web application.
 
-Simply open:
+The project can be run by opening:
 
 ```text
 index.html
@@ -326,7 +349,68 @@ No installation is required.
 
 No build process is required.
 
+No package manager is required.
+
 No external dependencies are required.
+
+For normal gameplay, the project can run entirely on the user's device.
+
+## Project Structure
+
+The project is organized into three main files:
+
+```text
+Towels Wrap/
+├── index.html
+├── style.css
+└── script.js
+```
+
+### `index.html`
+
+Contains the game's interface and page structure, including:
+
+- Main menu
+- Game setup
+- How to Play
+- Settings
+- Game screen
+- Player clocks
+- Board
+
+### `style.css`
+
+Contains the complete visual design, including:
+
+- Dark and light themes
+- Responsive layouts
+- Buttons
+- Cards
+- Game board
+- Board cells
+- Player colors
+- Clocks
+- Settings controls
+- Mobile layouts
+- Reduced-motion behavior
+
+### `script.js`
+
+Contains the game's functionality, including:
+
+- Game state
+- Board generation
+- Move validation
+- Piece placement
+- Turn management
+- AI
+- Clock system
+- Settings
+- Local storage
+- Pause/resume
+- Game-end detection
+- Board rendering
+- UI navigation
 
 ## Browser Support
 
@@ -334,31 +418,28 @@ Towels Wrap is designed for modern browsers supporting standard HTML, CSS, and J
 
 Recommended browsers include:
 
-* Chrome
-* Edge
-* Firefox
-* Safari
+- Chrome
+- Microsoft Edge
+- Firefox
+- Safari
 
 For the best experience, use a reasonably recent version of your browser.
 
-## Project Structure
-
-The basic project can be as simple as:
-
-```text
-Towels Wrap/
-└── index.html
-```
-
-The current version contains the game's HTML, CSS, and JavaScript in a single file, making it easy to distribute and run.
-
 ## Privacy
 
-Towels Wrap does not require an account, server, or external service.
+Towels Wrap does not require:
 
-Game settings are stored locally in your browser.
+- An account
+- A server
+- External AI services
+- External libraries
+- Online game services
 
-The game itself runs entirely on the client.
+The game runs entirely in the browser.
+
+Settings are stored locally using the browser's `localStorage`.
+
+No account or online service is required to play.
 
 ## License
 
