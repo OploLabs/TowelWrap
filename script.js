@@ -2075,26 +2075,68 @@ function buildExample(
 /* =========================================================
    BOARD EVENTS
 ========================================================= */
+function updatePreview() {
+    // Remove previous preview
+    ui.game.board
+        .querySelectorAll(".board-cell.preview")
+        .forEach(cell => {
+            cell.classList.remove("preview");
+            cell.style.backgroundColor = "";
+        });
+
+    if (!hoverCell) {
+        return;
+    }
+
+    const previewCells = getMoveCells(
+        hoverCell.row,
+        hoverCell.col,
+        orientations[currentPlayer]
+    );
+
+    for (const preview of previewCells) {
+        if (!isInsideBoard(preview.row, preview.col)) {
+            continue;
+        }
+
+        const cell = ui.game.board.querySelector(
+            `.board-cell[data-row="${preview.row}"][data-col="${preview.col}"]`
+        );
+
+        if (!cell) {
+            continue;
+        }
+
+        if (board[preview.row][preview.col] === EMPTY) {
+            cell.classList.add("preview");
+            cell.style.backgroundColor =
+                playerColor(currentPlayer);
+        }
+    }
+}
+
+function clearPreview() {
+    ui.game.board
+        .querySelectorAll(".board-cell.preview")
+        .forEach(cell => {
+            cell.classList.remove("preview");
+            cell.style.backgroundColor = "";
+        });
+}
 
 ui.game.board.addEventListener(
     "click",
     event => {
         const cell =
-            event.target.closest(
-                ".board-cell"
-            );
+            event.target.closest(".board-cell");
 
         if (!cell) {
             return;
         }
 
         humanMove(
-            Number(
-                cell.dataset.row
-            ),
-            Number(
-                cell.dataset.col
-            )
+            Number(cell.dataset.row),
+            Number(cell.dataset.col)
         );
     }
 );
@@ -2103,9 +2145,7 @@ ui.game.board.addEventListener(
     "mouseover",
     event => {
         const cell =
-            event.target.closest(
-                ".board-cell"
-            );
+            event.target.closest(".board-cell");
 
         if (!cell) {
             return;
@@ -2121,15 +2161,13 @@ ui.game.board.addEventListener(
         }
 
         hoverCell = {
-            row: Number(
-                cell.dataset.row
-            ),
-            col: Number(
-                cell.dataset.col
-            )
+            row: Number(cell.dataset.row),
+            col: Number(cell.dataset.col)
         };
 
-        renderBoard();
+        // Don't rebuild the board here.
+        // Rebuilding the buttons breaks clicking.
+        updatePreview();
     }
 );
 
@@ -2137,7 +2175,7 @@ ui.game.board.addEventListener(
     "mouseleave",
     () => {
         hoverCell = null;
-        renderBoard();
+        clearPreview();
     }
 );
 
