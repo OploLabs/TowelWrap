@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>How to Play — Towels Wrap</title>
+
+    <style>
+      :root {
+        --bg: #0d0f14;
+        --panel: #151922;
+        --panel-2: #1b202b;
+        --border: #2b3240;
+
+        --text: #f2f4f8;
+        --muted: #8d96a8;
+
+        --accent: #6c8cff;
+
+        --p1: #4f8cff;
+        --p2: #ff5757;
+        --empty: #202632;
+
+        --transition: 0.12s;
+      }
+
+      * {
+        box-sizing: border-box;
+        scrollbar-width: thin;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+
+        background: var(--bg);
+        color: var(--text);
+
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+
+        overflow-x: hidden;
+      }
+
+      /* =========================
+           GENERAL
+           ========================= */
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      a {
+        font: inherit;
+      }
+
+      .screen {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      /* =========================
+           BUTTONS
+           ========================= */
+
+      .button {
+        display: inline-block;
+
+        border: 1px solid var(--border);
+
+        background: var(--panel);
+        color: var(--text);
+
+        border-radius: 10px;
+
+        padding: 11px 17px;
+
+        text-decoration: none;
+
+        transition:
+          background var(--transition),
+          border-color var(--transition),
+          transform var(--transition);
+      }
+
+      .button:hover {
+        background: var(--panel-2);
+        border-color: #3b4455;
+      }
+
+      .button:active {
+        transform: scale(0.97);
+      }
+
+      .button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* =========================
+           PAGE
+           ========================= */
+
+      .page {
+        width: min(760px, 100%);
+
+        margin: 0 auto;
+
+        padding: 24px;
+      }
+
+      .page-header {
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+
+        font-size: 25px;
+      }
+
+      .back-button {
+        flex-shrink: 0;
+      }
+
+      /* =========================
+           CARDS
+           ========================= */
+
+      .card {
+        background: var(--panel);
+
+        border: 1px solid var(--border);
+
+        border-radius: 15px;
+
+        padding: 20px;
+
+        margin-bottom: 14px;
+      }
+
+      .card:last-child {
+        margin-bottom: 0;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+
+        font-size: 19px;
+      }
+
+      .card p {
+        color: var(--muted);
+
+        line-height: 1.55;
+
+        margin: 0 0 12px;
+      }
+
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* =========================
+           RULES LIST
+           ========================= */
+
+      .rules-list {
+        margin: 10px 0 0;
+
+        padding-left: 21px;
+
+        color: var(--muted);
+
+        line-height: 1.65;
+      }
+
+      /* =========================
+           EXAMPLES
+           ========================= */
+
+      .example {
+        margin-top: 18px;
+
+        padding: 16px;
+
+        background: var(--panel-2);
+
+        border: 1px solid var(--border);
+
+        border-radius: 12px;
+      }
+
+      .example-title {
+        margin-bottom: 12px;
+
+        font-size: 14px;
+
+        font-weight: 700;
+      }
+
+      .example-board {
+        width: min(350px, 100%);
+
+        margin: 0 auto;
+
+        display: grid;
+
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+
+        gap: 4px;
+      }
+
+      .example-cell {
+        aspect-ratio: 1;
+
+        border-radius: 5px;
+
+        background: var(--empty);
+      }
+
+      .example-cell.p1 {
+        background: var(--p1);
+      }
+
+      .example-cell.p2 {
+        background: var(--p2);
+      }
+
+      .example-caption {
+        margin-top: 10px;
+
+        text-align: center;
+
+        color: var(--muted);
+
+        font-size: 13px;
+      }
+
+      /* =========================
+           MOBILE
+           ========================= */
+
+      @media (max-width: 650px) {
+        .page {
+          padding: 16px;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .page {
+          padding: 14px;
+        }
+
+        .page-header {
+          gap: 10px;
+        }
+
+        .page-header h1 {
+          font-size: 22px;
+        }
+
+        .card {
+          padding: 17px;
+        }
+
+        .example {
+          padding: 12px;
+        }
+
+        .example-board {
+          gap: 3px;
+        }
+      }
+
+      /* =========================
+           REDUCED MOTION
+           ========================= */
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="screen">
+      <main class="page">
+        <!-- Header -->
+        <header class="page-header">
+          <a class="button back-button" href="index.html" aria-label="Back to main menu"> ← </a>
+
+          <h1>How to Play</h1>
+        </header>
+
+        <!-- Goal -->
+        <section class="card">
+          <h2>The Goal</h2>
+
+          <p>Take turns placing your two-cell piece on the board.</p>
+
+          <p>Your piece must follow your assigned orientation.</p>
+
+          <p>If you have no legal move, you lose. If the board becomes completely full, the game is a tie.</p>
+        </section>
+
+        <!-- Placing pieces -->
+        <section class="card">
+          <h2>1. Place Your Piece</h2>
+
+          <p>Each piece covers exactly two neighboring squares.</p>
+
+          <!-- Horizontal example -->
+          <div class="example">
+            <div class="example-title">Horizontal Piece</div>
+
+            <div class="example-board">
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell p1"></div>
+              <div class="example-cell p1"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+            </div>
+
+            <div class="example-caption">Two neighboring blue squares make one horizontal piece.</div>
+          </div>
+
+          <!-- Vertical example -->
+          <div class="example">
+            <div class="example-title">Vertical Piece</div>
+
+            <div class="example-board">
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+            </div>
+
+            <div class="example-caption">Two neighboring red squares make one vertical piece.</div>
+          </div>
+        </section>
+
+        <!-- Taking turns -->
+        <section class="card">
+          <h2>2. Take Turns</h2>
+
+          <p>Players alternate turns. Both squares used by your piece must be empty.</p>
+
+          <div class="example">
+            <div class="example-title">Occupied Squares Are Blocked</div>
+
+            <div class="example-board">
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell p1"></div>
+              <div class="example-cell">X</div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
+              <div class="example-cell"></div>
+            </div>
+
+            <div class="example-caption">A piece cannot overlap another piece.</div>
+          </div>
+        </section>
+
+        <!-- Clocks -->
+        <section class="card">
+          <h2>3. Manage Your Clock</h2>
+
+          <p>Each player has their own clock. Only the current player's clock runs.</p>
+
+          <p>After a move, the clocks switch.</p>
+
+          <p>
+            The default time control is a stopwatch, which counts upward. Countdown modes can be selected in Settings.
+          </p>
+        </section>
+
+        <!-- Winning -->
+        <section class="card">
+          <h2>4. Win or Tie</h2>
+
+          <ul class="rules-list">
+            <li>No legal move → you lose.</li>
+            <li>The other player wins.</li>
+            <li>Completely full board → tie.</li>
+            <li>In countdown mode, reaching zero can end the game.</li>
+          </ul>
+        </section>
+      </main>
+    </section>
+  </body>
+</html>

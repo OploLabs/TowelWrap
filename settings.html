@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Towels Wrap — Settings</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #0d0f14;
+        --panel: #151922;
+        --panel-2: #1b202b;
+        --border: #2b3240;
+        --text: #f2f4f8;
+        --muted: #8d96a8;
+        --accent: #6c8cff;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .page {
+        width: min(760px, 100%);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 25px;
+      }
+
+      .button {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 11px 17px;
+        transition:
+          background 0.12s,
+          border-color 0.12s,
+          transform 0.12s;
+      }
+
+      .button:hover {
+        background: var(--panel-2);
+        border-color: #3b4455;
+      }
+
+      .button:active {
+        transform: scale(0.97);
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      .button.primary:hover {
+        filter: brightness(1.08);
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+
+      .card h2 {
+        margin: 0 0 18px;
+        font-size: 19px;
+      }
+
+      .setting {
+        margin-bottom: 18px;
+      }
+
+      .setting:last-child {
+        margin-bottom: 0;
+      }
+
+      .setting label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .setting small {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      select {
+        width: 100%;
+        padding: 11px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        outline: none;
+      }
+
+      select:focus {
+        border-color: var(--accent);
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 44px;
+        padding: 3px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+      }
+
+      input[type="number"] {
+        width: 100%;
+        padding: 11px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        outline: none;
+      }
+
+      input[type="number"]:focus {
+        border-color: var(--accent);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .range-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .range-row input {
+        flex: 1;
+      }
+
+      .range-value {
+        min-width: 42px;
+        text-align: right;
+        font-weight: 700;
+      }
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+
+      .color-item {
+        min-width: 0;
+      }
+
+      .color-item label {
+        font-size: 13px;
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .countdown-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .checkbox-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+      }
+
+      .checkbox-row label {
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .actions .button {
+        flex: 1;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .saved-message {
+        margin-top: 12px;
+        color: #7fe0a0;
+        text-align: center;
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .saved-message.visible {
+        opacity: 1;
+      }
+
+      @media (max-width: 650px) {
+        .page {
+          padding: 16px;
+        }
+
+        .color-grid,
+        .two-column {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="page">
+      <div class="page-header">
+        <button class="button" id="backButton" type="button">←</button>
+
+        <h1>Settings</h1>
+      </div>
+
+      <!-- APPEARANCE -->
+      <div class="card">
+        <h2>Appearance</h2>
+
+        <div class="setting">
+          <label for="theme"> Theme </label>
+
+          <select id="theme">
+            <option value="dark">Dark</option>
+
+            <option value="light">Light</option>
+
+            <option value="system">System</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="cellStyle"> Cell Shape </label>
+
+          <select id="cellStyle">
+            <option value="rounded">Rounded</option>
+
+            <option value="square">Square</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="animations"> Animations </label>
+
+          <select id="animations">
+            <option value="on">On</option>
+
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="preview"> Move Preview </label>
+
+          <select id="preview">
+            <option value="on">On</option>
+
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="reducedMotion"> Reduced Motion </label>
+
+          <select id="reducedMotion">
+            <option value="system">System Default</option>
+
+            <option value="on">On</option>
+
+            <option value="off">Off</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- BOARD -->
+      <div class="card">
+        <h2>Board</h2>
+
+        <div class="two-column">
+          <div class="setting">
+            <label for="boardWidth"> Board Width </label>
+
+            <div class="range-row">
+              <input type="input" id="boardWidth" min="2" max="20" value="7" />
+
+              <span class="range-value" id="boardWidthValue"> 7 </span>
+            </div>
+          </div>
+
+          <div class="setting">
+            <label for="boardHeight"> Board Height </label>
+
+            <div class="range-row">
+              <input type="input" id="boardHeight" min="2" max="20" value="8" />
+
+              <span class="range-value" id="boardHeightValue"> 8 </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting">
+          <label for="pieceLength"> Piece Length </label>
+
+          <div class="range-row">
+            <input type="input" id="pieceLength" min="1" max="7" value="2" />
+
+            <span class="range-value" id="pieceLengthValue"> 2 </span>
+          </div>
+
+          <small> Number of connected cells placed by each move. </small>
+        </div>
+      </div>
+
+      <!-- COLORS -->
+      <div class="card">
+        <h2>Colors</h2>
+
+        <div class="color-grid">
+          <div class="color-item">
+            <label for="p1Color"> Player 1 </label>
+
+            <input type="color" id="p1Color" value="#4f8cff" />
+          </div>
+
+          <div class="color-item">
+            <label for="p2Color"> Player 2 </label>
+
+            <input type="color" id="p2Color" value="#ff5757" />
+          </div>
+
+          <div class="color-item">
+            <label for="emptyColor"> Empty Cells </label>
+
+            <input type="color" id="emptyColor" value="#202632" />
+          </div>
+        </div>
+
+        <small> Player colors can also be changed when setting up a game. </small>
+      </div>
+
+      <!-- TIME -->
+      <div class="card">
+        <h2>Time Control</h2>
+
+        <div class="setting">
+          <label for="timeControl"> Time Control </label>
+
+          <select id="timeControl">
+            <option value="stopwatch">Stopwatch</option>
+
+            <option value="countdown">Countdown</option>
+          </select>
+        </div>
+
+        <div id="countdownSettings" class="hidden">
+          <label> Countdown Time </label>
+
+          <div class="countdown-grid">
+            <div>
+              <label for="countdownMinutes"> Minutes </label>
+
+              <input type="number" id="countdownMinutes" min="0" max="999" value="10" />
+            </div>
+
+            <div>
+              <label for="countdownSeconds"> Seconds </label>
+
+              <input type="number" id="countdownSeconds" min="0" max="59" value="0" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RULES -->
+      <div class="card">
+        <h2>Rules</h2>
+
+        <div class="setting">
+          <label for="noMove"> No Legal Move </label>
+
+          <select id="noMove">
+            <option value="lose">Player loses</option>
+
+            <option value="tie">Game is a tie</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="fullBoard"> Full Board </label>
+
+          <select id="fullBoard">
+            <option value="tie">Game is a tie</option>
+
+            <option value="last">Last player to move wins</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="oppositeOrientation"> Player 2 Orientation </label>
+
+          <select id="oppositeOrientation">
+            <option value="opposite">Opposite of Player 1</option>
+
+            <option value="same">Same as Player 1</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- GAME BEHAVIOR -->
+      <div class="card">
+        <h2>Game Behavior</h2>
+
+        <div class="setting">
+          <div class="checkbox-row">
+            <input type="checkbox" id="confirmMove" />
+
+            <label for="confirmMove"> Confirm Moves </label>
+          </div>
+
+          <small> Ask for confirmation before placing a move. </small>
+        </div>
+
+        <div class="setting">
+          <div class="checkbox-row">
+            <input type="checkbox" id="autoPause" />
+
+            <label for="autoPause"> Pause When Hidden </label>
+          </div>
+
+          <small> Automatically pause the game when the browser tab becomes hidden. </small>
+        </div>
+      </div>
+
+      <!-- SAVE -->
+      <div class="card">
+        <div class="actions">
+          <button class="button" id="resetButton" type="button">Reset Settings</button>
+
+          <button class="button primary" id="saveButton" type="button">Save Settings</button>
+        </div>
+
+        <div class="saved-message" id="savedMessage">Settings saved.</div>
+      </div>
+    </main>
+
+    <script>
+      "use strict";
+
+      const STORAGE_KEY = "towelsWrapSettings";
+
+      const DEFAULT_SETTINGS = {
+        theme: "dark",
+        cellStyle: "rounded",
+        animations: "on",
+        preview: "on",
+
+        p1Color: "#4f8cff",
+        p2Color: "#ff5757",
+        emptyColor: "#202632",
+
+        timeControl: "stopwatch",
+        countdownMinutes: 10,
+        countdownSeconds: 0,
+
+        confirmMove: "off",
+        autoPause: "on",
+        reducedMotion: "system",
+
+        pieceLength: 2,
+        noMove: "lose",
+        fullBoard: "tie",
+        oppositeOrientation: "opposite",
+
+        boardWidth: 7,
+        boardHeight: 8,
+      };
+
+      const theme = document.getElementById("theme");
+
+      const cellStyle = document.getElementById("cellStyle");
+
+      const animations = document.getElementById("animations");
+
+      const preview = document.getElementById("preview");
+
+      const reducedMotion = document.getElementById("reducedMotion");
+
+      const boardWidth = document.getElementById("boardWidth");
+
+      const boardHeight = document.getElementById("boardHeight");
+
+      const pieceLength = document.getElementById("pieceLength");
+
+      const boardWidthValue = document.getElementById("boardWidthValue");
+
+      const boardHeightValue = document.getElementById("boardHeightValue");
+
+      const pieceLengthValue = document.getElementById("pieceLengthValue");
+
+      const p1Color = document.getElementById("p1Color");
+
+      const p2Color = document.getElementById("p2Color");
+
+      const emptyColor = document.getElementById("emptyColor");
+
+      const timeControl = document.getElementById("timeControl");
+
+      const countdownSettings = document.getElementById("countdownSettings");
+
+      const countdownMinutes = document.getElementById("countdownMinutes");
+
+      const countdownSeconds = document.getElementById("countdownSeconds");
+
+      const noMove = document.getElementById("noMove");
+
+      const fullBoard = document.getElementById("fullBoard");
+
+      const oppositeOrientation = document.getElementById("oppositeOrientation");
+
+      const confirmMove = document.getElementById("confirmMove");
+
+      const autoPause = document.getElementById("autoPause");
+
+      const savedMessage = document.getElementById("savedMessage");
+
+      function loadSettings() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+
+          if (!saved) {
+            return {
+              ...DEFAULT_SETTINGS,
+            };
+          }
+
+          return {
+            ...DEFAULT_SETTINGS,
+            ...JSON.parse(saved),
+          };
+        } catch {
+          return {
+            ...DEFAULT_SETTINGS,
+          };
+        }
+      }
+
+      function saveSettings() {
+        const settings = {
+          theme: theme.value,
+
+          cellStyle: cellStyle.value,
+
+          animations: animations.value,
+
+          preview: preview.value,
+
+          p1Color: p1Color.value,
+
+          p2Color: p2Color.value,
+
+          emptyColor: emptyColor.value,
+
+          timeControl: timeControl.value,
+
+          countdownMinutes: Math.max(0, Number(countdownMinutes.value) || 0),
+
+          countdownSeconds: Math.max(0, Math.min(59, Number(countdownSeconds.value) || 0)),
+
+          confirmMove: confirmMove.checked ? "on" : "off",
+
+          autoPause: autoPause.checked ? "on" : "off",
+
+          reducedMotion: reducedMotion.value,
+
+          pieceLength: Number(pieceLength.value),
+
+          noMove: noMove.value,
+
+          fullBoard: fullBoard.value,
+
+          oppositeOrientation: oppositeOrientation.value,
+
+          boardWidth: Number(boardWidth.value),
+
+          boardHeight: Number(boardHeight.value),
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+
+        showSavedMessage();
+      }
+
+      function applySettings(settings) {
+        theme.value = settings.theme;
+
+        cellStyle.value = settings.cellStyle;
+
+        animations.value = settings.animations;
+
+        preview.value = settings.preview;
+
+        reducedMotion.value = settings.reducedMotion;
+
+        boardWidth.value = settings.boardWidth;
+
+        boardHeight.value = settings.boardHeight;
+
+        pieceLength.value = settings.pieceLength;
+
+        p1Color.value = settings.p1Color;
+
+        p2Color.value = settings.p2Color;
+
+        emptyColor.value = settings.emptyColor;
+
+        timeControl.value = settings.timeControl;
+
+        countdownMinutes.value = settings.countdownMinutes;
+
+        countdownSeconds.value = settings.countdownSeconds;
+
+        noMove.value = settings.noMove;
+
+        fullBoard.value = settings.fullBoard;
+
+        oppositeOrientation.value = settings.oppositeOrientation;
+
+        confirmMove.checked = settings.confirmMove === "on";
+
+        autoPause.checked = settings.autoPause === "on";
+
+        updateRangeValues();
+        updateCountdownVisibility();
+      }
+
+      function updateRangeValues() {
+        boardWidthValue.textContent = boardWidth.value;
+
+        boardHeightValue.textContent = boardHeight.value;
+
+        pieceLengthValue.textContent = pieceLength.value;
+      }
+
+      function updateCountdownVisibility() {
+        countdownSettings.classList.toggle("hidden", timeControl.value !== "countdown");
+      }
+
+      function showSavedMessage() {
+        savedMessage.classList.add("visible");
+
+        clearTimeout(showSavedMessage.timeout);
+
+        showSavedMessage.timeout = setTimeout(() => {
+          savedMessage.classList.remove("visible");
+        }, 1800);
+      }
+
+      function resetSettings() {
+        const confirmed = window.confirm("Reset all Towels Wrap settings to their defaults?");
+
+        if (!confirmed) {
+          return;
+        }
+
+        const defaults = {
+          ...DEFAULT_SETTINGS,
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+
+        applySettings(defaults);
+
+        showSavedMessage();
+      }
+
+      boardWidth.addEventListener("input", updateRangeValues);
+
+      boardHeight.addEventListener("input", updateRangeValues);
+
+      pieceLength.addEventListener("input", updateRangeValues);
+
+      timeControl.addEventListener("change", updateCountdownVisibility);
+
+      document.getElementById("saveButton").addEventListener("click", saveSettings);
+
+      document.getElementById("resetButton").addEventListener("click", resetSettings);
+
+      document.getElementById("backButton").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      applySettings(loadSettings());
+    </script>
+  </body>
+</html>

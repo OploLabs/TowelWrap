@@ -1,0 +1,2428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Towels Wrap — Game</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        scrollbar-width: thin;
+      }
+
+      :root {
+        --bg: #0d0f14;
+        --panel: #151922;
+        --panel-2: #1b202b;
+        --border: #2b3240;
+        --text: #f2f4f8;
+        --muted: #8d96a8;
+        --accent: #6c8cff;
+        --p1: #4f8cff;
+        --p2: #ff5757;
+        --empty: #202632;
+        --invalid: #7b2525;
+        --cell-radius: 8px;
+        --transition: 0.12s;
+        --board-width: 7;
+        --current-player-color: #4f8cff;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        overflow-x: hidden;
+      }
+
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .button {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 11px 17px;
+        transition:
+          background var(--transition),
+          border-color var(--transition),
+          transform var(--transition);
+      }
+
+      .button:hover {
+        background: var(--panel-2);
+        border-color: #3b4455;
+      }
+
+      .button:active {
+        transform: scale(0.97);
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      .button.primary:hover {
+        filter: brightness(1.08);
+      }
+
+      .button.large {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 17px;
+      }
+
+      #gameScreen {
+        width: 100%;
+        min-height: 100vh;
+        padding: 18px 16px 25px;
+      }
+
+      .game-container {
+        width: min(760px, 100%);
+        margin: 0 auto;
+      }
+
+      .game-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .game-title {
+        font-weight: 750;
+        font-size: 20px;
+      }
+
+      .game-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .status {
+        text-align: center;
+        margin-bottom: 14px;
+      }
+
+      .turn {
+        font-size: 21px;
+        font-weight: 750;
+      }
+
+      .substatus {
+        color: var(--muted);
+        margin-top: 5px;
+        font-size: 14px;
+      }
+
+      .clock-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .clock-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        transition:
+          border-color var(--transition),
+          background var(--transition),
+          box-shadow var(--transition);
+      }
+
+      .clock-card.active {
+        border-color: var(--clock-color);
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--clock-color) 35%, transparent);
+      }
+
+      .clock-card.p1-clock {
+        --clock-color: var(--p1);
+      }
+
+      .clock-card.p2-clock {
+        --clock-color: var(--p2);
+      }
+
+      .clock-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 7px;
+      }
+
+      .clock-player {
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .clock-turn {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+
+      .clock {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        font-size: clamp(28px, 7vw, 42px);
+        line-height: 1;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+
+      .clock.paused {
+        opacity: 0.6;
+      }
+
+      .board-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: clamp(10px, 3vw, 20px);
+      }
+
+      .board-wrap {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        min-width: 0;
+      }
+
+      .board {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(var(--board-width), minmax(0, 1fr));
+        gap: clamp(3px, 1vw, 6px);
+        user-select: none;
+        touch-action: manipulation;
+      }
+
+      .cell {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        min-width: 0;
+        border-radius: var(--cell-radius);
+        background: var(--empty);
+        border: 2px solid transparent;
+        transition:
+          background var(--transition),
+          transform var(--transition),
+          border-color var(--transition);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .cell.p1 {
+        background: var(--p1);
+      }
+
+      .cell.p2 {
+        background: var(--p2);
+      }
+
+      .cell.clickable:hover {
+        transform: scale(0.96);
+      }
+
+      .cell.preview {
+        background: color-mix(in srgb, var(--current-player-color) 55%, var(--empty));
+        border-color: var(--current-player-color);
+      }
+
+      .cell.invalid {
+        background: var(--invalid);
+        border-color: #ff5555;
+      }
+
+      .cell:active {
+        transform: scale(0.96);
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        margin-top: 17px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .game-info strong {
+        color: var(--text);
+      }
+
+      .game-over {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.68);
+      }
+
+      .game-over-card {
+        width: min(390px, 100%);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        padding: 28px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      }
+
+      .game-over-card h2 {
+        margin: 0;
+        font-size: 29px;
+      }
+
+      .game-over-card p {
+        color: var(--muted);
+        margin: 9px 0 22px;
+        line-height: 1.5;
+      }
+
+      .game-over-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      html.no-animations * {
+        transition: none !important;
+        animation: none !important;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+        }
+
+        html:not(.force-animations) * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .clock-area {
+          gap: 8px;
+        }
+
+        .clock-card {
+          padding: 12px 11px;
+        }
+
+        .game-topbar {
+          align-items: flex-start;
+        }
+
+        .game-title {
+          font-size: 18px;
+        }
+
+        .game-actions {
+          flex-shrink: 0;
+        }
+
+        .game-actions .button {
+          padding: 9px 11px;
+        }
+      }
+
+      @media (max-width: 430px) {
+        #gameScreen {
+          padding: 12px 8px 20px;
+        }
+
+        .board-panel {
+          padding: 9px;
+        }
+
+        .board {
+          gap: 3px;
+        }
+
+        .cell {
+          border-width: 1px;
+          border-radius: calc(var(--cell-radius) * 0.75);
+        }
+
+        .game-info {
+          gap: 12px;
+        }
+
+        .clock {
+          font-size: 27px;
+        }
+
+        .clock-player {
+          font-size: 12px;
+        }
+
+        .clock-turn {
+          font-size: 9px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <section id="gameScreen">
+      <div class="game-container">
+        <div class="game-topbar">
+          <div class="game-title">Towels Wrap</div>
+
+          <div class="game-actions">
+            <button class="button" id="gamePauseButton" type="button">Pause</button>
+
+            <button class="button" id="gameMenuButton" type="button">Menu</button>
+
+            <button class="button primary" id="gameNewButton" type="button">New Game</button>
+          </div>
+        </div>
+
+        <div class="clock-area">
+          <div class="clock-card p1-clock" id="p1ClockCard">
+            <div class="clock-header">
+              <span class="clock-player"> Player 1 </span>
+
+              <span class="clock-turn" id="p1ClockTurn"> Waiting </span>
+            </div>
+
+            <div class="clock" id="p1Clock">0:00</div>
+          </div>
+
+          <div class="clock-card p2-clock" id="p2ClockCard">
+            <div class="clock-header">
+              <span class="clock-player"> Player 2 </span>
+
+              <span class="clock-turn" id="p2ClockTurn"> Waiting </span>
+            </div>
+
+            <div class="clock" id="p2Clock">0:00</div>
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="turn" id="turnText">Player 1's turn</div>
+
+          <div class="substatus" id="substatus">Horizontal</div>
+        </div>
+
+        <div class="board-panel">
+          <div class="board-wrap">
+            <div class="board" id="board"></div>
+          </div>
+
+          <div class="game-info">
+            <div>
+              <strong>Player 1:</strong>
+              <span id="p1Orientation"> Horizontal </span>
+            </div>
+
+            <div>
+              <strong>Player 2:</strong>
+              <span id="p2Orientation"> Vertical </span>
+            </div>
+
+            <div>
+              <strong>Moves:</strong>
+              <span id="moveCount">0</span>
+            </div>
+
+            <div>
+              <strong>Time:</strong>
+              <span id="timeControlLabel"> Stopwatch </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAUSE OVERLAY -->
+
+    <div class="game-over hidden" id="pauseOverlay">
+      <div class="game-over-card">
+        <h2>Game Paused</h2>
+
+        <p>Both player clocks are stopped.</p>
+
+        <div class="game-over-actions">
+          <button class="button primary large" id="resumeButton" type="button">Resume</button>
+
+          <button class="button large" id="pauseMenuButton" type="button">Main Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER -->
+
+    <div class="game-over hidden" id="gameOver">
+      <div class="game-over-card">
+        <h2 id="gameOverTitle">Player 1 Wins!</h2>
+
+        <p id="gameOverMessage">Player 2 has no legal moves.</p>
+
+        <div class="game-over-actions">
+          <button class="button primary large" id="playAgainButton" type="button">Play Again</button>
+
+          <button class="button large" id="gameOverMenuButton" type="button">Main Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* =========================================================
+   CONSTANTS
+========================================================= */
+
+      const EMPTY = 0;
+      const P1 = 1;
+      const P2 = 2;
+
+      const DEFAULT_RULES = {
+        boardWidth: 7,
+        boardHeight: 8,
+        pieceLength: 2,
+        oppositeOrientations: true,
+        noLegalMove: "lose",
+        fullBoard: "tie",
+      };
+
+      const DEFAULT_SETTINGS = {
+        theme: "dark",
+        cellStyle: "rounded",
+        animations: "on",
+        preview: "on",
+
+        p1Color: "#4f8cff",
+        p2Color: "#ff5757",
+        emptyColor: "#202632",
+
+        timeControl: "stopwatch",
+        countdownMinutes: 10,
+        countdownSeconds: 0,
+
+        confirmMove: "off",
+        autoPause: "on",
+        reducedMotion: "system",
+
+        pieceLength: 2,
+        noMove: "lose",
+        fullBoard: "tie",
+        oppositeOrientation: "opposite",
+
+        boardWidth: 7,
+        boardHeight: 8,
+      };
+
+      const rules = {
+        ...DEFAULT_RULES,
+      };
+
+      /* =========================================================
+   SETTINGS
+========================================================= */
+
+      function loadSettings() {
+        try {
+          const saved = localStorage.getItem("towelsWrapSettings");
+
+          if (!saved) {
+            return {
+              ...DEFAULT_SETTINGS,
+            };
+          }
+
+          return {
+            ...DEFAULT_SETTINGS,
+            ...JSON.parse(saved),
+          };
+        } catch {
+          return {
+            ...DEFAULT_SETTINGS,
+          };
+        }
+      }
+
+      function saveSettings() {
+        try {
+          localStorage.setItem("towelsWrapSettings", JSON.stringify(settings));
+        } catch {
+          // Ignore storage errors.
+        }
+      }
+
+      let settings = loadSettings();
+
+      /* =========================================================
+   SETUP DATA
+========================================================= */
+
+      function loadSetup() {
+        try {
+          const saved = localStorage.getItem("towelsWrapSetup");
+
+          if (!saved) {
+            return null;
+          }
+
+          return JSON.parse(saved);
+        } catch {
+          return null;
+        }
+      }
+
+      /* =========================================================
+   GAME STATE
+========================================================= */
+
+      let board = [];
+
+      let currentPlayer = P1;
+
+      let gameOver = false;
+
+      let moveCount = 0;
+
+      let hoverCell = null;
+
+      let pendingMove = null;
+
+      let gamePaused = false;
+
+      let orientations = {
+        1: "H",
+        2: "V",
+      };
+
+      /* =========================================================
+   AI CONFIGURATION
+========================================================= */
+
+      const AI_CONFIG = {
+        easy: {
+          maxDepth: 2,
+          timeLimit: 120,
+          randomness: 0.2,
+          tactical: false,
+        },
+
+        normal: {
+          maxDepth: 5,
+          timeLimit: 500,
+          randomness: 0.02,
+          tactical: true,
+        },
+
+        hard: {
+          maxDepth: 64,
+          timeLimit: 1500,
+          randomness: 0,
+          tactical: true,
+        },
+      };
+
+      const aiState = {
+        enabled: false,
+
+        player: P2,
+
+        difficulty: "normal",
+
+        thinking: false,
+
+        generation: 0,
+
+        searchGeneration: 0,
+
+        deadline: 0,
+
+        nodes: 0,
+
+        transpositionTable: new Map(),
+      };
+
+      const AI_MAX_TABLE_SIZE = 50000;
+
+      const AI_WIN_SCORE = 1000000000;
+
+      const AI_LOSS_SCORE = -AI_WIN_SCORE;
+
+      /* =========================================================
+   AI CONTROL
+========================================================= */
+
+      function cancelAIThinking() {
+        aiState.generation++;
+
+        aiState.thinking = false;
+
+        aiState.deadline = 0;
+
+        aiState.nodes = 0;
+
+        aiState.transpositionTable.clear();
+      }
+
+      function startNewAIGeneration() {
+        cancelAIThinking();
+
+        aiState.generation++;
+      }
+
+      /* =========================================================
+   BOARD COPYING
+========================================================= */
+
+      function copyBoard(stateBoard) {
+        return stateBoard.map((row) => row.slice());
+      }
+
+      function applyMoveToState(stateBoard, move, player) {
+        const nextBoard = copyBoard(stateBoard);
+
+        move.cells.forEach((cell) => {
+          nextBoard[cell.r][cell.c] = player;
+        });
+
+        return nextBoard;
+      }
+
+      function otherPlayer(player) {
+        return player === P1 ? P2 : P1;
+      }
+
+      /* =========================================================
+   AI POSITION KEYS
+========================================================= */
+
+      function getAIPositionKey(stateBoard, player) {
+        let key =
+          `${rules.boardWidth}x` +
+          `${rules.boardHeight}:` +
+          `${rules.pieceLength}:` +
+          `${rules.noLegalMove}:` +
+          `${rules.fullBoard}:` +
+          `${orientations[P1]}${orientations[P2]}:` +
+          `${player}:`;
+
+        for (let r = 0; r < rules.boardHeight; r++) {
+          key += stateBoard[r].join("");
+        }
+
+        return key;
+      }
+
+      /* =========================================================
+   AI TERMINAL SCORING
+========================================================= */
+
+      function getAITerminalScore(stateBoard, playerToMove, ply) {
+        let full = true;
+
+        for (let r = 0; r < rules.boardHeight; r++) {
+          for (let c = 0; c < rules.boardWidth; c++) {
+            if (stateBoard[r][c] === EMPTY) {
+              full = false;
+
+              break;
+            }
+          }
+
+          if (!full) {
+            break;
+          }
+        }
+
+        if (full) {
+          if (rules.fullBoard === "tie") {
+            return 0;
+          }
+
+          const winner = otherPlayer(playerToMove);
+
+          return winner === aiState.player ? AI_WIN_SCORE - ply : AI_LOSS_SCORE + ply;
+        }
+
+        const legalMoves = getLegalMoves(stateBoard, playerToMove);
+
+        if (legalMoves.length !== 0) {
+          return null;
+        }
+
+        if (rules.noLegalMove === "tie") {
+          return 0;
+        }
+
+        const winner = otherPlayer(playerToMove);
+
+        return winner === aiState.player ? AI_WIN_SCORE - ply : AI_LOSS_SCORE + ply;
+      }
+
+      /* =========================================================
+   AI EVALUATION
+========================================================= */
+
+      function evaluateAIPosition(stateBoard, playerToMove) {
+        const aiPlayer = aiState.player;
+
+        const opponent = otherPlayer(aiPlayer);
+
+        const aiMoves = getLegalMoves(stateBoard, aiPlayer);
+
+        const opponentMoves = getLegalMoves(stateBoard, opponent);
+
+        const aiMobility = aiMoves.length;
+
+        const opponentMobility = opponentMoves.length;
+
+        let score = (aiMobility - opponentMobility) * 100;
+
+        if (aiMobility === 0) {
+          score -= 50000;
+        } else if (aiMobility === 1) {
+          score -= 500;
+        } else if (aiMobility === 2) {
+          score -= 150;
+        }
+
+        if (opponentMobility === 0) {
+          score += 50000;
+        } else if (opponentMobility === 1) {
+          score += 500;
+        } else if (opponentMobility === 2) {
+          score += 150;
+        }
+
+        const difficulty = aiState.difficulty;
+
+        if (difficulty === "normal") {
+          score += aiMobility * 20 - opponentMobility * 35;
+        } else if (difficulty === "hard") {
+          score += aiMobility * 15 - opponentMobility * 55;
+        } else {
+          score += aiMobility * 55;
+        }
+
+        let emptyCells = 0;
+
+        for (let r = 0; r < rules.boardHeight; r++) {
+          for (let c = 0; c < rules.boardWidth; c++) {
+            if (stateBoard[r][c] === EMPTY) {
+              emptyCells++;
+            }
+          }
+        }
+
+        score += emptyCells * 0.15;
+
+        if (playerToMove === aiPlayer) {
+          score += aiMobility * 8;
+        } else {
+          score -= opponentMobility * 8;
+        }
+
+        return score;
+      }
+
+      /* =========================================================
+   AI MOVE ORDERING
+========================================================= */
+
+      function scoreAIMoveForOrdering(stateBoard, move, player) {
+        const nextBoard = applyMoveToState(stateBoard, move, player);
+
+        const opponent = otherPlayer(player);
+
+        const opponentMoves = getLegalMoves(nextBoard, opponent).length;
+
+        const ownMoves = getLegalMoves(nextBoard, player).length;
+
+        if (opponentMoves === 0) {
+          return 100000000;
+        }
+
+        return ownMoves * 10 - opponentMoves * 30;
+      }
+
+      function movesEqual(first, second) {
+        if (!first || !second) {
+          return false;
+        }
+
+        if (first.cells.length !== second.cells.length) {
+          return false;
+        }
+
+        for (let i = 0; i < first.cells.length; i++) {
+          if (first.cells[i].r !== second.cells[i].r || first.cells[i].c !== second.cells[i].c) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function orderAIMoves(stateBoard, moves, player, preferredMove = null) {
+        const scored = moves.map((move) => ({
+          move,
+
+          score: scoreAIMoveForOrdering(stateBoard, move, player),
+        }));
+
+        scored.sort((a, b) => {
+          if (preferredMove && movesEqual(a.move, preferredMove)) {
+            return -1;
+          }
+
+          if (preferredMove && movesEqual(b.move, preferredMove)) {
+            return 1;
+          }
+
+          return b.score - a.score;
+        });
+
+        return scored.map((item) => item.move);
+      }
+
+      /* =========================================================
+   AI SEARCH
+========================================================= */
+
+      function aiSearchExpired() {
+        return performance.now() >= aiState.deadline;
+      }
+
+      function alphaBeta(stateBoard, playerToMove, depth, alpha, beta, ply, extensionRemaining) {
+        aiState.nodes++;
+
+        if (aiSearchExpired()) {
+          throw new Error("AI_SEARCH_TIMEOUT");
+        }
+
+        const terminal = getAITerminalScore(stateBoard, playerToMove, ply);
+
+        if (terminal !== null) {
+          return terminal;
+        }
+
+        if (depth <= 0) {
+          if (extensionRemaining > 0) {
+            const tacticalMoves = getLegalMoves(stateBoard, playerToMove);
+
+            if (tacticalMoves.length <= 2) {
+              depth = 1;
+
+              extensionRemaining--;
+            } else {
+              return evaluateAIPosition(stateBoard, playerToMove);
+            }
+          } else {
+            return evaluateAIPosition(stateBoard, playerToMove);
+          }
+        }
+
+        let moves = getLegalMoves(stateBoard, playerToMove);
+
+        if (moves.length === 0) {
+          return evaluateAIPosition(stateBoard, playerToMove);
+        }
+
+        moves = orderAIMoves(stateBoard, moves, playerToMove);
+
+        const maximizing = playerToMove === aiState.player;
+
+        if (maximizing) {
+          let value = AI_LOSS_SCORE;
+
+          for (const move of moves) {
+            if (aiSearchExpired()) {
+              throw new Error("AI_SEARCH_TIMEOUT");
+            }
+
+            const nextBoard = applyMoveToState(stateBoard, move, playerToMove);
+
+            const childValue = alphaBeta(
+              nextBoard,
+              otherPlayer(playerToMove),
+              depth - 1,
+              alpha,
+              beta,
+              ply + 1,
+              extensionRemaining,
+            );
+
+            value = Math.max(value, childValue);
+
+            alpha = Math.max(alpha, value);
+
+            if (alpha >= beta) {
+              break;
+            }
+          }
+
+          return value;
+        }
+
+        let value = AI_WIN_SCORE;
+
+        for (const move of moves) {
+          if (aiSearchExpired()) {
+            throw new Error("AI_SEARCH_TIMEOUT");
+          }
+
+          const nextBoard = applyMoveToState(stateBoard, move, playerToMove);
+
+          const childValue = alphaBeta(
+            nextBoard,
+            otherPlayer(playerToMove),
+            depth - 1,
+            alpha,
+            beta,
+            ply + 1,
+            extensionRemaining,
+          );
+
+          value = Math.min(value, childValue);
+
+          beta = Math.min(beta, value);
+
+          if (alpha >= beta) {
+            break;
+          }
+        }
+
+        return value;
+      }
+
+      /* =========================================================
+   AI ROOT SEARCH
+========================================================= */
+
+      function searchAIRoot(stateBoard, player, depth, preferredMove = null) {
+        const moves = getLegalMoves(stateBoard, player);
+
+        if (moves.length === 0) {
+          return null;
+        }
+
+        let orderedMoves = orderAIMoves(stateBoard, moves, player, preferredMove);
+
+        if (preferredMove) {
+          orderedMoves = [preferredMove, ...orderedMoves.filter((move) => !movesEqual(move, preferredMove))];
+        }
+
+        let bestMove = orderedMoves[0];
+
+        let bestScore = AI_LOSS_SCORE;
+
+        let alpha = AI_LOSS_SCORE;
+
+        const beta = AI_WIN_SCORE;
+
+        for (const move of orderedMoves) {
+          if (aiSearchExpired()) {
+            throw new Error("AI_SEARCH_TIMEOUT");
+          }
+
+          const nextBoard = applyMoveToState(stateBoard, move, player);
+
+          const score = alphaBeta(nextBoard, otherPlayer(player), depth - 1, alpha, beta, 1, 2);
+
+          if (score > bestScore) {
+            bestScore = score;
+
+            bestMove = move;
+          }
+
+          alpha = Math.max(alpha, bestScore);
+        }
+
+        return {
+          move: bestMove,
+          score: bestScore,
+          depth,
+        };
+      }
+
+      /* =========================================================
+   AI TRANSPOSITION TABLE
+========================================================= */
+
+      function getAITranspositionKey(stateBoard, player, depth, extensionRemaining) {
+        return getAIPositionKey(stateBoard, player) + `:${depth}:${extensionRemaining}`;
+      }
+
+      function getCachedAIValue(stateBoard, player, depth, extensionRemaining) {
+        const key = getAITranspositionKey(stateBoard, player, depth, extensionRemaining);
+
+        return aiState.transpositionTable.get(key);
+      }
+
+      function storeAIValue(stateBoard, player, depth, extensionRemaining, value) {
+        if (aiState.transpositionTable.size >= AI_MAX_TABLE_SIZE) {
+          const firstKey = aiState.transpositionTable.keys().next().value;
+
+          if (firstKey !== undefined) {
+            aiState.transpositionTable.delete(firstKey);
+          }
+        }
+
+        const key = getAITranspositionKey(stateBoard, player, depth, extensionRemaining);
+
+        aiState.transpositionTable.set(key, value);
+      }
+
+      /* =========================================================
+   AI ASYNC HELPERS
+========================================================= */
+
+      function yieldToBrowser() {
+        return new Promise((resolve) => setTimeout(resolve, 0));
+      }
+
+      /* =========================================================
+   EASY AI
+========================================================= */
+
+      function chooseEasyMove(stateBoard, player) {
+        const moves = getLegalMoves(stateBoard, player);
+
+        if (moves.length === 0) {
+          return null;
+        }
+
+        const scored = moves.map((move) => {
+          const nextBoard = applyMoveToState(stateBoard, move, player);
+
+          const score = evaluateAIPosition(nextBoard, otherPlayer(player));
+
+          return {
+            move,
+            score,
+          };
+        });
+
+        scored.sort((a, b) => b.score - a.score);
+
+        const reasonableCount = Math.max(1, Math.ceil(scored.length * 0.35));
+
+        const candidates = scored.slice(0, reasonableCount);
+
+        if (Math.random() < AI_CONFIG.easy.randomness) {
+          return candidates[Math.floor(Math.random() * candidates.length)].move;
+        }
+
+        return candidates[0].move;
+      }
+
+      /* =========================================================
+   FIND AI MOVE
+========================================================= */
+
+      async function findAIMove(stateBoard, player, difficulty, generation) {
+        const config = AI_CONFIG[difficulty] || AI_CONFIG.normal;
+
+        const legalMoves = getLegalMoves(stateBoard, player);
+
+        if (legalMoves.length === 0) {
+          return null;
+        }
+
+        if (generation !== aiState.generation) {
+          return null;
+        }
+
+        aiState.deadline = performance.now() + config.timeLimit;
+
+        aiState.nodes = 0;
+
+        aiState.transpositionTable.clear();
+
+        if (difficulty === "easy") {
+          await yieldToBrowser();
+
+          if (generation !== aiState.generation || gamePaused || gameOver) {
+            return null;
+          }
+
+          return chooseEasyMove(stateBoard, player);
+        }
+
+        let completedMove = legalMoves[0];
+
+        let completedScore = AI_LOSS_SCORE;
+
+        let completedDepth = 0;
+
+        let preferredMove = null;
+
+        for (let depth = 1; depth <= config.maxDepth; depth++) {
+          if (generation !== aiState.generation || gamePaused || gameOver) {
+            return null;
+          }
+
+          if (aiSearchExpired()) {
+            break;
+          }
+
+          try {
+            const result = searchAIRoot(stateBoard, player, depth, preferredMove);
+
+            if (!result) {
+              break;
+            }
+
+            completedMove = result.move;
+
+            completedScore = result.score;
+
+            completedDepth = depth;
+
+            preferredMove = result.move;
+          } catch (error) {
+            if (error && error.message === "AI_SEARCH_TIMEOUT") {
+              break;
+            }
+
+            console.error("AI search error:", error);
+
+            break;
+          }
+
+          await yieldToBrowser();
+        }
+
+        void completedScore;
+        void completedDepth;
+
+        return completedMove;
+      }
+
+      /* =========================================================
+   AI MOVE VALIDATION
+========================================================= */
+
+      function findMatchingLegalMove(move, legalMoves) {
+        if (!move) {
+          return null;
+        }
+
+        return legalMoves.find((legalMove) => movesEqual(legalMove, move)) || null;
+      }
+
+      /* =========================================================
+   APPLY AI MOVE
+========================================================= */
+
+      function makeAIMove(move, generation) {
+        if (generation !== aiState.generation) {
+          return false;
+        }
+
+        if (!aiState.enabled || !aiState.thinking || gameOver || gamePaused || currentPlayer !== aiState.player) {
+          return false;
+        }
+
+        const legalMoves = getLegalMoves(board, currentPlayer);
+
+        const legalMove = findMatchingLegalMove(move, legalMoves);
+
+        if (!legalMove) {
+          console.error("AI attempted an illegal move.");
+
+          aiState.thinking = false;
+
+          return false;
+        }
+
+        legalMove.cells.forEach((cell) => {
+          board[cell.r][cell.c] = currentPlayer;
+        });
+
+        moveCount++;
+
+        hoverCell = null;
+
+        pendingMove = null;
+
+        if (clockRunning) {
+          const now = performance.now();
+
+          addElapsedTime(now - lastClockUpdate);
+
+          lastClockUpdate = now;
+        }
+
+        aiState.thinking = false;
+
+        nextTurn();
+
+        return true;
+      }
+
+      /* =========================================================
+   START AI THINKING
+========================================================= */
+
+      async function startAIThinking() {
+        if (!aiState.enabled || gameOver || gamePaused || currentPlayer !== aiState.player || aiState.thinking) {
+          return;
+        }
+
+        const generation = aiState.generation;
+
+        const difficulty = aiState.difficulty;
+
+        aiState.thinking = true;
+
+        render();
+
+        const snapshot = copyBoard(board);
+
+        const move = await findAIMove(snapshot, aiState.player, difficulty, generation);
+
+        if (generation !== aiState.generation || gameOver || gamePaused || currentPlayer !== aiState.player) {
+          return;
+        }
+
+        makeAIMove(move, generation);
+      }
+
+      /* =========================================================
+   CLOCK STATE
+========================================================= */
+
+      let playerTime = {
+        1: 0,
+        2: 0,
+      };
+
+      let clockRunning = false;
+
+      let lastClockUpdate = null;
+
+      let clockAnimationFrame = null;
+
+      /* =========================================================
+   DOM REFERENCES
+========================================================= */
+
+      const boardElement = document.getElementById("board");
+
+      const turnText = document.getElementById("turnText");
+
+      const substatus = document.getElementById("substatus");
+
+      const p1OrientationText = document.getElementById("p1Orientation");
+
+      const p2OrientationText = document.getElementById("p2Orientation");
+
+      const moveCountText = document.getElementById("moveCount");
+
+      const gameOverElement = document.getElementById("gameOver");
+
+      const gameOverTitle = document.getElementById("gameOverTitle");
+
+      const gameOverMessage = document.getElementById("gameOverMessage");
+
+      const p1Clock = document.getElementById("p1Clock");
+
+      const p2Clock = document.getElementById("p2Clock");
+
+      const p1ClockCard = document.getElementById("p1ClockCard");
+
+      const p2ClockCard = document.getElementById("p2ClockCard");
+
+      const p1ClockTurn = document.getElementById("p1ClockTurn");
+
+      const p2ClockTurn = document.getElementById("p2ClockTurn");
+
+      const pauseOverlay = document.getElementById("pauseOverlay");
+
+      /* =========================================================
+   COLORS / RULES
+========================================================= */
+
+      function applyColors() {
+        document.documentElement.style.setProperty("--p1", settings.p1Color);
+
+        document.documentElement.style.setProperty("--p2", settings.p2Color);
+
+        document.documentElement.style.setProperty("--empty", settings.emptyColor);
+
+        document.documentElement.style.setProperty("--cell-radius", settings.cellStyle === "square" ? "2px" : "8px");
+
+        let theme = settings.theme;
+
+        if (theme === "system") {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+
+        if (theme === "light") {
+          document.documentElement.style.setProperty("--bg", "#f1f3f7");
+
+          document.documentElement.style.setProperty("--panel", "#ffffff");
+
+          document.documentElement.style.setProperty("--panel-2", "#f1f3f7");
+
+          document.documentElement.style.setProperty("--border", "#d7dce5");
+
+          document.documentElement.style.setProperty("--text", "#151922");
+
+          document.documentElement.style.setProperty("--muted", "#697386");
+        } else {
+          document.documentElement.style.setProperty("--bg", "#0d0f14");
+
+          document.documentElement.style.setProperty("--panel", "#151922");
+
+          document.documentElement.style.setProperty("--panel-2", "#1b202b");
+
+          document.documentElement.style.setProperty("--border", "#2b3240");
+
+          document.documentElement.style.setProperty("--text", "#f2f4f8");
+
+          document.documentElement.style.setProperty("--muted", "#8d96a8");
+        }
+
+        document.documentElement.classList.toggle("no-animations", settings.animations === "off");
+
+        if (
+          settings.reducedMotion === "on" ||
+          (settings.reducedMotion === "system" && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        ) {
+          document.documentElement.classList.add("no-animations");
+        }
+      }
+
+      /* =========================================================
+   APPLY RULE SETTINGS
+========================================================= */
+
+      function applyRuleSettings() {
+        let width = Number(settings.boardWidth);
+
+        let height = Number(settings.boardHeight);
+
+        if (!Number.isFinite(width)) {
+          width = DEFAULT_RULES.boardWidth;
+        }
+
+        if (!Number.isFinite(height)) {
+          height = DEFAULT_RULES.boardHeight;
+        }
+
+        rules.boardWidth = Math.max(2, Math.min(20, Math.round(width)));
+
+        rules.boardHeight = Math.max(2, Math.min(20, Math.round(height)));
+
+        document.documentElement.style.setProperty("--board-width", rules.boardWidth);
+
+        let length = Number(settings.pieceLength);
+
+        if (!Number.isFinite(length)) {
+          length = DEFAULT_RULES.pieceLength;
+        }
+
+        const maxPieceLength = Math.min(rules.boardWidth, rules.boardHeight);
+
+        rules.pieceLength = Math.max(1, Math.min(maxPieceLength, Math.round(length)));
+
+        rules.noLegalMove = settings.noMove === "tie" ? "tie" : "lose";
+
+        rules.fullBoard = settings.fullBoard === "win" ? "win" : "tie";
+
+        rules.oppositeOrientations = settings.oppositeOrientation !== "same";
+      }
+
+      /* =========================================================
+   SETUP INITIALIZATION
+========================================================= */
+
+      function prepareGameFromSetup() {
+        const setup = loadSetup();
+
+        if (!setup) {
+          console.warn("No towelsWrapSetup was found. Using defaults.");
+
+          settings = loadSettings();
+
+          applyColors();
+          applyRuleSettings();
+
+          orientations[P1] = randomOrientation();
+
+          orientations[P2] = rules.oppositeOrientations ? oppositeOrientation(orientations[P1]) : orientations[P1];
+
+          currentPlayer = P1;
+
+          aiState.enabled = false;
+
+          initializeGame();
+
+          return;
+        }
+
+        settings = loadSettings();
+
+        if (setup.p1Color) {
+          settings.p1Color = setup.p1Color;
+        }
+
+        if (setup.p2Color) {
+          settings.p2Color = setup.p2Color;
+        }
+
+        applyColors();
+        applyRuleSettings();
+
+        /* -----------------------------------------
+       PLAYER 1 ORIENTATION
+    ----------------------------------------- */
+
+        let p1Orientation = setup.p1Orientation || "random";
+
+        if (p1Orientation === "random") {
+          p1Orientation = randomOrientation();
+        }
+
+        if (p1Orientation !== "H" && p1Orientation !== "V") {
+          p1Orientation = "H";
+        }
+
+        orientations[P1] = p1Orientation;
+
+        /* -----------------------------------------
+       PLAYER 2 ORIENTATION
+    ----------------------------------------- */
+
+        if (rules.oppositeOrientations) {
+          orientations[P2] = oppositeOrientation(p1Orientation);
+        } else {
+          orientations[P2] = p1Orientation;
+        }
+
+        /* -----------------------------------------
+       STARTING PLAYER
+    ----------------------------------------- */
+
+        if (setup.startingPlayer === "random") {
+          currentPlayer = Math.random() < 0.5 ? P1 : P2;
+        } else {
+          currentPlayer = Number(setup.startingPlayer) === P2 ? P2 : P1;
+        }
+
+        /* -----------------------------------------
+       AI
+    ----------------------------------------- */
+
+        cancelAIThinking();
+
+        aiState.enabled = setup.gameMode === "ai";
+
+        aiState.player = P2;
+
+        aiState.difficulty =
+          setup.aiDifficulty === "easy" || setup.aiDifficulty === "hard" ? setup.aiDifficulty : "normal";
+
+        initializeGame();
+      }
+
+      /* =========================================================
+   INITIALIZE GAME
+========================================================= */
+
+      function initializeGame() {
+        board = createEmptyBoard();
+
+        moveCount = 0;
+
+        gameOver = false;
+
+        hoverCell = null;
+
+        pendingMove = null;
+
+        gamePaused = false;
+
+        aiState.thinking = false;
+
+        gameOverElement.classList.add("hidden");
+
+        pauseOverlay.classList.add("hidden");
+
+        document.getElementById("gamePauseButton").textContent = "Pause";
+
+        initializeClocks();
+
+        render();
+
+        startClock();
+
+        if (aiState.enabled && currentPlayer === aiState.player) {
+          setTimeout(() => {
+            startAIThinking();
+          }, 0);
+        }
+      }
+
+      /* =========================================================
+   BOARD CREATION
+========================================================= */
+
+      function createEmptyBoard() {
+        return Array.from(
+          {
+            length: rules.boardHeight,
+          },
+          () => Array(rules.boardWidth).fill(EMPTY),
+        );
+      }
+
+      /* =========================================================
+   ORIENTATION HELPERS
+========================================================= */
+
+      function randomOrientation() {
+        return Math.random() < 0.5 ? "H" : "V";
+      }
+
+      function oppositeOrientation(orientation) {
+        return orientation === "H" ? "V" : "H";
+      }
+
+      function orientationName(orientation) {
+        return orientation === "H" ? "Horizontal" : "Vertical";
+      }
+
+      function playerName(player) {
+        return player === P1 ? "Player 1" : "Player 2";
+      }
+
+      function getPlayerColor(player) {
+        return player === P1 ? settings.p1Color : settings.p2Color;
+      }
+
+      /* =========================================================
+   CLOCK HELPERS
+========================================================= */
+
+      function getCountdownStart() {
+        const minutes = Math.max(0, Number(settings.countdownMinutes) || 0);
+
+        const seconds = Math.max(0, Math.min(59, Number(settings.countdownSeconds) || 0));
+
+        return minutes * 60 + seconds;
+      }
+
+      function initializeClocks() {
+        const initial = settings.timeControl === "countdown" ? getCountdownStart() : 0;
+
+        playerTime[P1] = initial;
+
+        playerTime[P2] = initial;
+
+        clockRunning = false;
+
+        lastClockUpdate = null;
+
+        cancelAnimationFrame(clockAnimationFrame);
+
+        renderClocks();
+      }
+
+      function formatDuration(seconds) {
+        seconds = Math.max(0, seconds);
+
+        const totalSeconds = Math.floor(seconds);
+
+        const minutes = Math.floor(totalSeconds / 60);
+
+        const remainingSeconds = totalSeconds % 60;
+
+        if (minutes >= 60) {
+          const hours = Math.floor(minutes / 60);
+
+          const remainingMinutes = minutes % 60;
+
+          return (
+            `${hours}:` +
+            `${String(remainingMinutes).padStart(2, "0")}:` +
+            `${String(remainingSeconds).padStart(2, "0")}`
+          );
+        }
+
+        return `${minutes}:` + `${String(remainingSeconds).padStart(2, "0")}`;
+      }
+
+      function renderClocks() {
+        p1Clock.textContent = formatDuration(playerTime[P1]);
+
+        p2Clock.textContent = formatDuration(playerTime[P2]);
+
+        const p1Active = !gameOver && !gamePaused && currentPlayer === P1;
+
+        const p2Active = !gameOver && !gamePaused && currentPlayer === P2;
+
+        p1ClockCard.classList.toggle("active", p1Active);
+
+        p2ClockCard.classList.toggle("active", p2Active);
+
+        p1ClockTurn.textContent = p1Active
+          ? aiState.enabled && aiState.player === P1
+            ? "AI"
+            : "Your turn"
+          : "Waiting";
+
+        p2ClockTurn.textContent = p2Active
+          ? aiState.enabled && aiState.player === P2
+            ? "AI"
+            : "Your turn"
+          : "Waiting";
+
+        p1Clock.classList.toggle("paused", gamePaused);
+
+        p2Clock.classList.toggle("paused", gamePaused);
+      }
+
+      function startClock() {
+        if (gameOver || gamePaused || clockRunning) {
+          return;
+        }
+
+        clockRunning = true;
+
+        lastClockUpdate = performance.now();
+
+        cancelAnimationFrame(clockAnimationFrame);
+
+        clockTick();
+      }
+
+      function stopClock() {
+        if (clockRunning && lastClockUpdate !== null) {
+          const now = performance.now();
+
+          addElapsedTime(now - lastClockUpdate);
+        }
+
+        clockRunning = false;
+
+        lastClockUpdate = null;
+
+        cancelAnimationFrame(clockAnimationFrame);
+
+        renderClocks();
+      }
+
+      function addElapsedTime(milliseconds) {
+        const seconds = milliseconds / 1000;
+
+        if (settings.timeControl === "stopwatch") {
+          playerTime[currentPlayer] += seconds;
+
+          return;
+        }
+
+        playerTime[currentPlayer] = Math.max(0, playerTime[currentPlayer] - seconds);
+
+        if (playerTime[currentPlayer] <= 0 && !gameOver) {
+          finishTimeLoss(currentPlayer);
+        }
+      }
+
+      function clockTick() {
+        if (!clockRunning || gameOver || gamePaused) {
+          return;
+        }
+
+        const now = performance.now();
+
+        const elapsed = now - lastClockUpdate;
+
+        lastClockUpdate = now;
+
+        addElapsedTime(elapsed);
+
+        renderClocks();
+
+        if (clockRunning && !gameOver && !gamePaused) {
+          clockAnimationFrame = requestAnimationFrame(clockTick);
+        }
+      }
+
+      /* =========================================================
+   PAUSE
+========================================================= */
+
+      function pauseGame() {
+        if (gameOver || gamePaused) {
+          return;
+        }
+
+        if (aiState.thinking) {
+          cancelAIThinking();
+        }
+
+        stopClock();
+
+        gamePaused = true;
+
+        pauseOverlay.classList.remove("hidden");
+
+        document.getElementById("gamePauseButton").textContent = "Resume";
+
+        renderClocks();
+      }
+
+      function resumeGame() {
+        if (gameOver || !gamePaused) {
+          return;
+        }
+
+        gamePaused = false;
+
+        pauseOverlay.classList.add("hidden");
+
+        document.getElementById("gamePauseButton").textContent = "Pause";
+
+        renderClocks();
+
+        startClock();
+
+        if (aiState.enabled && currentPlayer === aiState.player) {
+          setTimeout(() => {
+            startAIThinking();
+          }, 0);
+        }
+      }
+
+      /* =========================================================
+   LEGAL MOVES
+========================================================= */
+
+      function getLegalMoves(stateBoard, player) {
+        const moves = [];
+
+        const orientation = orientations[player];
+
+        for (let r = 0; r < rules.boardHeight; r++) {
+          for (let c = 0; c < rules.boardWidth; c++) {
+            const cells = [];
+
+            for (let i = 0; i < rules.pieceLength; i++) {
+              const cellR = orientation === "H" ? r : r + i;
+
+              const cellC = orientation === "H" ? c + i : c;
+
+              cells.push({
+                r: cellR,
+                c: cellC,
+              });
+            }
+
+            const inside = cells.every(
+              (cell) => cell.r >= 0 && cell.r < rules.boardHeight && cell.c >= 0 && cell.c < rules.boardWidth,
+            );
+
+            if (!inside) {
+              continue;
+            }
+
+            const empty = cells.every((cell) => stateBoard[cell.r][cell.c] === EMPTY);
+
+            if (empty) {
+              moves.push({
+                cells,
+              });
+            }
+          }
+        }
+
+        return moves;
+      }
+
+      /* =========================================================
+   BOARD STATE
+========================================================= */
+
+      function isBoardFull() {
+        for (let r = 0; r < rules.boardHeight; r++) {
+          for (let c = 0; c < rules.boardWidth; c++) {
+            if (board[r][c] === EMPTY) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+
+      /* =========================================================
+   PREVIEW
+========================================================= */
+
+      function getPreview() {
+        if (!hoverCell || gameOver || gamePaused || settings.preview === "off" || aiState.thinking) {
+          return null;
+        }
+
+        const r = hoverCell.r;
+
+        const c = hoverCell.c;
+
+        const orientation = orientations[currentPlayer];
+
+        const cells = [];
+
+        for (let i = 0; i < rules.pieceLength; i++) {
+          const cellR = orientation === "H" ? r : r + i;
+
+          const cellC = orientation === "H" ? c + i : c;
+
+          cells.push({
+            r: cellR,
+            c: cellC,
+          });
+        }
+
+        const valid = cells.every(
+          (cell) =>
+            cell.r >= 0 &&
+            cell.r < rules.boardHeight &&
+            cell.c >= 0 &&
+            cell.c < rules.boardWidth &&
+            board[cell.r][cell.c] === EMPTY,
+        );
+
+        return {
+          cells,
+          valid,
+        };
+      }
+
+      /* =========================================================
+   RENDER
+========================================================= */
+
+      function render() {
+        boardElement.innerHTML = "";
+
+        const preview = getPreview();
+
+        for (let r = 0; r < rules.boardHeight; r++) {
+          for (let c = 0; c < rules.boardWidth; c++) {
+            const cell = document.createElement("div");
+
+            cell.className = "cell";
+
+            const value = board[r][c];
+
+            if (value === P1) {
+              cell.classList.add("p1");
+            } else if (value === P2) {
+              cell.classList.add("p2");
+            }
+
+            if (!gameOver && !gamePaused && !aiState.thinking && value === EMPTY) {
+              cell.classList.add("clickable");
+            }
+
+            if (preview) {
+              const isPreview = preview.cells.some((previewCell) => previewCell.r === r && previewCell.c === c);
+
+              if (isPreview) {
+                cell.classList.add(preview.valid ? "preview" : "invalid");
+              }
+            }
+
+            cell.dataset.row = r;
+
+            cell.dataset.col = c;
+
+            boardElement.appendChild(cell);
+          }
+        }
+
+        updateStatus();
+
+        p1OrientationText.textContent = orientationName(orientations[P1]);
+
+        p2OrientationText.textContent = orientationName(orientations[P2]);
+
+        moveCountText.textContent = moveCount;
+
+        document.getElementById("timeControlLabel").textContent =
+          settings.timeControl === "stopwatch" ? "Stopwatch" : "Countdown";
+
+        document.documentElement.style.setProperty("--current-player-color", getPlayerColor(currentPlayer));
+
+        renderClocks();
+      }
+
+      /* =========================================================
+   STATUS
+========================================================= */
+
+      function updateStatus() {
+        if (gameOver) {
+          return;
+        }
+
+        if (gamePaused) {
+          turnText.textContent = "Game paused";
+
+          substatus.textContent = "Both clocks are stopped.";
+
+          return;
+        }
+
+        if (aiState.thinking) {
+          turnText.textContent = `${playerName(currentPlayer)}'s turn`;
+
+          substatus.textContent = "AI is thinking...";
+
+          return;
+        }
+
+        if (isBoardFull()) {
+          if (rules.fullBoard === "tie") {
+            finishTie();
+
+            return;
+          }
+
+          if (rules.fullBoard === "win") {
+            const winner = currentPlayer;
+
+            finishWin(winner, "The board is completely full.");
+
+            return;
+          }
+        }
+
+        const legalMoves = getLegalMoves(board, currentPlayer);
+
+        if (legalMoves.length === 0) {
+          if (rules.noLegalMove === "lose") {
+            const winner = currentPlayer === P1 ? P2 : P1;
+
+            finishWin(winner, `${playerName(currentPlayer)} has no legal moves.`);
+          } else {
+            finishTie();
+          }
+
+          return;
+        }
+
+        turnText.textContent = `${playerName(currentPlayer)}'s turn`;
+
+        substatus.textContent = orientationName(orientations[currentPlayer]);
+      }
+
+      /* =========================================================
+   GAME END
+========================================================= */
+
+      function finishWin(winner, message = null) {
+        cancelAIThinking();
+
+        stopClock();
+
+        gameOver = true;
+
+        gamePaused = false;
+
+        const loser = winner === P1 ? P2 : P1;
+
+        gameOverTitle.textContent = `${playerName(winner)} Wins!`;
+
+        gameOverMessage.textContent = message || `${playerName(loser)} has no legal moves.`;
+
+        gameOverElement.classList.remove("hidden");
+
+        pauseOverlay.classList.add("hidden");
+
+        turnText.textContent = `${playerName(winner)} wins!`;
+
+        substatus.textContent = message || "Game over.";
+
+        renderClocks();
+      }
+
+      function finishTimeLoss(loser) {
+        cancelAIThinking();
+
+        stopClock();
+
+        gameOver = true;
+
+        gamePaused = false;
+
+        const winner = loser === P1 ? P2 : P1;
+
+        gameOverTitle.textContent = `${playerName(winner)} Wins!`;
+
+        gameOverMessage.textContent = `${playerName(loser)}'s clock reached zero.`;
+
+        gameOverElement.classList.remove("hidden");
+
+        turnText.textContent = `${playerName(winner)} wins!`;
+
+        substatus.textContent = "Time expired.";
+
+        renderClocks();
+      }
+
+      function finishTie() {
+        cancelAIThinking();
+
+        stopClock();
+
+        gameOver = true;
+
+        gamePaused = false;
+
+        gameOverTitle.textContent = "It's a Tie!";
+
+        gameOverMessage.textContent = "The board is completely full.";
+
+        gameOverElement.classList.remove("hidden");
+
+        pauseOverlay.classList.add("hidden");
+
+        turnText.textContent = "It's a tie!";
+
+        substatus.textContent = "The board is completely full.";
+
+        renderClocks();
+      }
+
+      /* =========================================================
+   HUMAN MOVE
+========================================================= */
+
+      function humanMove(r, c) {
+        if (gameOver || gamePaused || aiState.thinking || (aiState.enabled && currentPlayer === aiState.player)) {
+          return;
+        }
+
+        const orientation = orientations[currentPlayer];
+
+        const cells = [];
+
+        for (let i = 0; i < rules.pieceLength; i++) {
+          const cellR = orientation === "H" ? r : r + i;
+
+          const cellC = orientation === "H" ? c + i : c;
+
+          cells.push({
+            r: cellR,
+            c: cellC,
+          });
+        }
+
+        const inside = cells.every(
+          (cell) => cell.r >= 0 && cell.r < rules.boardHeight && cell.c >= 0 && cell.c < rules.boardWidth,
+        );
+
+        if (!inside) {
+          hoverCell = {
+            r,
+            c,
+          };
+
+          render();
+
+          return;
+        }
+
+        const empty = cells.every((cell) => board[cell.r][cell.c] === EMPTY);
+
+        if (!empty) {
+          hoverCell = {
+            r,
+            c,
+          };
+
+          render();
+
+          return;
+        }
+
+        if (settings.confirmMove === "on") {
+          if (pendingMove && pendingMove.r === r && pendingMove.c === c) {
+            pendingMove = null;
+          } else {
+            pendingMove = {
+              r,
+              c,
+            };
+
+            hoverCell = {
+              r,
+              c,
+            };
+
+            render();
+
+            substatus.textContent = "Click again to confirm.";
+
+            return;
+          }
+        }
+
+        pendingMove = null;
+
+        cells.forEach((cell) => {
+          board[cell.r][cell.c] = currentPlayer;
+        });
+
+        moveCount++;
+
+        hoverCell = null;
+
+        if (clockRunning) {
+          const now = performance.now();
+
+          addElapsedTime(now - lastClockUpdate);
+
+          lastClockUpdate = now;
+        }
+
+        nextTurn();
+      }
+
+      /* =========================================================
+   NEXT TURN
+========================================================= */
+
+      function nextTurn() {
+        if (gameOver) {
+          render();
+
+          return;
+        }
+
+        if (isBoardFull()) {
+          if (rules.fullBoard === "tie") {
+            finishTie();
+          } else {
+            finishWin(currentPlayer, "The board is completely full.");
+          }
+
+          render();
+
+          return;
+        }
+
+        currentPlayer = currentPlayer === P1 ? P2 : P1;
+
+        const legalMoves = getLegalMoves(board, currentPlayer);
+
+        if (legalMoves.length === 0) {
+          if (rules.noLegalMove === "lose") {
+            const winner = currentPlayer === P1 ? P2 : P1;
+
+            finishWin(winner, `${playerName(currentPlayer)} has no legal moves.`);
+          } else {
+            finishTie();
+          }
+
+          render();
+
+          return;
+        }
+
+        lastClockUpdate = performance.now();
+
+        render();
+
+        if (aiState.enabled && currentPlayer === aiState.player) {
+          setTimeout(() => {
+            startAIThinking();
+          }, 0);
+        }
+      }
+
+      /* =========================================================
+   BOARD MOUSE / TOUCH
+========================================================= */
+
+      boardElement.addEventListener("mousemove", (event) => {
+        if (gamePaused || gameOver || aiState.thinking) {
+          return;
+        }
+
+        const cell = event.target.closest(".cell");
+
+        if (!cell) {
+          if (hoverCell !== null) {
+            hoverCell = null;
+
+            render();
+          }
+
+          return;
+        }
+
+        const nextHover = {
+          r: Number(cell.dataset.row),
+
+          c: Number(cell.dataset.col),
+        };
+
+        if (hoverCell && hoverCell.r === nextHover.r && hoverCell.c === nextHover.c) {
+          return;
+        }
+
+        hoverCell = nextHover;
+
+        render();
+      });
+
+      boardElement.addEventListener("mouseleave", () => {
+        if (hoverCell !== null) {
+          hoverCell = null;
+
+          render();
+        }
+      });
+
+      boardElement.addEventListener("click", (event) => {
+        const cell = event.target.closest(".cell");
+
+        if (!cell) {
+          return;
+        }
+
+        humanMove(Number(cell.dataset.row), Number(cell.dataset.col));
+      });
+
+      /* =========================================================
+   BUTTONS
+========================================================= */
+
+      document.getElementById("gamePauseButton").addEventListener("click", () => {
+        if (gamePaused) {
+          resumeGame();
+        } else {
+          pauseGame();
+        }
+      });
+
+      document.getElementById("resumeButton").addEventListener("click", resumeGame);
+
+      document.getElementById("gameMenuButton").addEventListener("click", () => {
+        cancelAIThinking();
+
+        stopClock();
+
+        window.location.href = "index.html";
+      });
+
+      document.getElementById("pauseMenuButton").addEventListener("click", () => {
+        cancelAIThinking();
+
+        stopClock();
+
+        window.location.href = "index.html";
+      });
+
+      document.getElementById("gameNewButton").addEventListener("click", () => {
+        cancelAIThinking();
+
+        stopClock();
+
+        window.location.href = "setup.html";
+      });
+
+      document.getElementById("playAgainButton").addEventListener("click", () => {
+        cancelAIThinking();
+
+        stopClock();
+
+        window.location.href = "setup.html";
+      });
+
+      document.getElementById("gameOverMenuButton").addEventListener("click", () => {
+        cancelAIThinking();
+
+        stopClock();
+
+        window.location.href = "index.html";
+      });
+
+      /* =========================================================
+   AUTO PAUSE
+========================================================= */
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && settings.autoPause === "on" && !gameOver) {
+          pauseGame();
+        }
+      });
+
+      /* =========================================================
+   START
+========================================================= */
+
+      applyColors();
+
+      applyRuleSettings();
+
+      prepareGameFromSetup();
+    </script>
+  </body>
+</html>
