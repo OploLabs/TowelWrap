@@ -1,8 +1,10 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
 
     <title>Towels Wrap — Settings</title>
 
@@ -12,26 +14,45 @@
       }
 
       :root {
-        --bg: #0d0f14;
+        --bg: #0b0d12;
+        --bg-soft: #10131a;
         --panel: #151922;
-        --panel-2: #1b202b;
-        --border: #2b3240;
-        --text: #f2f4f8;
-        --muted: #8d96a8;
+        --panel-hover: #191e28;
+        --panel-2: #1c222d;
+        --border: #292f3b;
+        --border-hover: #3a4352;
+
+        --text: #f4f6fa;
+        --text-secondary: #c0c6d1;
+        --muted: #858e9f;
+
         --accent: #6c8cff;
+        --accent-hover: #7d9aff;
+        --accent-soft: rgba(108, 140, 255, 0.14);
+
+        --success: #6fda98;
+        --danger: #ff6b6b;
+
+        --radius: 14px;
+        --radius-small: 10px;
+
+        --transition: 0.16s ease;
       }
 
-      html,
+      html {
+        min-height: 100%;
+        background: var(--bg);
+      }
+
       body {
         margin: 0;
-        width: 100%;
-        min-height: 100%;
-      }
-
-      body {
+        min-width: 320px;
         min-height: 100vh;
-        background: var(--bg);
+
+        background: radial-gradient(circle at 50% -20%, rgba(108, 140, 255, 0.08), transparent 38%), var(--bg);
+
         color: var(--text);
+
         font-family:
           Inter,
           ui-sans-serif,
@@ -40,11 +61,13 @@
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
+
+        -webkit-font-smoothing: antialiased;
       }
 
       button,
-      select,
-      input {
+      input,
+      select {
         font: inherit;
       }
 
@@ -56,42 +79,512 @@
       select:focus-visible,
       input:focus-visible {
         outline: 2px solid var(--accent);
-        outline-offset: 2px;
+        outline-offset: 3px;
       }
 
       .page {
-        width: min(760px, 100%);
+        width: min(820px, 100%);
         margin: 0 auto;
-        padding: 24px;
+        padding: 34px 24px 50px;
       }
+
+      /* =========================
+     HEADER
+  ========================= */
 
       .page-header {
         display: flex;
         align-items: center;
         gap: 15px;
-        margin-bottom: 25px;
+        margin-bottom: 28px;
       }
 
-      .page-header h1 {
+      .back-button {
+        width: 42px;
+        height: 42px;
+
+        display: grid;
+        place-items: center;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: var(--panel);
+        color: var(--text);
+
+        font-size: 20px;
+
+        transition:
+          background var(--transition),
+          border-color var(--transition),
+          transform var(--transition);
+      }
+
+      .back-button:hover {
+        background: var(--panel-hover);
+        border-color: var(--border-hover);
+      }
+
+      .back-button:active {
+        transform: scale(0.94);
+      }
+
+      .header-text {
+        min-width: 0;
+      }
+
+      .header-text h1 {
         margin: 0;
-        font-size: 25px;
+        font-size: 26px;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+      }
+
+      .header-text p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* =========================
+     CARDS
+  ========================= */
+
+      .card {
+        margin-bottom: 14px;
+        padding: 21px;
+
+        background: rgba(21, 25, 34, 0.94);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.18),
+          0 8px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+
+        margin-bottom: 20px;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+
+      .card-icon {
+        width: 34px;
+        height: 34px;
+
+        display: grid;
+        place-items: center;
+
+        border-radius: 9px;
+        background: var(--accent-soft);
+
+        color: var(--accent);
+
+        font-size: 16px;
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: -0.01em;
+      }
+
+      .card-description {
+        margin: -11px 0 20px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      /* =========================
+     SETTINGS
+  ========================= */
+
+      .setting {
+        margin-bottom: 17px;
+      }
+
+      .setting:last-child {
+        margin-bottom: 0;
+      }
+
+      .setting-label {
+        display: block;
+        margin-bottom: 7px;
+
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .setting-description {
+        margin: 6px 0 0;
+
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+
+      .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+
+        min-height: 48px;
+        padding: 10px 0;
+      }
+
+      .setting-row + .setting-row {
+        border-top: 1px solid rgba(255, 255, 255, 0.045);
+      }
+
+      .setting-info {
+        min-width: 0;
+      }
+
+      .setting-info .setting-label {
+        margin: 0;
+      }
+
+      .setting-info .setting-description {
+        margin-top: 3px;
+      }
+
+      /* =========================
+     SELECT
+  ========================= */
+
+      select,
+      input[type="number"] {
+        width: 100%;
+        min-height: 43px;
+
+        padding: 9px 12px;
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-small);
+
+        background: var(--panel-2);
+        color: var(--text);
+
+        outline: none;
+
+        transition:
+          border-color var(--transition),
+          background var(--transition);
+      }
+
+      select:hover,
+      input[type="number"]:hover {
+        border-color: var(--border-hover);
+      }
+
+      select:focus,
+      input[type="number"]:focus {
+        border-color: var(--accent);
+      }
+
+      .compact-select {
+        width: 190px;
+        flex-shrink: 0;
+      }
+
+      /* =========================
+     TOGGLE
+  ========================= */
+
+      .toggle {
+        position: relative;
+        width: 46px;
+        height: 26px;
+
+        flex-shrink: 0;
+      }
+
+      .toggle input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .toggle-track {
+        position: absolute;
+        inset: 0;
+
+        border-radius: 999px;
+        background: #303642;
+
+        cursor: pointer;
+
+        transition:
+          background var(--transition),
+          box-shadow var(--transition);
+      }
+
+      .toggle-track::after {
+        content: "";
+
+        position: absolute;
+        top: 3px;
+        left: 3px;
+
+        width: 20px;
+        height: 20px;
+
+        border-radius: 50%;
+        background: #fff;
+
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.28);
+
+        transition: transform var(--transition);
+      }
+
+      .toggle input:checked + .toggle-track {
+        background: var(--accent);
+      }
+
+      .toggle input:checked + .toggle-track::after {
+        transform: translateX(20px);
+      }
+
+      .toggle input:focus-visible + .toggle-track {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      /* =========================
+     SLIDERS
+  ========================= */
+
+      .slider-setting {
+        padding: 13px 14px;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: rgba(255, 255, 255, 0.015);
+      }
+
+      .slider-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        margin-bottom: 11px;
+      }
+
+      .slider-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .slider-value {
+        min-width: 35px;
+
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 700;
+        text-align: right;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 5px;
+
+        appearance: none;
+        -webkit-appearance: none;
+
+        border-radius: 999px;
+        background: #303642;
+
+        outline: none;
+        accent-color: var(--accent);
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+
+        width: 17px;
+        height: 17px;
+
+        border: 2px solid var(--bg);
+        border-radius: 50%;
+
+        background: var(--accent);
+
+        box-shadow: 0 0 0 1px rgba(108, 140, 255, 0.25);
+
+        transition: transform var(--transition);
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.12);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 17px;
+        height: 17px;
+
+        border: 2px solid var(--bg);
+        border-radius: 50%;
+
+        background: var(--accent);
+      }
+
+      .slider-limits {
+        display: flex;
+        justify-content: space-between;
+
+        margin-top: 6px;
+
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      /* =========================
+     TWO COLUMN
+  ========================= */
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* =========================
+     COLORS
+  ========================= */
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .color-item {
+        min-width: 0;
+      }
+
+      .color-item label {
+        display: block;
+        margin-bottom: 7px;
+
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .color-control {
+        position: relative;
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 46px;
+
+        padding: 4px;
+
+        border: 1px solid var(--border);
+        border-radius: 10px;
+
+        background: var(--panel-2);
+
+        cursor: pointer;
+
+        transition: border-color var(--transition);
+      }
+
+      input[type="color"]:hover {
+        border-color: var(--border-hover);
+      }
+
+      /* =========================
+     COUNTDOWN
+  ========================= */
+
+      .countdown-box {
+        margin-top: 14px;
+        padding: 14px;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: rgba(108, 140, 255, 0.035);
+      }
+
+      .countdown-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .number-label {
+        display: block;
+        margin-bottom: 6px;
+
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* =========================
+     ACTIONS
+  ========================= */
+
+      .actions-card {
+        position: sticky;
+        bottom: 14px;
+        z-index: 10;
+
+        padding: 13px;
+
+        background: rgba(21, 25, 34, 0.9);
+
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
       }
 
       .button {
+        min-height: 43px;
+
+        padding: 9px 16px;
+
         border: 1px solid var(--border);
-        background: var(--panel);
-        color: var(--text);
         border-radius: 10px;
-        padding: 11px 17px;
+
+        background: var(--panel-2);
+        color: var(--text);
+
+        font-weight: 600;
+
         transition:
-          background 0.12s,
-          border-color 0.12s,
-          transform 0.12s;
+          background var(--transition),
+          border-color var(--transition),
+          transform var(--transition),
+          filter var(--transition);
       }
 
       .button:hover {
-        background: var(--panel-2);
-        border-color: #3b4455;
+        background: var(--panel-hover);
+        border-color: var(--border-hover);
       }
 
       .button:active {
@@ -105,186 +598,170 @@
       }
 
       .button.primary:hover {
-        filter: brightness(1.08);
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
       }
 
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 14px;
-      }
-
-      .card h2 {
-        margin: 0 0 18px;
-        font-size: 19px;
-      }
-
-      .setting {
-        margin-bottom: 18px;
-      }
-
-      .setting:last-child {
-        margin-bottom: 0;
-      }
-
-      .setting label {
-        display: block;
-        margin-bottom: 7px;
-        font-weight: 600;
-        font-size: 14px;
-      }
-
-      .setting small {
-        display: block;
-        margin-top: 6px;
-        color: var(--muted);
-        line-height: 1.4;
-      }
-
-      select {
-        width: 100%;
-        padding: 11px;
-        border-radius: 9px;
-        border: 1px solid var(--border);
-        background: var(--panel-2);
-        color: var(--text);
-        outline: none;
-      }
-
-      select:focus {
-        border-color: var(--accent);
-      }
-
-      input[type="color"] {
-        width: 100%;
-        height: 44px;
-        padding: 3px;
-        background: var(--panel-2);
-        border: 1px solid var(--border);
-        border-radius: 9px;
-      }
-
-      input[type="number"] {
-        width: 100%;
-        padding: 11px;
-        border-radius: 9px;
-        border: 1px solid var(--border);
-        background: var(--panel-2);
-        color: var(--text);
-        outline: none;
-      }
-
-      input[type="number"]:focus {
-        border-color: var(--accent);
-      }
-
-      input[type="range"] {
-        width: 100%;
-        accent-color: var(--accent);
-      }
-
-      .range-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .range-row input {
-        flex: 1;
-      }
-
-      .range-value {
-        min-width: 42px;
-        text-align: right;
-        font-weight: 700;
-      }
-
-      .color-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-      }
-
-      .color-item {
-        min-width: 0;
-      }
-
-      .color-item label {
-        font-size: 13px;
-      }
-
-      .two-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-
-      .countdown-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 12px;
-      }
-
-      .checkbox-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-      }
-
-      .checkbox-row input {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--accent);
-      }
-
-      .checkbox-row label {
-        margin: 0;
-        cursor: pointer;
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
+      .button:disabled {
+        opacity: 0.45;
+        cursor: default;
+        transform: none;
       }
 
       .actions .button {
         flex: 1;
       }
 
+      .save-status {
+        min-height: 20px;
+
+        margin-top: 9px;
+
+        color: var(--success);
+        font-size: 12px;
+        text-align: center;
+
+        opacity: 0;
+        transform: translateY(-2px);
+
+        transition:
+          opacity var(--transition),
+          transform var(--transition);
+      }
+
+      .save-status.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .save-status.unsaved {
+        color: #e5b86a;
+        opacity: 1;
+        transform: none;
+      }
+
+      /* =========================
+     HIDDEN
+  ========================= */
+
       .hidden {
         display: none !important;
       }
 
-      .saved-message {
-        margin-top: 12px;
-        color: #7fe0a0;
-        text-align: center;
-        font-size: 14px;
-        opacity: 0;
-        transition: opacity 0.2s;
+      /* =========================
+     LIGHT THEME
+  ========================= */
+
+      body.light-theme {
+        --bg: #f3f5f8;
+        --bg-soft: #eef1f5;
+        --panel: #ffffff;
+        --panel-hover: #f7f8fa;
+        --panel-2: #f0f2f5;
+
+        --border: #dfe3e9;
+        --border-hover: #c7cdd6;
+
+        --text: #161a21;
+        --text-secondary: #4d5562;
+        --muted: #747d8b;
+
+        --accent: #5575e8;
+        --accent-hover: #4869e2;
+
+        --accent-soft: rgba(85, 117, 232, 0.11);
       }
 
-      .saved-message.visible {
-        opacity: 1;
+      body.light-theme {
+        background: radial-gradient(circle at 50% -20%, rgba(85, 117, 232, 0.09), transparent 38%), var(--bg);
       }
+
+      body.light-theme .card {
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.04),
+          0 8px 25px rgba(0, 0, 0, 0.035);
+      }
+
+      body.light-theme input[type="range"] {
+        background: #d8dde5;
+      }
+
+      /* =========================
+     REDUCED MOTION
+  ========================= */
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+
+      body.no-animations *,
+      body.no-animations *::before,
+      body.no-animations *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+
+      /* =========================
+     RESPONSIVE
+  ========================= */
 
       @media (max-width: 650px) {
         .page {
-          padding: 16px;
+          padding: 20px 14px 40px;
         }
 
-        .color-grid,
-        .two-column {
+        .page-header {
+          margin-bottom: 21px;
+        }
+
+        .header-text h1 {
+          font-size: 23px;
+        }
+
+        .card {
+          padding: 17px;
+          border-radius: 13px;
+        }
+
+        .two-column,
+        .color-grid {
           grid-template-columns: 1fr;
         }
 
+        .compact-select {
+          width: 145px;
+        }
+
         .actions {
-          flex-direction: column;
+          flex-direction: column-reverse;
+        }
+
+        .actions-card {
+          position: static;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .setting-row {
+          align-items: flex-start;
+        }
+
+        .compact-select {
+          width: 125px;
+        }
+
+        .countdown-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-wrapper {
+          padding: 12px;
         }
       }
     </style>
@@ -292,240 +769,299 @@
 
   <body>
     <main class="page">
-      <div class="page-header">
-        <button class="button" id="backButton" type="button">←</button>
+      <!-- HEADER -->
+      <header class="page-header">
+        <button class="back-button" id="backButton" type="button" aria-label="Go back">←</button>
 
-        <h1>Settings</h1>
-      </div>
+        <div class="header-text">
+          <h1>Settings</h1>
+          <p>Customize your Towels Wrap experience.</p>
+        </div>
+      </header>
 
       <!-- APPEARANCE -->
-      <div class="card">
-        <h2>Appearance</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">◐</div>
+            <h2>Appearance</h2>
+          </div>
+        </div>
 
-        <div class="setting">
-          <label for="theme"> Theme </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="theme">Theme</label>
+            <p class="setting-description">Choose how Towels Wrap looks.</p>
+          </div>
 
-          <select id="theme">
+          <select class="compact-select" id="theme">
             <option value="dark">Dark</option>
-
             <option value="light">Light</option>
-
             <option value="system">System</option>
           </select>
         </div>
 
-        <div class="setting">
-          <label for="cellStyle"> Cell Shape </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="cellStyle"> Cell Shape </label>
+            <p class="setting-description">Change the shape of cells on the board.</p>
+          </div>
 
-          <select id="cellStyle">
+          <select class="compact-select" id="cellStyle">
             <option value="rounded">Rounded</option>
-
             <option value="square">Square</option>
           </select>
         </div>
 
-        <div class="setting">
-          <label for="animations"> Animations </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="animationsToggle"> Animations </label>
+            <p class="setting-description">Enable visual transitions and effects.</p>
+          </div>
 
-          <select id="animations">
-            <option value="on">On</option>
-
-            <option value="off">Off</option>
-          </select>
+          <label class="toggle">
+            <input type="checkbox" id="animationsToggle" />
+            <span class="toggle-track"></span>
+          </label>
         </div>
 
-        <div class="setting">
-          <label for="preview"> Move Preview </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="previewToggle"> Move Preview </label>
+            <p class="setting-description">Show where your piece will be placed before moving.</p>
+          </div>
 
-          <select id="preview">
-            <option value="on">On</option>
-
-            <option value="off">Off</option>
-          </select>
+          <label class="toggle">
+            <input type="checkbox" id="previewToggle" />
+            <span class="toggle-track"></span>
+          </label>
         </div>
 
-        <div class="setting">
-          <label for="reducedMotion"> Reduced Motion </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="reducedMotion"> Reduced Motion </label>
+            <p class="setting-description">Reduce movement for a more comfortable experience.</p>
+          </div>
 
-          <select id="reducedMotion">
+          <select class="compact-select" id="reducedMotion">
             <option value="system">System Default</option>
-
             <option value="on">On</option>
-
             <option value="off">Off</option>
           </select>
         </div>
-      </div>
+      </section>
 
       <!-- BOARD -->
-      <div class="card">
-        <h2>Board</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">▦</div>
+            <h2>Board</h2>
+          </div>
+        </div>
+
+        <p class="card-description">Customize the size of the playing board and the length of each piece.</p>
 
         <div class="two-column">
-          <div class="setting">
-            <label for="boardWidth"> Board Width </label>
+          <div class="slider-setting">
+            <div class="slider-header">
+              <span class="slider-title">Board Width</span>
+              <span class="slider-value" id="boardWidthValue">7</span>
+            </div>
 
-            <div class="range-row">
-              <input type="input" id="boardWidth" min="2" max="20" value="7" />
+            <input type="range" id="boardWidth" min="2" max="20" value="7" step="1" />
 
-              <span class="range-value" id="boardWidthValue"> 7 </span>
+            <div class="slider-limits">
+              <span>2</span>
+              <span>20</span>
             </div>
           </div>
 
-          <div class="setting">
-            <label for="boardHeight"> Board Height </label>
+          <div class="slider-setting">
+            <div class="slider-header">
+              <span class="slider-title">Board Height</span>
+              <span class="slider-value" id="boardHeightValue">8</span>
+            </div>
 
-            <div class="range-row">
-              <input type="input" id="boardHeight" min="2" max="20" value="8" />
+            <input type="range" id="boardHeight" min="2" max="20" value="8" step="1" />
 
-              <span class="range-value" id="boardHeightValue"> 8 </span>
+            <div class="slider-limits">
+              <span>2</span>
+              <span>20</span>
             </div>
           </div>
         </div>
 
-        <div class="setting">
-          <label for="pieceLength"> Piece Length </label>
-
-          <div class="range-row">
-            <input type="input" id="pieceLength" min="1" max="7" value="2" />
-
-            <span class="range-value" id="pieceLengthValue"> 2 </span>
+        <div class="slider-setting" style="margin-top: 12px">
+          <div class="slider-header">
+            <span class="slider-title">Piece Length</span>
+            <span class="slider-value" id="pieceLengthValue">2</span>
           </div>
 
-          <small> Number of connected cells placed by each move. </small>
+          <input type="range" id="pieceLength" min="2" max="7" value="2" step="1" />
+
+          <div class="slider-limits">
+            <span>2</span>
+            <span>7</span>
+          </div>
+
+          <p class="setting-description">Number of connected cells placed by each move.</p>
         </div>
-      </div>
 
       <!-- COLORS -->
-      <div class="card">
-        <h2>Colors</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">●</div>
+            <h2>Colors</h2>
+          </div>
+        </div>
+
+        <p class="card-description">Choose the colors used for each player and empty cells.</p>
 
         <div class="color-grid">
           <div class="color-item">
-            <label for="p1Color"> Player 1 </label>
-
+            <label for="p1Color">Player 1</label>
             <input type="color" id="p1Color" value="#4f8cff" />
           </div>
 
           <div class="color-item">
-            <label for="p2Color"> Player 2 </label>
-
+            <label for="p2Color">Player 2</label>
             <input type="color" id="p2Color" value="#ff5757" />
           </div>
 
           <div class="color-item">
-            <label for="emptyColor"> Empty Cells </label>
-
+            <label for="emptyColor">Empty Cells</label>
             <input type="color" id="emptyColor" value="#202632" />
           </div>
         </div>
 
-        <small> Player colors can also be changed when setting up a game. </small>
-      </div>
+        <p class="setting-description">Player colors can also be changed when setting up a game.</p>
+      </section>
 
       <!-- TIME -->
-      <div class="card">
-        <h2>Time Control</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">◷</div>
+            <h2>Time Control</h2>
+          </div>
+        </div>
 
-        <div class="setting">
-          <label for="timeControl"> Time Control </label>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="timeControl"> Time Control </label>
+            <p class="setting-description">Choose how game time is tracked.</p>
+          </div>
 
-          <select id="timeControl">
+          <select class="compact-select" id="timeControl">
             <option value="stopwatch">Stopwatch</option>
-
             <option value="countdown">Countdown</option>
           </select>
         </div>
 
-        <div id="countdownSettings" class="hidden">
-          <label> Countdown Time </label>
+        <div id="countdownSettings" class="countdown-box hidden">
+          <label class="setting-label">Countdown Time</label>
 
           <div class="countdown-grid">
             <div>
-              <label for="countdownMinutes"> Minutes </label>
+              <label class="number-label" for="countdownMinutes"> Minutes </label>
 
               <input type="number" id="countdownMinutes" min="0" max="999" value="10" />
             </div>
 
             <div>
-              <label for="countdownSeconds"> Seconds </label>
+              <label class="number-label" for="countdownSeconds"> Seconds </label>
 
               <input type="number" id="countdownSeconds" min="0" max="59" value="0" />
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- RULES -->
-      <div class="card">
-        <h2>Rules</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">⚑</div>
+            <h2>Rules</h2>
+          </div>
+        </div>
 
         <div class="setting">
-          <label for="noMove"> No Legal Move </label>
+          <label class="setting-label" for="noMove"> No Legal Move </label>
 
           <select id="noMove">
             <option value="lose">Player loses</option>
-
             <option value="tie">Game is a tie</option>
           </select>
         </div>
 
         <div class="setting">
-          <label for="fullBoard"> Full Board </label>
+          <label class="setting-label" for="fullBoard"> Full Board </label>
 
           <select id="fullBoard">
             <option value="tie">Game is a tie</option>
-
             <option value="last">Last player to move wins</option>
           </select>
         </div>
 
         <div class="setting">
-          <label for="oppositeOrientation"> Player 2 Orientation </label>
+          <label class="setting-label" for="oppositeOrientation"> Player 2 Orientation </label>
 
           <select id="oppositeOrientation">
             <option value="opposite">Opposite of Player 1</option>
-
             <option value="same">Same as Player 1</option>
           </select>
         </div>
-      </div>
+      </section>
 
       <!-- GAME BEHAVIOR -->
-      <div class="card">
-        <h2>Game Behavior</h2>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">⚙</div>
+            <h2>Game Behavior</h2>
+          </div>
+        </div>
 
-        <div class="setting">
-          <div class="checkbox-row">
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="confirmMove"> Confirm Moves </label>
+
+            <p class="setting-description">Ask for confirmation before placing a move.</p>
+          </div>
+
+          <label class="toggle">
             <input type="checkbox" id="confirmMove" />
-
-            <label for="confirmMove"> Confirm Moves </label>
-          </div>
-
-          <small> Ask for confirmation before placing a move. </small>
+            <span class="toggle-track"></span>
+          </label>
         </div>
 
-        <div class="setting">
-          <div class="checkbox-row">
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="autoPause"> Pause When Hidden </label>
+
+            <p class="setting-description">Automatically pause the game when the browser tab becomes hidden.</p>
+          </div>
+
+          <label class="toggle">
             <input type="checkbox" id="autoPause" />
-
-            <label for="autoPause"> Pause When Hidden </label>
-          </div>
-
-          <small> Automatically pause the game when the browser tab becomes hidden. </small>
+            <span class="toggle-track"></span>
+          </label>
         </div>
-      </div>
+      </section>
 
       <!-- SAVE -->
-      <div class="card">
+      <section class="card actions-card">
         <div class="actions">
           <button class="button" id="resetButton" type="button">Reset Settings</button>
 
-          <button class="button primary" id="saveButton" type="button">Save Settings</button>
+          <button class="button primary" id="saveButton" type="button">Save Changes</button>
         </div>
 
-        <div class="saved-message" id="savedMessage">Settings saved.</div>
-      </div>
+        <div class="save-status" id="savedMessage" role="status" aria-live="polite">Settings saved.</div>
+      </section>
     </main>
 
     <script>
@@ -549,9 +1085,11 @@
 
         confirmMove: "off",
         autoPause: "on",
+
         reducedMotion: "system",
 
         pieceLength: 2,
+
         noMove: "lose",
         fullBoard: "tie",
         oppositeOrientation: "opposite",
@@ -560,13 +1098,16 @@
         boardHeight: 8,
       };
 
-      const theme = document.getElementById("theme");
+      /* =========================
+     ELEMENTS
+  ========================= */
 
+      const theme = document.getElementById("theme");
       const cellStyle = document.getElementById("cellStyle");
 
-      const animations = document.getElementById("animations");
+      const animationsToggle = document.getElementById("animationsToggle");
 
-      const preview = document.getElementById("preview");
+      const previewToggle = document.getElementById("previewToggle");
 
       const reducedMotion = document.getElementById("reducedMotion");
 
@@ -608,46 +1149,51 @@
 
       const savedMessage = document.getElementById("savedMessage");
 
+      const saveButton = document.getElementById("saveButton");
+
+      /* =========================
+     SETTINGS
+  ========================= */
+
       function loadSettings() {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
 
           if (!saved) {
-            return {
-              ...DEFAULT_SETTINGS,
-            };
+            return { ...DEFAULT_SETTINGS };
+          }
+
+          const parsed = JSON.parse(saved);
+
+          if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+            return { ...DEFAULT_SETTINGS };
           }
 
           return {
             ...DEFAULT_SETTINGS,
-            ...JSON.parse(saved),
+            ...parsed,
           };
         } catch {
-          return {
-            ...DEFAULT_SETTINGS,
-          };
+          return { ...DEFAULT_SETTINGS };
         }
       }
 
-      function saveSettings() {
-        const settings = {
+      function getCurrentSettings() {
+        return {
           theme: theme.value,
-
           cellStyle: cellStyle.value,
 
-          animations: animations.value,
+          animations: animationsToggle.checked ? "on" : "off",
 
-          preview: preview.value,
+          preview: previewToggle.checked ? "on" : "off",
 
           p1Color: p1Color.value,
-
           p2Color: p2Color.value,
-
           emptyColor: emptyColor.value,
 
           timeControl: timeControl.value,
 
-          countdownMinutes: Math.max(0, Number(countdownMinutes.value) || 0),
+          countdownMinutes: Math.max(0, Math.min(999, Number(countdownMinutes.value) || 0)),
 
           countdownSeconds: Math.max(0, Math.min(59, Number(countdownSeconds.value) || 0)),
 
@@ -657,32 +1203,25 @@
 
           reducedMotion: reducedMotion.value,
 
-          pieceLength: Number(pieceLength.value),
+          pieceLength: Math.max(1, Math.min(7, Number(pieceLength.value) || 1)),
 
           noMove: noMove.value,
-
           fullBoard: fullBoard.value,
-
           oppositeOrientation: oppositeOrientation.value,
 
-          boardWidth: Number(boardWidth.value),
+          boardWidth: Math.max(2, Math.min(20, Number(boardWidth.value) || 7)),
 
-          boardHeight: Number(boardHeight.value),
+          boardHeight: Math.max(2, Math.min(20, Number(boardHeight.value) || 8)),
         };
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-
-        showSavedMessage();
       }
 
       function applySettings(settings) {
         theme.value = settings.theme;
-
         cellStyle.value = settings.cellStyle;
 
-        animations.value = settings.animations;
+        animationsToggle.checked = settings.animations === "on";
 
-        preview.value = settings.preview;
+        previewToggle.checked = settings.preview === "on";
 
         reducedMotion.value = settings.reducedMotion;
 
@@ -716,7 +1255,49 @@
 
         updateRangeValues();
         updateCountdownVisibility();
+        applyVisualSettings();
+
+        saveButton.disabled = false;
       }
+
+      function saveSettings(showMessage = true) {
+        const settings = getCurrentSettings();
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+
+        if (showMessage) {
+          showSavedMessage("Settings saved.");
+        }
+
+        saveButton.disabled = true;
+      }
+
+      /* =========================
+     VISUAL SETTINGS
+  ========================= */
+
+      function applyVisualSettings() {
+        let useLight = false;
+
+        if (theme.value === "light") {
+          useLight = true;
+        } else if (theme.value === "system") {
+          useLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        }
+
+        document.body.classList.toggle("light-theme", useLight);
+
+        const animationsOff =
+          animationsToggle.checked === false ||
+          reducedMotion.value === "on" ||
+          (reducedMotion.value === "system" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+        document.body.classList.toggle("no-animations", animationsOff);
+      }
+
+      /* =========================
+     BOARD
+  ========================= */
 
       function updateRangeValues() {
         boardWidthValue.textContent = boardWidth.value;
@@ -726,11 +1307,24 @@
         pieceLengthValue.textContent = pieceLength.value;
       }
 
+
+      /* =========================
+     COUNTDOWN
+  ========================= */
+
       function updateCountdownVisibility() {
         countdownSettings.classList.toggle("hidden", timeControl.value !== "countdown");
       }
 
-      function showSavedMessage() {
+      /* =========================
+     SAVE STATUS
+  ========================= */
+
+      function showSavedMessage(message) {
+        savedMessage.textContent = message;
+
+        savedMessage.classList.remove("unsaved");
+
         savedMessage.classList.add("visible");
 
         clearTimeout(showSavedMessage.timeout);
@@ -739,6 +1333,18 @@
           savedMessage.classList.remove("visible");
         }, 1800);
       }
+
+      function markUnsaved() {
+        saveButton.disabled = false;
+
+        savedMessage.textContent = "You have unsaved changes.";
+
+        savedMessage.classList.add("visible", "unsaved");
+      }
+
+      /* =========================
+     RESET
+  ========================= */
 
       function resetSettings() {
         const confirmed = window.confirm("Reset all Towels Wrap settings to their defaults?");
@@ -755,26 +1361,109 @@
 
         applySettings(defaults);
 
-        showSavedMessage();
+        showSavedMessage("Settings reset to defaults.");
       }
 
-      boardWidth.addEventListener("input", updateRangeValues);
+      /* =========================
+     EVENT LISTENERS
+  ========================= */
 
-      boardHeight.addEventListener("input", updateRangeValues);
+      boardWidth.addEventListener("input", () => {
+        updateRangeValues();
+        markUnsaved();
+      });
 
-      pieceLength.addEventListener("input", updateRangeValues);
+      boardHeight.addEventListener("input", () => {
+        updateRangeValues();
+        markUnsaved();
+      });
 
-      timeControl.addEventListener("change", updateCountdownVisibility);
+      pieceLength.addEventListener("input", () => {
+        updateRangeValues();
+        markUnsaved();
+      });
 
-      document.getElementById("saveButton").addEventListener("click", saveSettings);
+      cellStyle.addEventListener("change", () => {
+        markUnsaved();
+      });
+
+      p1Color.addEventListener("input", () => {
+        markUnsaved();
+      });
+
+      p2Color.addEventListener("input", () => {
+        markUnsaved();
+      });
+
+      emptyColor.addEventListener("input", () => {
+        markUnsaved();
+      });
+
+      theme.addEventListener("change", () => {
+        applyVisualSettings();
+        markUnsaved();
+      });
+
+      animationsToggle.addEventListener("change", () => {
+        applyVisualSettings();
+        markUnsaved();
+      });
+
+      reducedMotion.addEventListener("change", () => {
+        applyVisualSettings();
+        markUnsaved();
+      });
+
+      previewToggle.addEventListener("change", markUnsaved);
+
+      confirmMove.addEventListener("change", markUnsaved);
+
+      autoPause.addEventListener("change", markUnsaved);
+
+      timeControl.addEventListener("change", () => {
+        updateCountdownVisibility();
+        markUnsaved();
+      });
+
+      countdownMinutes.addEventListener("input", markUnsaved);
+
+      countdownSeconds.addEventListener("input", markUnsaved);
+
+      noMove.addEventListener("change", markUnsaved);
+
+      fullBoard.addEventListener("change", markUnsaved);
+
+      oppositeOrientation.addEventListener("change", markUnsaved);
+
+      saveButton.addEventListener("click", () => {
+        saveSettings();
+      });
 
       document.getElementById("resetButton").addEventListener("click", resetSettings);
 
       document.getElementById("backButton").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "index";
       });
 
-      applySettings(loadSettings());
+      /* =========================
+     SYSTEM THEME CHANGES
+  ========================= */
+
+      window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+        if (theme.value === "system") {
+          applyVisualSettings();
+        }
+      });
+
+      /* =========================
+     INITIALIZE
+  ========================= */
+
+      const initialSettings = loadSettings();
+
+      applySettings(initialSettings);
+
+      saveButton.disabled = true;
     </script>
   </body>
 </html>

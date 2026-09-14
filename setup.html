@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -22,6 +21,7 @@
         --accent: #6c8cff;
         --p1: #4f8cff;
         --p2: #ff5757;
+        --danger: #ff5757;
       }
 
       html,
@@ -111,6 +111,16 @@
         filter: brightness(1.08);
       }
 
+      .button.danger {
+        color: #ff8a8a;
+        border-color: #553030;
+      }
+
+      .button.danger:hover {
+        background: #241719;
+        border-color: #704040;
+      }
+
       .button.large {
         width: 100%;
         padding: 14px 18px;
@@ -186,7 +196,8 @@
         line-height: 1.4;
       }
 
-      select {
+      select,
+      input[type="number"] {
         width: 100%;
         padding: 11px;
         border-radius: 9px;
@@ -196,7 +207,8 @@
         outline: none;
       }
 
-      select:focus {
+      select:focus,
+      input[type="number"]:focus {
         border-color: var(--accent);
       }
 
@@ -212,6 +224,12 @@
         background: var(--panel-2);
         border: 1px solid var(--border);
         border-radius: 9px;
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
       }
 
       .info-grid {
@@ -239,7 +257,21 @@
       }
 
       .actions {
-        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .actions .button {
+        flex: 1;
+      }
+
+      .saved-status {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
       }
 
       .hidden {
@@ -247,7 +279,9 @@
       }
 
       @media (max-width: 650px) {
-        .setup-grid {
+        .setup-grid,
+        .two-column,
+        .actions {
           grid-template-columns: 1fr;
         }
 
@@ -260,11 +294,9 @@
         }
       }
     </style>
-    ```
   </head>
 
   <body>
-    ```
     <main class="page">
       <div class="page-header">
         <button class="button back-button" id="backButton" type="button">←</button>
@@ -272,10 +304,11 @@
         <h1>Game Setup</h1>
       </div>
 
+      <!-- PLAYERS -->
       <div class="card">
-        <h2>Before You Start</h2>
+        <h2>Players</h2>
 
-        <p class="card-description">Set up the players and choose how this game should begin.</p>
+        <p class="card-description">Choose the colors and starting orientations for the players.</p>
 
         <div class="setup-grid">
           <!-- PLAYER 1 -->
@@ -285,19 +318,17 @@
             <div class="color-preview" id="p1Preview"></div>
 
             <div class="setting">
-              <label for="p1Color"> Color </label>
+              <label for="p1Color">Color</label>
 
               <input type="color" id="p1Color" value="#4f8cff" />
             </div>
 
             <div class="setting">
-              <label for="p1Orientation"> Orientation </label>
+              <label for="p1Orientation">Orientation</label>
 
               <select id="p1Orientation">
                 <option value="random">Random</option>
-
                 <option value="H">Horizontal</option>
-
                 <option value="V">Vertical</option>
               </select>
             </div>
@@ -310,58 +341,54 @@
             <div class="color-preview" id="p2Preview"></div>
 
             <div class="setting">
-              <label for="p2Color"> Color </label>
+              <label for="p2Color">Color</label>
 
               <input type="color" id="p2Color" value="#ff5757" />
             </div>
 
             <div class="setting">
-              <label> Orientation </label>
+              <label for="p2Orientation">Orientation</label>
 
-              <select disabled>
-                <option>Opposite of Player 1</option>
+              <select id="p2Orientation">
+                <option value="opposite">Opposite of Player 1</option>
+                <option value="H">Horizontal</option>
+                <option value="V">Vertical</option>
               </select>
 
-              <small> Player 2 automatically gets the opposite orientation. </small>
+              <small id="p2OrientationDescription"> Player 2 automatically gets the opposite orientation. </small>
             </div>
           </div>
         </div>
       </div>
-
       <!-- GAME OPTIONS -->
       <div class="card">
         <h2>Game Options</h2>
 
         <div class="setting">
-          <label for="startingPlayer"> Starting Player </label>
+          <label for="startingPlayer">Starting Player</label>
 
           <select id="startingPlayer">
             <option value="1">Player 1</option>
-
             <option value="2">Player 2</option>
-
             <option value="random">Random</option>
           </select>
         </div>
 
         <div class="setting">
-          <label for="gameMode"> Game Mode </label>
+          <label for="gameMode">Game Mode</label>
 
           <select id="gameMode">
             <option value="human">Human vs Human</option>
-
             <option value="ai">Human vs AI</option>
           </select>
         </div>
 
         <div class="setting hidden" id="aiDifficultySetting">
-          <label for="aiDifficulty"> AI Difficulty </label>
+          <label for="aiDifficulty">AI Difficulty</label>
 
           <select id="aiDifficulty">
             <option value="easy">Easy</option>
-
             <option value="normal" selected>Normal</option>
-
             <option value="hard">Hard</option>
           </select>
 
@@ -369,11 +396,140 @@
         </div>
       </div>
 
+      <!-- BOARD SETTINGS -->
+      <div class="card">
+        <h2>Board & Rules</h2>
+
+        <p class="card-description">These settings control the actual rules and size of the game.</p>
+
+        <div class="two-column">
+          <div class="setting">
+            <label for="boardWidth">Board Width</label>
+
+            <input type="number" id="boardWidth" min="1" max="50" step="1" />
+          </div>
+
+          <div class="setting">
+            <label for="boardHeight">Board Height</label>
+
+            <input type="number" id="boardHeight" min="1" max="50" step="1" />
+          </div>
+        </div>
+
+        <div class="setting">
+          <label for="pieceLength">Piece Length</label>
+
+          <select id="pieceLength">
+            <option value="1">1 cell</option>
+            <option value="2">2 cells</option>
+            <option value="3">3 cells</option>
+            <option value="4">4 cells</option>
+            <option value="5">5 cells</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="noMove">No Legal Move</label>
+
+          <select id="noMove">
+            <option value="lose">Player loses</option>
+            <option value="tie">Game is a tie</option>
+          </select>
+
+          <small> Determines what happens when a player has no legal move. </small>
+        </div>
+
+        <div class="setting">
+          <label for="fullBoard">Full Board</label>
+
+          <select id="fullBoard">
+            <option value="tie">Game is a tie</option>
+            <option value="p1">Player 1 wins</option>
+            <option value="p2">Player 2 wins</option>
+          </select>
+
+          <small> Determines what happens when the board becomes completely full. </small>
+        </div>
+      </div>
+
+      <!-- TIME -->
+      <div class="card">
+        <h2>Time Control</h2>
+
+        <div class="setting">
+          <label for="timeControl">Time Control</label>
+
+          <select id="timeControl">
+            <option value="stopwatch">Stopwatch</option>
+            <option value="countdown">Countdown</option>
+          </select>
+        </div>
+
+        <div class="two-column hidden" id="countdownSettings">
+          <div class="setting">
+            <label for="countdownMinutes">Minutes</label>
+
+            <input type="number" id="countdownMinutes" min="0" max="999" step="1" />
+          </div>
+
+          <div class="setting">
+            <label for="countdownSeconds">Seconds</label>
+
+            <input type="number" id="countdownSeconds" min="0" max="59" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL / BEHAVIOR -->
+      <div class="card">
+        <h2>Game Behavior</h2>
+
+        <div class="setting">
+          <label for="cellStyle">Cell Style</label>
+
+          <select id="cellStyle">
+            <option value="rounded">Rounded</option>
+            <option value="square">Square</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="animations">Animations</label>
+
+          <select id="animations">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="confirmMove">Confirm Move</label>
+
+          <select id="confirmMove">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+          </select>
+
+          <small> Ask for confirmation before committing a move. </small>
+        </div>
+
+        <div class="setting">
+          <label for="autoPause">Auto Pause</label>
+
+          <select id="autoPause">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+
+          <small> Automatically pause when the game loses focus. </small>
+        </div>
+      </div>
+
       <!-- CURRENT SETTINGS -->
       <div class="card">
         <h2>Game Settings</h2>
 
-        <p class="card-description">These settings come from the Settings page and apply when the game starts.</p>
+        <p class="card-description">These settings are saved and will be used when the game starts.</p>
 
         <div class="info-grid">
           <div class="info">
@@ -385,13 +541,13 @@
           <div class="info">
             <div class="info-label">Piece Length</div>
 
-            <div class="info-value" id="pieceLength">2 cells</div>
+            <div class="info-value" id="pieceLengthDisplay">2 cells</div>
           </div>
 
           <div class="info">
             <div class="info-label">Time Control</div>
 
-            <div class="info-value" id="timeControl">Stopwatch</div>
+            <div class="info-value" id="timeControlDisplay">Stopwatch</div>
           </div>
 
           <div class="info">
@@ -399,19 +555,33 @@
 
             <div class="info-value" id="noMoveRule">Player loses</div>
           </div>
+
+          <div class="info">
+            <div class="info-label">Starting Player</div>
+
+            <div class="info-value" id="startingPlayerDisplay">Player 1</div>
+          </div>
+
+          <div class="info">
+            <div class="info-label">Game Mode</div>
+
+            <div class="info-value" id="gameModeDisplay">Human vs Human</div>
+          </div>
         </div>
 
-        <div class="actions">
-          <button class="button" id="settingsButton" type="button" style="width: 100%">Change Settings</button>
-        </div>
+        <div class="saved-status" id="savedStatus">Changes are saved automatically.</div>
       </div>
-
-      <!-- START -->
+      <!-- ACTIONS -->
       <div class="card">
+        <div class="actions">
+          <button class="button danger" id="resetButton" type="button">Reset Setup</button>
+
+          <button class="button" id="settingsButton" type="button">Main Settings</button>
+        </div>
+
         <button class="button primary large" id="startGameButton" type="button">Start Game</button>
       </div>
     </main>
-
     <script>
       "use strict";
 
@@ -442,6 +612,20 @@
         boardHeight: 8,
       };
 
+      const DEFAULT_SETUP = {
+        p1Color: "#4f8cff",
+        p2Color: "#ff5757",
+
+        p1Orientation: "random",
+        p2Orientation: "opposite",
+
+        startingPlayer: "1",
+
+        gameMode: "human",
+
+        aiDifficulty: "normal",
+      };
+
       function loadSettings() {
         try {
           const saved = localStorage.getItem("towelsWrapSettings");
@@ -463,7 +647,29 @@
         }
       }
 
+      function loadSetup() {
+        try {
+          const saved = localStorage.getItem("towelsWrapSetup");
+
+          if (!saved) {
+            return {
+              ...DEFAULT_SETUP,
+            };
+          }
+
+          return {
+            ...DEFAULT_SETUP,
+            ...JSON.parse(saved),
+          };
+        } catch {
+          return {
+            ...DEFAULT_SETUP,
+          };
+        }
+      }
+
       let settings = loadSettings();
+      let setup = loadSetup();
 
       const p1Color = document.getElementById("p1Color");
       const p2Color = document.getElementById("p2Color");
@@ -471,8 +677,110 @@
       const p1Preview = document.getElementById("p1Preview");
       const p2Preview = document.getElementById("p2Preview");
 
+      const p1Orientation = document.getElementById("p1Orientation");
+      const p2Orientation = document.getElementById("p2Orientation");
+
+      const startingPlayer = document.getElementById("startingPlayer");
+
       const gameMode = document.getElementById("gameMode");
+
+      const aiDifficulty = document.getElementById("aiDifficulty");
+
       const aiDifficultySetting = document.getElementById("aiDifficultySetting");
+
+      const boardWidth = document.getElementById("boardWidth");
+
+      const boardHeight = document.getElementById("boardHeight");
+
+      const pieceLength = document.getElementById("pieceLength");
+
+      const noMove = document.getElementById("noMove");
+
+      const fullBoard = document.getElementById("fullBoard");
+
+      const timeControl = document.getElementById("timeControl");
+
+      const countdownSettings = document.getElementById("countdownSettings");
+
+      const countdownMinutes = document.getElementById("countdownMinutes");
+
+      const countdownSeconds = document.getElementById("countdownSeconds");
+
+      const cellStyle = document.getElementById("cellStyle");
+
+      const animations = document.getElementById("animations");
+
+      const confirmMove = document.getElementById("confirmMove");
+
+      const autoPause = document.getElementById("autoPause");
+
+      const savedStatus = document.getElementById("savedStatus");
+
+      function saveSetup() {
+        setup = {
+          p1Color: p1Color.value,
+          p2Color: p2Color.value,
+
+          p1Orientation: p1Orientation.value,
+
+          p2Orientation: p2Orientation.value,
+
+          startingPlayer: startingPlayer.value,
+
+          gameMode: gameMode.value,
+
+          aiDifficulty: aiDifficulty.value,
+        };
+
+        localStorage.setItem("towelsWrapSetup", JSON.stringify(setup));
+
+        savedStatus.textContent = "Setup changes saved automatically.";
+      }
+
+      function saveSettings() {
+        settings = {
+          ...settings,
+
+          boardWidth: Math.max(1, Math.min(50, Number(boardWidth.value) || 7)),
+
+          boardHeight: Math.max(1, Math.min(50, Number(boardHeight.value) || 8)),
+
+          pieceLength: Math.max(1, Math.min(5, Number(pieceLength.value) || 2)),
+
+          noMove: noMove.value,
+
+          fullBoard: fullBoard.value,
+
+          timeControl: timeControl.value,
+
+          countdownMinutes: Math.max(0, Number(countdownMinutes.value) || 0),
+
+          countdownSeconds: Math.max(0, Math.min(59, Number(countdownSeconds.value) || 0)),
+
+          cellStyle: cellStyle.value,
+
+          animations: animations.value,
+
+          confirmMove: confirmMove.value,
+
+          autoPause: autoPause.value,
+
+          p1Color: p1Color.value,
+
+          p2Color: p2Color.value,
+        };
+
+        localStorage.setItem("towelsWrapSettings", JSON.stringify(settings));
+
+        updateSettingsDisplay();
+
+        savedStatus.textContent = "Game settings saved automatically.";
+      }
+
+      function saveAll() {
+        saveSetup();
+        saveSettings();
+      }
 
       function updatePreviews() {
         p1Preview.style.background = p1Color.value;
@@ -483,92 +791,212 @@
         aiDifficultySetting.classList.toggle("hidden", gameMode.value !== "ai");
       }
 
-      function getCountdownText() {
-        const minutes = Math.max(0, Number(settings.countdownMinutes) || 0);
+      function updateCountdownVisibility() {
+        countdownSettings.classList.toggle("hidden", timeControl.value !== "countdown");
+      }
 
-        const seconds = Math.max(0, Math.min(59, Number(settings.countdownSeconds) || 0));
+      function getCountdownText() {
+        const minutes = Math.max(0, Number(countdownMinutes.value) || 0);
+
+        const seconds = Math.max(0, Math.min(59, Number(countdownSeconds.value) || 0));
 
         return `${minutes}:${String(seconds).padStart(2, "0")}`;
       }
 
-      function updateSettingsDisplay() {
-        document.getElementById("boardSize").textContent = `${settings.boardWidth} × ${settings.boardHeight}`;
-
-        document.getElementById("pieceLength").textContent = `${settings.pieceLength} ${
-          Number(settings.pieceLength) === 1 ? "cell" : "cells"
-        }`;
-
-        if (settings.timeControl === "countdown") {
-          document.getElementById("timeControl").textContent = `Countdown — ${getCountdownText()}`;
-        } else {
-          document.getElementById("timeControl").textContent = "Stopwatch";
+      function getStartingPlayerText() {
+        if (startingPlayer.value === "2") {
+          return "Player 2";
         }
 
-        document.getElementById("noMoveRule").textContent =
-          settings.noMove === "tie" ? "Game is a tie" : "Player loses";
+        if (startingPlayer.value === "random") {
+          return "Random";
+        }
+
+        return "Player 1";
       }
 
-      function prepareSetup() {
+      function getGameModeText() {
+        if (gameMode.value === "ai") {
+          return "Human vs AI";
+        }
+
+        return "Human vs Human";
+      }
+
+      function updateSettingsDisplay() {
+        document.getElementById("boardSize").textContent = `${boardWidth.value} × ${boardHeight.value}`;
+
+        const length = Number(pieceLength.value);
+
+        document.getElementById("pieceLengthDisplay").textContent = `${length} ${length === 1 ? "cell" : "cells"}`;
+
+        if (timeControl.value === "countdown") {
+          document.getElementById("timeControlDisplay").textContent = `Countdown — ${getCountdownText()}`;
+        } else {
+          document.getElementById("timeControlDisplay").textContent = "Stopwatch";
+        }
+
+        document.getElementById("noMoveRule").textContent = noMove.value === "tie" ? "Game is a tie" : "Player loses";
+
+        document.getElementById("startingPlayerDisplay").textContent = getStartingPlayerText();
+
+        document.getElementById("gameModeDisplay").textContent = getGameModeText();
+      }
+
+      function loadIntoForm() {
         settings = loadSettings();
+        setup = loadSetup();
 
-        p1Color.value = settings.p1Color;
-        p2Color.value = settings.p2Color;
+        /* SETUP */
 
-        document.getElementById("p1Orientation").value = "random";
+        p1Color.value = setup.p1Color;
+        p2Color.value = setup.p2Color;
 
-        document.getElementById("startingPlayer").value = "1";
+        p1Orientation.value = setup.p1Orientation;
+        p2Orientation.value = setup.p2Orientation;
 
-        gameMode.value = "human";
+        startingPlayer.value = setup.startingPlayer;
 
-        document.getElementById("aiDifficulty").value = "normal";
+        gameMode.value = setup.gameMode;
+
+        aiDifficulty.value = setup.aiDifficulty;
+
+        /* SETTINGS */
+
+        boardWidth.value = settings.boardWidth;
+
+        boardHeight.value = settings.boardHeight;
+
+        pieceLength.value = settings.pieceLength;
+
+        noMove.value = settings.noMove;
+
+        fullBoard.value = settings.fullBoard;
+
+        timeControl.value = settings.timeControl;
+
+        countdownMinutes.value = settings.countdownMinutes;
+
+        countdownSeconds.value = settings.countdownSeconds;
+
+        cellStyle.value = settings.cellStyle;
+
+        animations.value = settings.animations;
+
+        confirmMove.value = settings.confirmMove;
+
+        autoPause.value = settings.autoPause;
 
         updatePreviews();
         updateAIDifficulty();
+        updateCountdownVisibility();
         updateSettingsDisplay();
       }
 
-      function startGame() {
-        settings.p1Color = p1Color.value;
-        settings.p2Color = p2Color.value;
+      function resetSetup() {
+        const confirmed = window.confirm("Reset all game setup options to their defaults?");
 
-        localStorage.setItem(
-          "towelsWrapSetup",
-          JSON.stringify({
-            p1Color: p1Color.value,
-            p2Color: p2Color.value,
+        if (!confirmed) {
+          return;
+        }
 
-            p1Orientation: document.getElementById("p1Orientation").value,
+        setup = {
+          ...DEFAULT_SETUP,
+        };
 
-            startingPlayer: document.getElementById("startingPlayer").value,
+        settings = {
+          ...DEFAULT_SETTINGS,
+        };
 
-            gameMode: gameMode.value,
-
-            aiDifficulty: document.getElementById("aiDifficulty").value,
-          }),
-        );
+        localStorage.setItem("towelsWrapSetup", JSON.stringify(setup));
 
         localStorage.setItem("towelsWrapSettings", JSON.stringify(settings));
+
+        loadIntoForm();
+
+        savedStatus.textContent = "Setup has been reset to defaults.";
+      }
+
+      function startGame() {
+        saveAll();
 
         window.location.href = "game.html";
       }
 
-      p1Color.addEventListener("input", updatePreviews);
+      /* Setup changes */
 
-      p2Color.addEventListener("input", updatePreviews);
+      p1Color.addEventListener("input", () => {
+        updatePreviews();
+        saveSetup();
+        saveSettings();
+      });
 
-      gameMode.addEventListener("change", updateAIDifficulty);
+      p2Color.addEventListener("input", () => {
+        updatePreviews();
+        saveSetup();
+        saveSettings();
+      });
+
+      p1Orientation.addEventListener("change", saveSetup);
+      p2Orientation.addEventListener("change", saveSetup);
+
+      startingPlayer.addEventListener("change", () => {
+        saveSetup();
+        updateSettingsDisplay();
+      });
+
+      gameMode.addEventListener("change", () => {
+        updateAIDifficulty();
+        saveSetup();
+        updateSettingsDisplay();
+      });
+
+      aiDifficulty.addEventListener("change", saveSetup);
+
+      /* Settings changes */
+
+      boardWidth.addEventListener("input", saveSettings);
+
+      boardHeight.addEventListener("input", saveSettings);
+
+      pieceLength.addEventListener("change", saveSettings);
+
+      noMove.addEventListener("change", saveSettings);
+
+      fullBoard.addEventListener("change", saveSettings);
+
+      timeControl.addEventListener("change", () => {
+        updateCountdownVisibility();
+        saveSettings();
+      });
+
+      countdownMinutes.addEventListener("input", saveSettings);
+
+      countdownSeconds.addEventListener("input", saveSettings);
+
+      cellStyle.addEventListener("change", saveSettings);
+
+      animations.addEventListener("change", saveSettings);
+
+      confirmMove.addEventListener("change", saveSettings);
+
+      autoPause.addEventListener("change", saveSettings);
+
+      /* Buttons */
 
       document.getElementById("startGameButton").addEventListener("click", startGame);
 
+      document.getElementById("resetButton").addEventListener("click", resetSetup);
+
       document.getElementById("settingsButton").addEventListener("click", () => {
-        window.location.href = "settings.html";
+        window.location.href = "settings";
       });
 
       document.getElementById("backButton").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "index";
       });
 
-      prepareSetup();
+      loadIntoForm();
     </script>
   </body>
 </html>

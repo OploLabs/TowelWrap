@@ -247,6 +247,38 @@
         background: var(--p2);
       }
 
+      .example-cell.blocked {
+        position: relative;
+        overflow: hidden;
+        background: var(--empty);
+      }
+
+      .example-cell.blocked::before,
+      .example-cell.blocked::after {
+        content: "";
+        position: absolute;
+        width: 140%;
+        height: 18%;
+        left: -20%;
+        top: 41%;
+        border-radius: 999px;
+        mix-blend-mode: screen;
+      }
+
+      .example-cell.blocked::before {
+        background: var(--p1);
+        transform: rotate(45deg);
+      }
+
+      .example-cell.blocked::after {
+        background: var(--p2);
+        transform: rotate(-45deg);
+      }
+
+      .example-cell.blocked {
+        background: radial-gradient(circle at center, #c05cff 0%, transparent 30%), var(--empty);
+      }
+
       .example-caption {
         margin-top: 10px;
 
@@ -312,7 +344,7 @@
       <main class="page">
         <!-- Header -->
         <header class="page-header">
-          <a class="button back-button" href="index.html" aria-label="Back to main menu"> ← </a>
+          <a class="button back-button" href="index" aria-label="Back to main menu"> ← </a>
 
           <h1>How to Play</h1>
         </header>
@@ -374,7 +406,7 @@
             <div class="example-board">
               <div class="example-cell"></div>
               <div class="example-cell"></div>
-              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
               <div class="example-cell"></div>
               <div class="example-cell"></div>
 
@@ -386,7 +418,7 @@
 
               <div class="example-cell"></div>
               <div class="example-cell"></div>
-              <div class="example-cell"></div>
+              <div class="example-cell p2"></div>
               <div class="example-cell"></div>
               <div class="example-cell"></div>
 
@@ -419,7 +451,7 @@
 
               <div class="example-cell"></div>
               <div class="example-cell p1"></div>
-              <div class="example-cell">X</div>
+              <div class="example-cell blocked"></div>
               <div class="example-cell"></div>
               <div class="example-cell"></div>
 
@@ -431,7 +463,7 @@
 
               <div class="example-cell"></div>
               <div class="example-cell"></div>
-              <div class="example-cell p2"></div>
+              <div class="example-cell"></div>
               <div class="example-cell"></div>
               <div class="example-cell"></div>
             </div>
