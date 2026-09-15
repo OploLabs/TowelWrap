@@ -652,23 +652,23 @@
 
       const AI_CONFIG = {
         easy: {
-          maxDepth: 2,
-          timeLimit: 120,
-          randomness: 0.2,
+          maxDepth: 1,
+          timeLimit: 40,
+          randomness: 0.45,
           tactical: false,
         },
-
+      
         normal: {
-          maxDepth: 5,
-          timeLimit: 500,
-          randomness: 0.02,
-          tactical: true,
+          maxDepth: 2,
+          timeLimit: 100,
+          randomness: 0.18,
+          tactical: false,
         },
-
+      
         hard: {
-          maxDepth: 64,
-          timeLimit: 1500,
-          randomness: 0,
+          maxDepth: 4,
+          timeLimit: 400,
+          randomness: 0.03,
           tactical: true,
         },
       };
