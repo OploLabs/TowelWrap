@@ -282,8 +282,7 @@
         </div>
       </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bad-words@4.1.5/dist/index.min.js"></script>
-    <script>
+    <script type="module">
       /*
        * Change this to your deployed Cloudflare
        * Worker URL later.
@@ -325,11 +324,12 @@
         window.location.href = `game.html?${params.toString()}`;
       }
 
+      import { Filter } from "https://cdn.jsdelivr.net/npm/bad-words@4.1.5/+esm";
+
       const filter = new Filter();
 
       document.getElementById("createButton").addEventListener("click", async () => {
         const button = document.getElementById("createButton");
-
         const username = document.getElementById("createUsername").value.trim();
 
         if (!username) {
