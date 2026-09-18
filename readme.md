@@ -6,6 +6,10 @@ TowelWrap is designed to be simple to learn while providing customizable rules, 
 
 The local game runs entirely in the browser using standard HTML, CSS, and JavaScript. Online multiplayer uses a small Cloudflare-based backend for temporary game sessions.
 
+## Play
+
+[TowelWrap](https://oplolabs.github.io/TowelWrap/)
+
 ## Features
 
 ### Local Gameplay
@@ -104,18 +108,17 @@ The piece extends from left to right.
 
 The piece extends from top to bottom.
 
-For example, with a piece length of 3:
+For example, with a piece length of 2:
 
 ```text
 Horizontal:
 
-[■][■][■]
+[■][■]
 ```
 
 ```text
 Vertical:
 
-[■]
 [■]
 [■]
 ```
