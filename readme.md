@@ -1,20 +1,24 @@
-# Towels Wrap
+# TowelWrap
 
 A lightweight, browser-based two-player strategy game inspired by the classic towel game.
 
-Towels Wrap is designed to be simple to understand while providing customizable rules, board sizes, time controls, visual settings, and browser-based AI. It runs entirely on the user's device using standard HTML, CSS, and JavaScript.
+TowelWrap is designed to be simple to learn while providing customizable rules, board sizes, time controls, visual settings, browser-based AI, and online multiplayer.
+
+The local game runs entirely in the browser using standard HTML, CSS, and JavaScript. Online multiplayer uses a small Cloudflare-based backend for temporary game sessions.
 
 ## Features
 
+### Local Gameplay
+
 - Two-player local gameplay
-- Human vs Human mode
-- Human vs AI mode
+- Human vs Human
+- Human vs AI
 - Three AI difficulty levels:
   - Easy
   - Normal
   - Hard
 
-- Configurable rectangular board
+- Configurable rectangular boards
 - Configurable piece length
 - Horizontal and vertical orientations
 - Random Player 1 orientation
@@ -27,39 +31,60 @@ Towels Wrap is designed to be simple to understand while providing customizable 
 - Stopwatch time control
 - Countdown time control
 - Configurable countdown duration
-- Move preview
+- Move previews
 - Optional move confirmation
 - Move counter
+- Manual pause and resume
+- Automatic pause when the browser tab is hidden
+
+### Online Multiplayer
+
+TowelWrap also supports private online games.
+
+Online games use:
+
+- Private game credentials
+- Randomly generated game passwords
+- Two-player multiplayer
+- Server-authoritative game state
+- Live WebSocket communication
+- Server-authoritative moves
+- Server-authoritative clocks
+- Pause and resume
+- Automatic game expiration
+- Temporary game storage
+- No permanent match history
+
+Online games currently use the default TowelWrap game configuration rather than the settings saved for local games.
+
+### Customization
+
 - Player color customization
 - Empty-cell color customization
 - Rounded or square board cells
 - Dark, light, and system themes
 - Animation controls
 - Reduced-motion support
-- Automatic pause when the browser tab is hidden
-- Manual pause and resume
 - Responsive desktop and mobile layouts
 - Keyboard-friendly controls
-- Settings saved locally with `localStorage`
-- No external libraries
-- No server required
-- No build process required
 
-## How to Play
+### Project Design
 
-Towels Wrap is played on a rectangular grid.
+- No frontend frameworks
+- No external JavaScript libraries
+- No build process for the local game
+- Local settings stored with `localStorage`
+- Open source
+- Static frontend
+- Small backend only for online multiplayer
 
-Players take turns placing a connected piece on the board. The piece must follow the player's assigned orientation.
+---
 
-### Piece Orientations
+# How to Play
 
-**Horizontal**
+TowelWrap is played on a rectangular grid.
 
-The piece extends from left to right.
-
-**Vertical**
-
-The piece extends from top to bottom.
+Players take turns placing a connected piece on the board. The piece must follow the current player's assigned orientation.
 
 A move is legal only when:
 
@@ -69,7 +94,35 @@ A move is legal only when:
 
 The goal is to continue making legal moves while preventing your opponent from doing so.
 
-## Default Configuration
+## Piece Orientations
+
+### Horizontal
+
+The piece extends from left to right.
+
+### Vertical
+
+The piece extends from top to bottom.
+
+For example, with a piece length of 3:
+
+```text
+Horizontal:
+
+[■][■][■]
+```
+
+```text
+Vertical:
+
+[■]
+[■]
+[■]
+```
+
+---
+
+# Default Configuration
 
 The default game configuration is:
 
@@ -86,13 +139,17 @@ The default game configuration is:
 | Game mode            | Human vs Human       |
 | AI difficulty        | Normal               |
 
-Game rules and visual settings can be changed before starting a game.
+Local games can be customized before starting.
 
-## Game Setup
+Online games currently use these defaults.
 
-The **Game Setup** page controls settings for the next game.
+---
 
-### Players
+# Game Setup
+
+The **Game Setup** page controls the configuration for the next local game.
+
+## Players
 
 Each player can have a custom color.
 
@@ -104,11 +161,11 @@ Player 1's orientation can be:
 
 Player 2 can use:
 
-- The opposite orientation of Player 1
+- Opposite orientation of Player 1
 - Horizontal
 - Vertical
 
-### Starting Player
+## Starting Player
 
 The starting player can be:
 
@@ -116,42 +173,44 @@ The starting player can be:
 - Player 2
 - Random
 
-### Game Mode
+## Game Mode
 
-Towels Wrap supports two game modes:
+TowelWrap supports:
 
 - Human vs Human
 - Human vs AI
 
-When Human vs AI is selected, Player 2 is controlled by the AI.
+When Human vs AI is selected, Player 2 is controlled by the browser-based AI.
 
-### AI Difficulty
+## AI Difficulty
 
 The AI has three difficulty levels.
 
-#### Easy
+### Easy
 
 Uses a lightweight move-selection strategy with some randomness.
 
-#### Normal
+### Normal
 
 Uses deeper search with alpha-beta pruning, move ordering, tactical evaluation, and a limited search time.
 
-#### Hard
+### Hard
 
-Uses significantly deeper iterative search with tactical move ordering and a strict search deadline.
+Uses deeper iterative search with tactical move ordering and a strict search deadline.
 
 The AI runs entirely in the browser and does not use an external AI service.
 
-## Board Settings
+---
 
-The board can be customized before starting a game.
+# Board Settings
 
-### Board Size
+The board can be customized before starting a local game.
 
-The board width and height can be changed independently.
+## Board Size
 
-The main Settings page supports dimensions from:
+Width and height can be configured independently.
+
+The supported range is:
 
 ```text
 2 × 2
@@ -163,9 +222,7 @@ through:
 20 × 20
 ```
 
-The Game Setup interface also validates board dimensions before saving them.
-
-This allows rectangular boards such as:
+Examples include:
 
 ```text
 2 × 2
@@ -177,11 +234,9 @@ This allows rectangular boards such as:
 20 × 20
 ```
 
-### Piece Length
+## Piece Length
 
 The piece length determines how many connected cells are placed by each move.
-
-The normal configuration supports piece lengths up to 7 cells, while the game automatically ensures that a piece cannot extend beyond the board.
 
 For example:
 
@@ -197,9 +252,23 @@ Piece length: 5
 
 places five neighboring cells in the assigned orientation.
 
-## Orientation Rules
+The game validates the configuration so pieces cannot extend beyond the board.
 
-Player 1 can have a random, horizontal, or vertical orientation.
+---
+
+# Orientation Rules
+
+Player 1 can use:
+
+- Random
+- Horizontal
+- Vertical
+
+Player 2 can use:
+
+- Opposite
+- Horizontal
+- Vertical
 
 When Player 2 is configured to use the opposite orientation, the orientations are automatically paired.
 
@@ -217,31 +286,30 @@ Player 1 → Vertical
 Player 2 → Horizontal
 ```
 
-The game can also be configured so both players use the same orientation.
+Both players can also be configured to use the same orientation.
 
-## Win Conditions
+---
 
-Towels Wrap supports configurable end-game rules.
+# Win Conditions
 
-### No Legal Move
+TowelWrap supports configurable end-game rules.
+
+## No Legal Move
 
 When a player has no legal move, the game can:
 
 - Make that player lose
 - End in a tie
 
-The default rule is:
+The default is:
 
 ```text
 Player loses
 ```
 
-### Full Board
+## Full Board
 
-When every cell on the board is occupied, the game can:
-
-- End in a tie
-- Award the win according to the configured full-board rule
+When every cell on the board is occupied, the game can end according to the configured full-board rule.
 
 The default is:
 
@@ -249,13 +317,15 @@ The default is:
 Game is a tie
 ```
 
-## Time Control
+---
+
+# Time Control
 
 Each player has their own clock.
 
 Only the current player's clock runs. After a move, the active clock switches to the other player.
 
-### Stopwatch
+## Stopwatch
 
 Stopwatch mode starts each player's clock at:
 
@@ -265,7 +335,7 @@ Stopwatch mode starts each player's clock at:
 
 The clock counts upward while that player is taking their turn.
 
-### Countdown
+## Countdown
 
 Countdown mode gives each player a fixed amount of time.
 
@@ -279,99 +349,109 @@ The active player's clock counts downward.
 
 If the active player's time reaches zero, that player loses.
 
-The countdown can be configured with separate minute and second values.
+The countdown duration can be configured using separate minute and second values.
 
-## Move Preview
+---
 
-When enabled, moving the pointer over the board previews the piece placement.
+# Online Multiplayer
 
-The preview follows:
+TowelWrap includes private online multiplayer.
 
-- The current player's orientation
-- The configured piece length
-- The current board state
+Online games can be created from the **Online** page.
 
-Invalid preview positions are visually indicated.
+## Creating a Game
 
-Move preview can be disabled in Settings.
+The creator enters a username.
 
-## Confirm Moves
+The server then generates:
 
-Move confirmation can be enabled to help prevent accidental moves.
+- A private game ID
+- A random password
+- A private session token
 
-When enabled, selecting a starting cell prepares the move. Selecting the same starting cell again confirms it.
+The password is displayed to the creator so it can be shared with the other player.
 
-This can be useful when playing on touch devices or when accidental clicks are a concern.
+There is no separate game code. The username and password identify the private game.
 
-## Pause
+## Joining a Game
 
-A game can be manually paused at any time.
+The second player enters:
 
-While paused:
+- Username
+- Password
 
-- The board cannot be played
-- Player clocks stop
-- The AI stops thinking
-- The game can be resumed
+The username does not have to be globally unique.
 
-Towels Wrap also supports automatically pausing when the browser tab becomes hidden.
+The exact username and password combination must match the private game.
 
-Automatic pausing can be enabled or disabled through the settings.
+Incorrect credentials return the same generic message:
 
-## Appearance
+```text
+Not correct username or password
+```
 
-Towels Wrap includes several visual customization options.
+This prevents the server from revealing whether a particular username exists.
 
-### Themes
+## Online Game State
 
-- Dark
-- Light
-- System
+Online games are server-authoritative.
 
-The System option follows the operating system's preferred color scheme.
+The browser sends a requested move to the server.
 
-### Cell Styles
+The server checks:
 
-Board cells can be displayed as:
+- Whose turn it is
+- Whether the move is inside the board
+- Whether the piece fits the configured orientation
+- Whether the required cells are empty
+- Whether the game is currently playable
 
-- Rounded
-- Square
+The server then updates the game state and broadcasts the new state to both players.
 
-### Colors
+The browser does not get to decide whether a move is valid.
 
-The following colors can be customized:
+## Online Configuration
 
-- Player 1
-- Player 2
-- Empty cells
+Online games currently use the default configuration:
 
-Player colors can also be changed from the Game Setup page.
+```text
+Board: 7 × 8
+Piece length: 2
+Player 1 orientation: Random
+Player 2 orientation: Opposite
+Starting player: Player 1
+No legal move: Player loses
+Full board: Tie
+Time control: Stopwatch
+```
 
-## Accessibility
+Local `Settings` and `Game Setup` preferences are not used when creating an online game.
 
-Towels Wrap includes several accessibility-focused features:
+This keeps online games consistent between players.
 
-- Keyboard-friendly controls
-- Responsive layouts
-- Clearly separated controls
-- Reduced-motion support
-- System reduced-motion detection
-- Optional animation disabling
-- Customizable player colors
+## Game Expiration
 
-Reduced Motion supports:
+Online games are temporary.
 
-- System Default
-- On
-- Off
+A game is automatically deleted after its configured lifetime if it has not already been cleaned up.
 
-Animations can also be independently enabled or disabled.
+The server currently uses a six-hour game lifetime.
 
-## Settings Storage
+Online game data is intended to be temporary and is not used as permanent match history.
 
-Towels Wrap does not require an account.
+---
 
-Settings are stored locally in the browser using `localStorage`.
+# Privacy
+
+TowelWrap does not require an account for local gameplay.
+
+Local games run entirely in the browser.
+
+Local settings are stored using:
+
+```text
+localStorage
+```
 
 The main settings are stored under:
 
@@ -385,75 +465,273 @@ Game setup information is stored separately under:
 towelsWrapSetup
 ```
 
-This allows the game to remember configuration between visits using the same browser.
+Online multiplayer requires temporary server communication because the two players need to exchange game state.
 
-No settings need to be uploaded to a server.
+Online games temporarily store information required to operate the game, including:
 
-## Pages
+- Game configuration
+- Username
+- Hashed game password
+- Game expiration information
+- Temporary game state
 
-Towels Wrap is divided into several browser pages.
+Passwords are stored server-side as hashes rather than plaintext passwords.
 
-### Main Menu
+Online games are automatically cleaned up after expiration or game completion.
 
-The main menu provides access to:
+---
+
+# Pause
+
+A game can be manually paused.
+
+While paused:
+
+- The board cannot be played
+- Player clocks stop
+- Online moves are rejected
+- The AI stops thinking
+- The game can be resumed
+
+Local games can also automatically pause when the browser tab becomes hidden.
+
+Automatic pausing can be enabled or disabled in Settings.
+
+---
+
+# Move Preview
+
+When enabled, moving the pointer over the board previews the piece placement.
+
+The preview follows:
+
+- The current player's orientation
+- The configured piece length
+- The current board state
+
+A legal preview uses the current player's color.
+
+An illegal preview is shown using the invalid-move styling.
+
+Move previews can be disabled in Settings.
+
+---
+
+# Confirm Moves
+
+Move confirmation can be enabled to help prevent accidental moves.
+
+When enabled, selecting a starting cell prepares the move.
+
+Selecting the same starting cell again confirms it.
+
+This can be useful on touch devices or when accidental clicks are a concern.
+
+---
+
+# Appearance
+
+TowelWrap includes several visual customization options.
+
+## Themes
+
+- Dark
+- Light
+- System
+
+The System option follows the operating system's preferred color scheme.
+
+## Cell Styles
+
+Board cells can be displayed as:
+
+- Rounded
+- Square
+
+## Colors
+
+The following colors can be customized:
+
+- Player 1
+- Player 2
+- Empty cells
+
+---
+
+# Accessibility
+
+TowelWrap includes several accessibility-focused features:
+
+- Keyboard-friendly controls
+- Responsive layouts
+- Reduced-motion support
+- System reduced-motion detection
+- Optional animation disabling
+- Customizable player colors
+- Mobile-friendly controls
+
+Reduced Motion supports:
+
+- System Default
+- On
+- Off
+
+Animations can also be independently enabled or disabled.
+
+---
+
+# Project Structure
+
+The repository contains a static frontend and a separate Cloudflare Worker backend.
+
+A simplified structure is:
+
+```text
+TowelWrap/
+├── index.html
+├── online.html
+├── online.js
+├── setup.html
+├── howtoplay.html
+├── settings.html
+├── game.html
+├── readme.md
+└── server/
+    ├── src/
+    │   └── index.ts
+    ├── migrations/
+    │   ├── 0001_initial.sql
+    │   └── 0002_game_config.sql
+    ├── wrangler.jsonc
+    ├── package.json
+    └── tsconfig.json
+```
+
+## Frontend
+
+### `index.html`
+
+The main menu.
+
+Provides access to:
 
 - Play
+- Online
 - How to Play
 - Settings
 
-### Game Setup
+### `setup.html`
 
-The Game Setup page allows players to configure:
+Configures local games.
 
-- Player colors
-- Player orientations
-- Starting player
-- Game mode
-- AI difficulty
-- Board size
-- Piece length
-- No-move rule
-- Full-board rule
-- Time control
-- Countdown duration
-- Cell style
-- Animations
-- Move confirmation
-- Automatic pausing
+### `online.html`
 
-Setup changes are saved automatically.
+Creates and joins private online games.
 
-### How to Play
+### `online.js`
 
-The How to Play page explains the basic game rules, piece placement, turns, clocks, and winning conditions.
+Connects the game page to the online multiplayer server and handles:
 
-### Settings
+- WebSocket communication
+- Online board rendering
+- Server state
+- Online move requests
+- Online previews
+- Online clocks
+- Connection status
 
-The Settings page controls persistent appearance, board, time, rules, and game-behavior preferences.
+### `howtoplay.html`
 
-Settings can be saved or reset to their defaults.
+Contains the game's instructions and rules.
 
-### Game
+### `settings.html`
 
-The Game page contains the actual board and gameplay interface.
+Contains persistent visual and gameplay settings.
 
-It includes:
+### `game.html`
 
-- Player clocks
-- Current-turn status
-- Board
-- Move counter
-- Orientation information
-- Time-control information
-- Pause controls
-- New Game controls
-- Game-over screen
+Contains the main game interface and local gameplay system.
 
-## Running the Game
+It handles:
 
-Towels Wrap is a standalone web application.
+- Board rendering
+- Move validation
+- Clocks
+- AI
+- Pause system
+- Move previews
+- Game-end handling
 
-The project does not require:
+---
+
+# Online Server
+
+The online backend is located in:
+
+```text
+server/
+```
+
+It uses:
+
+- Cloudflare Workers
+- Cloudflare Durable Objects
+- Cloudflare D1
+- WebSockets
+- TypeScript
+
+## Durable Objects
+
+Durable Objects hold the temporary live state of each online game.
+
+They handle:
+
+- Connected players
+- Board state
+- Turns
+- Clocks
+- Moves
+- Pause state
+- Game completion
+- WebSocket connections
+
+## D1
+
+Cloudflare D1 stores temporary private-game information needed to find and authenticate a game.
+
+The database does not serve as permanent match history.
+
+## Server Authority
+
+The client cannot directly modify the authoritative online board.
+
+For example, when a player attempts a move:
+
+```text
+Browser
+   ↓
+Move request
+   ↓
+Cloudflare Worker
+   ↓
+Durable Object
+   ↓
+Validate move
+   ↓
+Update state
+   ↓
+Broadcast state
+   ↓
+Both browsers
+```
+
+---
+
+# Running Locally
+
+## Local Game
+
+The local game does not require:
 
 - Node.js
 - npm
@@ -463,7 +741,7 @@ The project does not require:
 - External JavaScript libraries
 - A backend server
 
-The pages can be opened directly in a modern web browser.
+The HTML files can be opened directly in a modern browser.
 
 The main entry point is:
 
@@ -471,56 +749,86 @@ The main entry point is:
 index.html
 ```
 
-From there, the game provides navigation to the setup, instructions, settings, and game pages.
+## Online Server Development
 
-## Project Structure
+The online backend is a Cloudflare Worker project.
 
-The project uses separate HTML pages for the major parts of the application.
+From the server directory:
 
-A typical structure is:
-
-```text
-Towels Wrap/
-├── index.html
-├── setup.html
-├── howtoplay.html
-├── settings.html
-└── game.html
+```bash
+cd server
 ```
 
-The current pages contain their own HTML, CSS, and JavaScript rather than relying on external frameworks or libraries.
+Install dependencies:
 
-### `index.html`
+```bash
+npm install
+```
 
-The main menu.
+Run the development server:
 
-Provides navigation to:
+```bash
+npx wrangler dev
+```
 
-- Play
-- How to Play
-- Settings
+Deploy the Worker:
 
-### `setup.html`
+```bash
+npx wrangler deploy
+```
 
-Handles game configuration before starting a match.
+The server requires the appropriate Cloudflare account and resources configured in `wrangler.jsonc`.
 
-It manages player configuration, game mode, AI difficulty, board rules, time controls, and gameplay behavior.
+---
 
-### `howtoplay.html`
+# Contributing
 
-Contains the game's instructions and basic rules.
+TowelWrap is open source and contributions are welcome.
 
-### `settings.html`
+You can contribute by:
 
-Contains persistent visual and gameplay settings.
+- Fixing bugs
+- Improving accessibility
+- Improving the UI
+- Adding tests
+- Improving the AI
+- Improving online multiplayer
+- Improving documentation
+- Optimizing performance
+- Reporting bugs
+- Suggesting features
 
-### `game.html`
+## Development Guidelines
 
-Contains the actual game board, game state, move validation, clocks, AI, pause system, and game-end handling.
+When contributing:
 
-## Browser Support
+- Keep the game lightweight.
+- Prefer browser-native APIs where practical.
+- Avoid unnecessary dependencies.
+- Keep local gameplay functional without the online server.
+- Keep online game validation server-authoritative.
+- Do not add unnecessary data collection.
+- Document significant changes.
+- Test changes on both desktop and mobile layouts when applicable.
 
-Towels Wrap is designed for modern browsers supporting standard HTML, CSS, and JavaScript features.
+## Reporting Issues
+
+When reporting a bug, include:
+
+- What you expected to happen
+- What actually happened
+- Steps to reproduce it
+- Browser and version
+- Operating system
+- Whether the issue occurs locally or online
+
+Screenshots, recordings, and relevant console errors can also be useful.
+
+---
+
+# Browser Support
+
+TowelWrap is designed for modern browsers supporting standard HTML, CSS, and JavaScript features.
 
 Recommended browsers include:
 
@@ -529,24 +837,19 @@ Recommended browsers include:
 - Mozilla Firefox
 - Safari
 
-A reasonably recent browser is recommended for the best experience.
+A reasonably recent browser is recommended.
 
-## Privacy
+---
 
-Towels Wrap is designed to run locally.
+# License
 
-It does not require:
+See the project's license file for the applicable usage, modification, and distribution terms.
 
-- An account
-- A backend server
-- An online multiplayer service
-- An external AI service
-- External JavaScript libraries
+---
 
-Game configuration is stored locally using the browser's `localStorage`.
+# Links
 
-No online account is required to play.
+**Repository:**
+https://github.com/OploLabs/TowelWrap
 
-## License
-
-See the project's license file for usage and distribution terms.
+TowelWrap is developed as an open-source project by OploLabs.

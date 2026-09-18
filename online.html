@@ -282,7 +282,7 @@
         </div>
       </div>
     </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/bad-words@4.1.5/dist/index.min.js"></script>
     <script>
       /*
        * Change this to your deployed Cloudflare
@@ -325,6 +325,8 @@
         window.location.href = `game.html?${params.toString()}`;
       }
 
+      const filter = new Filter();
+
       document.getElementById("createButton").addEventListener("click", async () => {
         const button = document.getElementById("createButton");
 
@@ -332,7 +334,11 @@
 
         if (!username) {
           showError("Please enter a username.");
+          return;
+        }
 
+        if (filter.isProfane(username)) {
+          showError("That username contains inappropriate language.");
           return;
         }
 
