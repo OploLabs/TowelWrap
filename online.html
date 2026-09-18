@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Towel Wrap — Online</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+
+        background: #10141b;
+        color: #f1f4f8;
+
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .card {
+        background: #181e27;
+        border: 1px solid #2a3340;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+      }
+
+      .subtitle {
+        margin: 0 0 28px;
+        color: #9da8b7;
+        line-height: 1.5;
+      }
+
+      .section {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #2a3340;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cbd3df;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        height: 46px;
+
+        padding: 0 14px;
+
+        border: 1px solid #35404e;
+        border-radius: 10px;
+
+        background: #11161d;
+        color: #f1f4f8;
+
+        font-size: 16px;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: #4f8cff;
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      button {
+        width: 100%;
+        height: 46px;
+
+        border: 0;
+        border-radius: 10px;
+
+        background: #4f8cff;
+        color: white;
+
+        font-size: 15px;
+        font-weight: 700;
+
+        cursor: pointer;
+      }
+
+      button:hover {
+        filter: brightness(1.08);
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .secondary {
+        background: #252e3a;
+      }
+
+      .credentials {
+        margin-top: 20px;
+        padding: 16px;
+
+        border: 1px solid #344154;
+        border-radius: 12px;
+
+        background: #11161d;
+      }
+
+      .credential-label {
+        margin-bottom: 4px;
+        color: #8995a5;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .credential-value {
+        margin-bottom: 14px;
+
+        color: #ffffff;
+
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+        font-size: 17px;
+        word-break: break-all;
+      }
+
+      .warning {
+        margin-top: 14px;
+        color: #aeb8c6;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .error {
+        display: none;
+
+        margin-bottom: 16px;
+        padding: 12px;
+
+        border: 1px solid #66343a;
+        border-radius: 10px;
+
+        background: #2b181c;
+        color: #ff9da5;
+
+        line-height: 1.4;
+      }
+
+      .success {
+        display: none;
+
+        margin-bottom: 16px;
+        padding: 12px;
+
+        border: 1px solid #31573e;
+        border-radius: 10px;
+
+        background: #17271c;
+        color: #9ce5ad;
+
+        line-height: 1.4;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        margin: 24px 0;
+
+        color: #667180;
+        font-size: 13px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #2a3340;
+      }
+
+      .back {
+        margin-top: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container">
+      <div class="card">
+        <h1>Online Game</h1>
+
+        <p class="subtitle">Create a private Towel Wrap game or join one using its username and password.</p>
+
+        <div id="error" class="error"></div>
+
+        <div id="success" class="success"></div>
+
+        <!-- CREATE -->
+
+        <section>
+          <h2>Create Private Game</h2>
+
+          <div class="field">
+            <label for="createUsername"> Username </label>
+
+            <input id="createUsername" type="text" maxlength="32" autocomplete="off" placeholder="Your username" />
+          </div>
+
+          <button id="createButton" type="button">Create Game</button>
+
+          <div id="credentials" class="credentials" style="display: none">
+            <div class="credential-label">Username</div>
+
+            <div id="createdUsername" class="credential-value"></div>
+
+            <div class="credential-label">Password</div>
+
+            <div id="createdPassword" class="credential-value"></div>
+
+            <div class="warning">
+              Give both the username and password to your opponent. The password will not be shown again after leaving
+              this page.
+            </div>
+
+            <button id="enterCreatedGame" type="button" style="margin-top: 16px">Enter Game</button>
+          </div>
+        </section>
+
+        <div class="divider">OR</div>
+
+        <!-- JOIN -->
+
+        <section>
+          <h2>Join Private Game</h2>
+
+          <div class="field">
+            <label for="joinUsername"> Username </label>
+
+            <input id="joinUsername" type="text" maxlength="32" autocomplete="off" placeholder="Game username" />
+          </div>
+
+          <div class="field">
+            <label for="joinPassword"> Password </label>
+
+            <input id="joinPassword" type="password" autocomplete="off" placeholder="Game password" />
+          </div>
+
+          <button id="joinButton" type="button">Join Game</button>
+        </section>
+
+        <div class="back">
+          <button id="backButton" class="secondary" type="button">Back</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      /*
+       * Change this to your deployed Cloudflare
+       * Worker URL later.
+       */
+      const TOWEL_WRAP_SERVER = "https://towel-wrap.shawn-andrew.workers.dev";
+
+      const errorElement = document.getElementById("error");
+
+      const successElement = document.getElementById("success");
+
+      function showError(message) {
+        successElement.style.display = "none";
+
+        errorElement.textContent = message;
+        errorElement.style.display = "block";
+      }
+
+      function showSuccess(message) {
+        errorElement.style.display = "none";
+
+        successElement.textContent = message;
+        successElement.style.display = "block";
+      }
+
+      function setButtonLoading(button, loading, normalText) {
+        button.disabled = loading;
+        button.textContent = loading ? "Please wait..." : normalText;
+      }
+
+      function enterGame(data) {
+        const params = new URLSearchParams();
+
+        params.set("online", "1");
+
+        params.set("game", data.gameId);
+
+        params.set("token", data.sessionToken);
+
+        window.location.href = `game.html?${params.toString()}`;
+      }
+
+      document.getElementById("createButton").addEventListener("click", async () => {
+        const button = document.getElementById("createButton");
+
+        const username = document.getElementById("createUsername").value.trim();
+
+        if (!username) {
+          showError("Please enter a username.");
+
+          return;
+        }
+
+        setButtonLoading(button, true, "Create Game");
+
+        try {
+          const response = await fetch(`${TOWEL_WRAP_SERVER}/api/games`, {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+              username,
+
+              /*
+               * These will be replaced with
+               * the actual setup settings when
+               * we connect this to setup.html.
+               */
+              config: {
+                boardWidth: 7,
+                boardHeight: 8,
+                pieceLength: 2,
+
+                oppositeOrientations: true,
+
+                noMove: "lose",
+                fullBoard: "tie",
+
+                timeControl: "stopwatch",
+
+                countdownMinutes: 10,
+                countdownSeconds: 0,
+
+                startingPlayer: 1,
+              },
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Could not create game.");
+          }
+
+          document.getElementById("createdUsername").textContent = data.username;
+
+          document.getElementById("createdPassword").textContent = data.password;
+
+          document.getElementById("credentials").style.display = "block";
+
+          showSuccess("Game created. Share the username and password with your opponent.");
+
+          document.getElementById("enterCreatedGame").onclick = () => {
+            enterGame(data);
+          };
+        } catch (error) {
+          showError(error instanceof Error ? error.message : "Could not create game.");
+        } finally {
+          setButtonLoading(button, false, "Create Game");
+        }
+      });
+
+      document.getElementById("joinButton").addEventListener("click", async () => {
+        const button = document.getElementById("joinButton");
+
+        const username = document.getElementById("joinUsername").value.trim();
+
+        const password = document.getElementById("joinPassword").value;
+
+        if (!username || !password) {
+          showError("Please enter both username and password.");
+
+          return;
+        }
+
+        setButtonLoading(button, true, "Join Game");
+
+        try {
+          const response = await fetch(`${TOWEL_WRAP_SERVER}/api/join`, {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Not correct username or password");
+          }
+
+          enterGame(data);
+        } catch (error) {
+          showError(error instanceof Error ? error.message : "Not correct username or password");
+        } finally {
+          setButtonLoading(button, false, "Join Game");
+        }
+      });
+
+      document.getElementById("backButton").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>

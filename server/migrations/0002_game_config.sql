@@ -1,0 +1,1 @@
+ALTER TABLE private_games ADD COLUMN config_json TEXT NOT NULL DEFAULT '{}';

@@ -521,7 +521,7 @@
         </div>
       </div>
     </div>
-
+    <script src="online.js"></script>
     <script>
       "use strict";
 
@@ -2422,10 +2422,15 @@
 ========================================================= */
 
       applyColors();
-
       applyRuleSettings();
 
-      prepareGameFromSetup();
+      const onlineParams = new URLSearchParams(window.location.search);
+
+      if (onlineParams.get("online") === "1") {
+        window.TowelWrapOnline.start();
+      } else {
+        prepareGameFromSetup();
+      }
     </script>
   </body>
 </html>
