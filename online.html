@@ -7,23 +7,42 @@
 
     <title>Towel Wrap — Online</title>
 
+    <meta name="description" content="Create or join a private Towel Wrap online game." />
+
+    <meta name="robots" content="noindex, nofollow" />
+
     <style>
       * {
         box-sizing: border-box;
       }
 
+      :root {
+        --bg: #0d0f14;
+        --panel: #151922;
+        --panel-2: #1b202b;
+        --border: #2b3240;
+        --text: #f2f4f8;
+        --muted: #8d96a8;
+        --accent: #6c8cff;
+        --danger: #ff5757;
+      }
+
+      html,
       body {
         margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
+        width: 100%;
+        min-height: 100%;
+      }
 
-        background: #10141b;
-        color: #f1f4f8;
+      body {
+        min-height: 100vh;
+
+        background: var(--bg);
+        color: var(--text);
 
         font-family:
+          Inter,
+          ui-sans-serif,
           system-ui,
           -apple-system,
           BlinkMacSystemFont,
@@ -31,132 +50,151 @@
           sans-serif;
       }
 
-      .container {
-        width: 100%;
-        max-width: 520px;
+      button,
+      input {
+        font: inherit;
       }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .page {
+        width: min(760px, 100%);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      /* HEADER */
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 25px;
+      }
+
+      /* BUTTONS */
+
+      .button {
+        border: 1px solid var(--border);
+
+        background: var(--panel);
+        color: var(--text);
+
+        border-radius: 10px;
+
+        padding: 11px 17px;
+
+        transition:
+          background 0.12s,
+          border-color 0.12s,
+          transform 0.12s;
+      }
+
+      .button:hover {
+        background: var(--panel-2);
+        border-color: #3b4455;
+      }
+
+      .button:active {
+        transform: scale(0.97);
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      .button.primary:hover {
+        filter: brightness(1.08);
+      }
+
+      .button.large {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 17px;
+      }
+
+      .button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .back-button {
+        flex-shrink: 0;
+      }
+
+      /* CARDS */
 
       .card {
-        background: #181e27;
-        border: 1px solid #2a3340;
-        border-radius: 18px;
-        padding: 28px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 14px;
       }
 
-      h1 {
+      .card h2 {
         margin: 0 0 8px;
-        font-size: 30px;
       }
 
-      .subtitle {
-        margin: 0 0 28px;
-        color: #9da8b7;
+      .card-description {
+        color: var(--muted);
         line-height: 1.5;
+        margin: 0 0 20px;
       }
 
-      .section {
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid #2a3340;
+      /* FORM */
+
+      .setting {
+        margin-bottom: 17px;
       }
 
-      label {
+      .setting:last-child {
+        margin-bottom: 0;
+      }
+
+      .setting label {
         display: block;
-        margin-bottom: 8px;
-        color: #cbd3df;
-        font-size: 14px;
+        margin-bottom: 7px;
+
         font-weight: 600;
+        font-size: 14px;
       }
 
       input {
         width: 100%;
-        height: 46px;
 
-        padding: 0 14px;
+        padding: 11px;
 
-        border: 1px solid #35404e;
-        border-radius: 10px;
+        border-radius: 9px;
 
-        background: #11161d;
-        color: #f1f4f8;
+        border: 1px solid var(--border);
 
-        font-size: 16px;
+        background: var(--panel-2);
+        color: var(--text);
+
         outline: none;
       }
 
       input:focus {
-        border-color: #4f8cff;
+        border-color: var(--accent);
       }
 
-      .field {
-        margin-bottom: 16px;
-      }
-
-      button {
-        width: 100%;
-        height: 46px;
-
-        border: 0;
-        border-radius: 10px;
-
-        background: #4f8cff;
-        color: white;
-
-        font-size: 15px;
-        font-weight: 700;
-
-        cursor: pointer;
-      }
-
-      button:hover {
-        filter: brightness(1.08);
-      }
-
-      button:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-      }
-
-      .secondary {
-        background: #252e3a;
-      }
-
-      .credentials {
-        margin-top: 20px;
-        padding: 16px;
-
-        border: 1px solid #344154;
-        border-radius: 12px;
-
-        background: #11161d;
-      }
-
-      .credential-label {
-        margin-bottom: 4px;
-        color: #8995a5;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-
-      .credential-value {
-        margin-bottom: 14px;
-
-        color: #ffffff;
-
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-        font-size: 17px;
-        word-break: break-all;
-      }
-
-      .warning {
-        margin-top: 14px;
-        color: #aeb8c6;
-        font-size: 13px;
-        line-height: 1.5;
-      }
+      /* MESSAGES */
 
       .error {
         display: none;
@@ -164,11 +202,11 @@
         margin-bottom: 16px;
         padding: 12px;
 
-        border: 1px solid #66343a;
+        border: 1px solid #553030;
         border-radius: 10px;
 
-        background: #2b181c;
-        color: #ff9da5;
+        background: #241719;
+        color: #ff8a8a;
 
         line-height: 1.4;
       }
@@ -188,105 +226,165 @@
         line-height: 1.4;
       }
 
+      /* CREDENTIALS */
+
+      .credentials {
+        margin-top: 16px;
+
+        padding: 15px;
+
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+
+      .credential-label {
+        color: var(--muted);
+
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .credential-value {
+        margin-bottom: 14px;
+
+        color: var(--text);
+
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+        font-size: 16px;
+
+        word-break: break-all;
+      }
+
+      .credential-value:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .warning {
+        margin-top: 14px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      /* DIVIDER */
+
       .divider {
         display: flex;
         align-items: center;
         gap: 12px;
 
-        margin: 24px 0;
+        margin: 20px 0;
 
-        color: #667180;
-        font-size: 13px;
+        color: var(--muted);
+
+        font-size: 12px;
+        font-weight: 600;
       }
 
       .divider::before,
       .divider::after {
         content: "";
+
         flex: 1;
+
         height: 1px;
-        background: #2a3340;
+
+        background: var(--border);
       }
 
-      .back {
-        margin-top: 14px;
+      /* MOBILE */
+
+      @media (max-width: 650px) {
+        .page {
+          padding: 16px;
+        }
       }
     </style>
   </head>
 
   <body>
-    <main class="container">
-      <div class="card">
-        <h1>Online Game</h1>
+    <main class="page">
+      <!-- PAGE HEADER -->
 
-        <p class="subtitle">Create a private Towel Wrap game or join one using its username and password.</p>
+      <div class="page-header">
+        <button class="button back-button" id="backButton" type="button">←</button>
+
+        <h1>Online</h1>
+      </div>
+
+      <!-- CREATE GAME -->
+
+      <div class="card">
+        <h2>Create Private Game</h2>
+
+        <p class="card-description">
+          Create a private Towel Wrap game and invite another player using the generated username and password.
+        </p>
 
         <div id="error" class="error"></div>
 
         <div id="success" class="success"></div>
 
-        <!-- CREATE -->
+        <div class="setting">
+          <label for="createUsername"> Username </label>
 
-        <section>
-          <h2>Create Private Game</h2>
+          <input id="createUsername" type="text" maxlength="32" autocomplete="off" placeholder="Your username" />
+        </div>
 
-          <div class="field">
-            <label for="createUsername"> Username </label>
+        <button class="button primary large" id="createButton" type="button">Create Game</button>
 
-            <input id="createUsername" type="text" maxlength="32" autocomplete="off" placeholder="Your username" />
+        <div id="credentials" class="credentials" style="display: none">
+          <div class="credential-label">Username</div>
+
+          <div id="createdUsername" class="credential-value"></div>
+
+          <div class="credential-label">Password</div>
+
+          <div id="createdPassword" class="credential-value"></div>
+
+          <div class="warning">
+            Give both the username and password to your opponent. The password will not be shown again after leaving
+            this page.
           </div>
 
-          <button id="createButton" type="button">Create Game</button>
-
-          <div id="credentials" class="credentials" style="display: none">
-            <div class="credential-label">Username</div>
-
-            <div id="createdUsername" class="credential-value"></div>
-
-            <div class="credential-label">Password</div>
-
-            <div id="createdPassword" class="credential-value"></div>
-
-            <div class="warning">
-              Give both the username and password to your opponent. The password will not be shown again after leaving
-              this page.
-            </div>
-
-            <button id="enterCreatedGame" type="button" style="margin-top: 16px">Enter Game</button>
-          </div>
-        </section>
-
-        <div class="divider">OR</div>
-
-        <!-- JOIN -->
-
-        <section>
-          <h2>Join Private Game</h2>
-
-          <div class="field">
-            <label for="joinUsername"> Username </label>
-
-            <input id="joinUsername" type="text" maxlength="32" autocomplete="off" placeholder="Game username" />
-          </div>
-
-          <div class="field">
-            <label for="joinPassword"> Password </label>
-
-            <input id="joinPassword" type="password" autocomplete="off" placeholder="Game password" />
-          </div>
-
-          <button id="joinButton" type="button">Join Game</button>
-        </section>
-
-        <div class="back">
-          <button id="backButton" class="secondary" type="button">Back</button>
+          <button class="button primary large" id="enterCreatedGame" type="button" style="margin-top: 16px">
+            Enter Game
+          </button>
         </div>
       </div>
+
+      <!-- DIVIDER -->
+
+      <div class="divider">OR</div>
+
+      <!-- JOIN GAME -->
+
+      <div class="card">
+        <h2>Join Private Game</h2>
+
+        <p class="card-description">Enter the username and password provided by the game creator to join their game.</p>
+
+        <div class="setting">
+          <label for="joinUsername"> Username </label>
+
+          <input id="joinUsername" type="text" maxlength="32" autocomplete="off" placeholder="Game username" />
+        </div>
+
+        <div class="setting">
+          <label for="joinPassword"> Password </label>
+
+          <input id="joinPassword" type="password" autocomplete="off" placeholder="Game password" />
+        </div>
+
+        <button class="button primary large" id="joinButton" type="button">Join Game</button>
+      </div>
     </main>
+
     <script type="module">
-      /*
-       * Change this to your deployed Cloudflare
-       * Worker URL later.
-       */
       const TOWEL_WRAP_SERVER = "https://towel-wrap.shawn-andrew.workers.dev";
 
       const errorElement = document.getElementById("error");
@@ -316,20 +414,21 @@
         const params = new URLSearchParams();
 
         params.set("online", "1");
-
         params.set("game", data.gameId);
-
         params.set("token", data.sessionToken);
 
-        window.location.href = `game.html?${params.toString()}`;
+        window.location.href = `game?${params.toString()}`;
       }
 
       import { Filter } from "https://cdn.jsdelivr.net/npm/bad-words@4.1.5/+esm";
 
       const filter = new Filter();
 
+      /* CREATE GAME */
+
       document.getElementById("createButton").addEventListener("click", async () => {
         const button = document.getElementById("createButton");
+
         const username = document.getElementById("createUsername").value.trim();
 
         if (!username) {
@@ -355,11 +454,6 @@
             body: JSON.stringify({
               username,
 
-              /*
-               * These will be replaced with
-               * the actual setup settings when
-               * we connect this to setup.html.
-               */
               config: {
                 boardWidth: 7,
                 boardHeight: 8,
@@ -404,6 +498,8 @@
         }
       });
 
+      /* JOIN GAME */
+
       document.getElementById("joinButton").addEventListener("click", async () => {
         const button = document.getElementById("joinButton");
 
@@ -413,6 +509,12 @@
 
         if (!username || !password) {
           showError("Please enter both username and password.");
+
+          return;
+        }
+
+        if (filter.isProfane(username)) {
+          showError("That username contains inappropriate language.");
 
           return;
         }
@@ -447,8 +549,10 @@
         }
       });
 
+      /* BACK BUTTON */
+
       document.getElementById("backButton").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "index";
       });
     </script>
   </body>
