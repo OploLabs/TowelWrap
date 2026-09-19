@@ -137,6 +137,16 @@
         flex-shrink: 0;
       }
 
+      .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .button-row .button {
+        flex: 1;
+      }
+
       /* CARDS */
 
       .card {
@@ -302,6 +312,10 @@
         .page {
           padding: 16px;
         }
+
+        .button-row {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -325,12 +339,14 @@
           Create a private Towel Wrap game and invite another player using the generated username and password.
         </p>
 
-        <div id="error" class="error"></div>
+        <!-- CREATE GAME MESSAGES -->
 
-        <div id="success" class="success"></div>
+        <div id="createError" class="error"></div>
+
+        <div id="createSuccess" class="success"></div>
 
         <div class="setting">
-          <label for="createUsername"> Username </label>
+          <label for="createUsername">Username</label>
 
           <input id="createUsername" type="text" maxlength="32" autocomplete="off" placeholder="Your username" />
         </div>
@@ -354,6 +370,12 @@
           <button class="button primary large" id="enterCreatedGame" type="button" style="margin-top: 16px">
             Enter Game
           </button>
+
+          <div class="button-row">
+            <button class="button" id="copyLinkButton" type="button">Copy Link</button>
+
+            <button class="button" id="shareLinkButton" type="button">Share Link</button>
+          </div>
         </div>
       </div>
 
@@ -368,14 +390,18 @@
 
         <p class="card-description">Enter the username and password provided by the game creator to join their game.</p>
 
+        <!-- JOIN GAME ERROR -->
+
+        <div id="joinError" class="error"></div>
+
         <div class="setting">
-          <label for="joinUsername"> Username </label>
+          <label for="joinUsername">Username</label>
 
           <input id="joinUsername" type="text" maxlength="32" autocomplete="off" placeholder="Game username" />
         </div>
 
         <div class="setting">
-          <label for="joinPassword"> Password </label>
+          <label for="joinPassword">Password</label>
 
           <input id="joinPassword" type="password" autocomplete="off" placeholder="Game password" />
         </div>
@@ -387,22 +413,34 @@
     <script type="module">
       const TOWEL_WRAP_SERVER = "https://towel-wrap.shawn-andrew.workers.dev";
 
-      const errorElement = document.getElementById("error");
+      const createErrorElement = document.getElementById("createError");
 
-      const successElement = document.getElementById("success");
+      const createSuccessElement = document.getElementById("createSuccess");
 
-      function showError(message) {
-        successElement.style.display = "none";
+      const joinErrorElement = document.getElementById("joinError");
 
-        errorElement.textContent = message;
-        errorElement.style.display = "block";
+      function showCreateError(message) {
+        createSuccessElement.style.display = "none";
+
+        createErrorElement.textContent = message;
+        createErrorElement.style.display = "block";
       }
 
-      function showSuccess(message) {
-        errorElement.style.display = "none";
+      function showCreateSuccess(message) {
+        createErrorElement.style.display = "none";
 
-        successElement.textContent = message;
-        successElement.style.display = "block";
+        createSuccessElement.textContent = message;
+        createSuccessElement.style.display = "block";
+      }
+
+      function showJoinError(message) {
+        joinErrorElement.textContent = message;
+        joinErrorElement.style.display = "block";
+      }
+
+      function clearJoinError() {
+        joinErrorElement.textContent = "";
+        joinErrorElement.style.display = "none";
       }
 
       function setButtonLoading(button, loading, normalText) {
@@ -420,6 +458,22 @@
         window.location.href = `game?${params.toString()}`;
       }
 
+      /*
+       * Creates a link that can be sent to another player.
+       *
+       * The username and password are stored in the URL query string.
+       */
+      function createShareLink(username, password) {
+        const url = new URL(window.location.href);
+
+        url.search = "";
+
+        url.searchParams.set("username", username);
+        url.searchParams.set("password", password);
+
+        return url.toString();
+      }
+
       import { Filter } from "https://cdn.jsdelivr.net/npm/bad-words@4.1.5/+esm";
 
       const filter = new Filter();
@@ -431,13 +485,16 @@
 
         const username = document.getElementById("createUsername").value.trim();
 
+        createErrorElement.style.display = "none";
+        createSuccessElement.style.display = "none";
+
         if (!username) {
-          showError("Please enter a username.");
+          showCreateError("Please enter a username.");
           return;
         }
 
         if (filter.isProfane(username)) {
-          showError("That username contains inappropriate language.");
+          showCreateError("That username contains inappropriate language.");
           return;
         }
 
@@ -486,13 +543,78 @@
 
           document.getElementById("credentials").style.display = "block";
 
-          showSuccess("Game created. Share the username and password with your opponent.");
+          showCreateSuccess("Game created. Share the link with your opponent.");
 
           document.getElementById("enterCreatedGame").onclick = () => {
             enterGame(data);
           };
+
+          /*
+           * COPY LINK
+           */
+
+          document.getElementById("copyLinkButton").onclick = async () => {
+            const link = createShareLink(data.username, data.password);
+
+            const button = document.getElementById("copyLinkButton");
+
+            try {
+              await navigator.clipboard.writeText(link);
+
+              button.textContent = "Copied!";
+
+              setTimeout(() => {
+                button.textContent = "Copy Link";
+              }, 1500);
+            } catch (error) {
+              showCreateError("Could not copy the link. Please copy it manually.");
+            }
+          };
+
+          /*
+           * SHARE LINK
+           */
+
+          document.getElementById("shareLinkButton").onclick = async () => {
+            const link = createShareLink(data.username, data.password);
+
+            if (typeof navigator.share !== "function") {
+              try {
+                await navigator.clipboard.writeText(link);
+
+                const button = document.getElementById("shareLinkButton");
+
+                button.textContent = "Link Copied!";
+
+                setTimeout(() => {
+                  button.textContent = "Share Link";
+                }, 1500);
+              } catch (error) {
+                showCreateError("Your browser does not support sharing. Please use Copy Link.");
+              }
+
+              return;
+            }
+
+            try {
+              await navigator.share({
+                title: "Towel Wrap Game",
+                text: "Join my Towel Wrap game!",
+                url: link,
+              });
+            } catch (error) {
+              /*
+               * AbortError normally means the user
+               * closed/canceled the share dialog.
+               * Don't show an error for that.
+               */
+              if (error?.name !== "AbortError") {
+                showCreateError("Could not share the game link.");
+              }
+            }
+          };
         } catch (error) {
-          showError(error instanceof Error ? error.message : "Could not create game.");
+          showCreateError(error instanceof Error ? error.message : "Could not create game.");
         } finally {
           setButtonLoading(button, false, "Create Game");
         }
@@ -507,14 +629,16 @@
 
         const password = document.getElementById("joinPassword").value;
 
+        clearJoinError();
+
         if (!username || !password) {
-          showError("Please enter both username and password.");
+          showJoinError("Please enter both username and password.");
 
           return;
         }
 
         if (filter.isProfane(username)) {
-          showError("That username contains inappropriate language.");
+          showJoinError("That username contains inappropriate language.");
 
           return;
         }
@@ -543,11 +667,38 @@
 
           enterGame(data);
         } catch (error) {
-          showError(error instanceof Error ? error.message : "Not correct username or password");
+          showJoinError(error instanceof Error ? error.message : "Not correct username or password");
         } finally {
           setButtonLoading(button, false, "Join Game");
         }
       });
+
+      /* AUTO-FILL FROM SHARE LINK */
+
+      const shareParams = new URLSearchParams(window.location.search);
+
+      const sharedUsername = shareParams.get("username");
+
+      const sharedPassword = shareParams.get("password");
+
+      if (sharedUsername) {
+        document.getElementById("joinUsername").value = sharedUsername;
+      }
+
+      if (sharedPassword) {
+        document.getElementById("joinPassword").value = sharedPassword;
+      }
+
+      /*
+       * Automatically attempt to join when both
+       * username and password were provided by
+       * a shared link.
+       */
+      if (sharedUsername && sharedPassword) {
+        setTimeout(() => {
+          document.getElementById("joinButton").click();
+        }, 100);
+      }
 
       /* BACK BUTTON */
 
