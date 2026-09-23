@@ -1,14 +1,11 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Towel Wrap — Online</title>
-
     <meta name="description" content="Create or join a private Towel Wrap online game." />
-
     <meta name="robots" content="noindex, nofollow" />
 
     <style>
@@ -25,6 +22,9 @@
         --muted: #8d96a8;
         --accent: #6c8cff;
         --danger: #ff5757;
+        --warning: #f2c94c;
+        --warning-border: #5a4b20;
+        --warning-bg: #252116;
       }
 
       html,
@@ -36,10 +36,8 @@
 
       body {
         min-height: 100vh;
-
         background: var(--bg);
         color: var(--text);
-
         font-family:
           Inter,
           ui-sans-serif,
@@ -77,7 +75,7 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        margin-bottom: 25px;
+        margin-bottom: 16px;
       }
 
       .page-header h1 {
@@ -85,18 +83,57 @@
         font-size: 25px;
       }
 
+      /* BETA WARNING */
+
+      .beta-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 25px;
+        padding: 13px 15px;
+        background: var(--warning-bg);
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+      }
+
+      .beta-banner-text {
+        color: var(--warning);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .beta-banner-button {
+        flex-shrink: 0;
+        border: 1px solid var(--warning-border);
+        background: transparent;
+        color: var(--warning);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+        transition:
+          background 0.12s,
+          border-color 0.12s,
+          transform 0.12s;
+      }
+
+      .beta-banner-button:hover {
+        background: #302a19;
+        border-color: #79662b;
+      }
+
+      .beta-banner-button:active {
+        transform: scale(0.97);
+      }
+
       /* BUTTONS */
 
       .button {
         border: 1px solid var(--border);
-
         background: var(--panel);
         color: var(--text);
-
         border-radius: 10px;
-
         padding: 11px 17px;
-
         transition:
           background 0.12s,
           border-color 0.12s,
@@ -180,23 +217,17 @@
       .setting label {
         display: block;
         margin-bottom: 7px;
-
         font-weight: 600;
         font-size: 14px;
       }
 
       input {
         width: 100%;
-
         padding: 11px;
-
         border-radius: 9px;
-
         border: 1px solid var(--border);
-
         background: var(--panel-2);
         color: var(--text);
-
         outline: none;
       }
 
@@ -208,31 +239,23 @@
 
       .error {
         display: none;
-
         margin-bottom: 16px;
         padding: 12px;
-
         border: 1px solid #553030;
         border-radius: 10px;
-
         background: #241719;
         color: #ff8a8a;
-
         line-height: 1.4;
       }
 
       .success {
         display: none;
-
         margin-bottom: 16px;
         padding: 12px;
-
         border: 1px solid #31573e;
         border-radius: 10px;
-
         background: #17271c;
         color: #9ce5ad;
-
         line-height: 1.4;
       }
 
@@ -240,9 +263,7 @@
 
       .credentials {
         margin-top: 16px;
-
         padding: 15px;
-
         background: var(--panel-2);
         border: 1px solid var(--border);
         border-radius: 10px;
@@ -250,20 +271,15 @@
 
       .credential-label {
         color: var(--muted);
-
         font-size: 12px;
         margin-bottom: 4px;
       }
 
       .credential-value {
         margin-bottom: 14px;
-
         color: var(--text);
-
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
         font-size: 16px;
-
         word-break: break-all;
       }
 
@@ -273,9 +289,7 @@
 
       .warning {
         margin-top: 14px;
-
         color: var(--muted);
-
         font-size: 13px;
         line-height: 1.5;
       }
@@ -286,11 +300,8 @@
         display: flex;
         align-items: center;
         gap: 12px;
-
         margin: 20px 0;
-
         color: var(--muted);
-
         font-size: 12px;
         font-weight: 600;
       }
@@ -298,11 +309,8 @@
       .divider::before,
       .divider::after {
         content: "";
-
         flex: 1;
-
         height: 1px;
-
         background: var(--border);
       }
 
@@ -311,6 +319,16 @@
       @media (max-width: 650px) {
         .page {
           padding: 16px;
+        }
+
+        .beta-banner {
+          align-items: stretch;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .beta-banner-button {
+          width: 100%;
         }
 
         .button-row {
@@ -323,15 +341,19 @@
   <body>
     <main class="page">
       <!-- PAGE HEADER -->
-
       <div class="page-header">
         <button class="button back-button" id="backButton" type="button">←</button>
-
         <h1>Online</h1>
       </div>
 
-      <!-- CREATE GAME -->
+      <!-- BETA WARNING -->
+      <div class="beta-banner">
+        <div class="beta-banner-text">Warning: Online is in BETA</div>
 
+        <button class="beta-banner-button" id="reportIssueButton" type="button">Report an Issue</button>
+      </div>
+
+      <!-- CREATE GAME -->
       <div class="card">
         <h2>Create Private Game</h2>
 
@@ -340,14 +362,11 @@
         </p>
 
         <!-- CREATE GAME MESSAGES -->
-
         <div id="createError" class="error"></div>
-
         <div id="createSuccess" class="success"></div>
 
         <div class="setting">
           <label for="createUsername">Username</label>
-
           <input id="createUsername" type="text" maxlength="32" autocomplete="off" placeholder="Your username" />
         </div>
 
@@ -355,11 +374,9 @@
 
         <div id="credentials" class="credentials" style="display: none">
           <div class="credential-label">Username</div>
-
           <div id="createdUsername" class="credential-value"></div>
 
           <div class="credential-label">Password</div>
-
           <div id="createdPassword" class="credential-value"></div>
 
           <div class="warning">
@@ -380,29 +397,24 @@
       </div>
 
       <!-- DIVIDER -->
-
       <div class="divider">OR</div>
 
       <!-- JOIN GAME -->
-
       <div class="card">
         <h2>Join Private Game</h2>
 
         <p class="card-description">Enter the username and password provided by the game creator to join their game.</p>
 
         <!-- JOIN GAME ERROR -->
-
         <div id="joinError" class="error"></div>
 
         <div class="setting">
           <label for="joinUsername">Username</label>
-
           <input id="joinUsername" type="text" maxlength="32" autocomplete="off" placeholder="Game username" />
         </div>
 
         <div class="setting">
           <label for="joinPassword">Password</label>
-
           <input id="joinPassword" type="password" autocomplete="off" placeholder="Game password" />
         </div>
 
@@ -414,21 +426,17 @@
       const TOWEL_WRAP_SERVER = "https://towel-wrap.shawn-andrew.workers.dev";
 
       const createErrorElement = document.getElementById("createError");
-
       const createSuccessElement = document.getElementById("createSuccess");
-
       const joinErrorElement = document.getElementById("joinError");
 
       function showCreateError(message) {
         createSuccessElement.style.display = "none";
-
         createErrorElement.textContent = message;
         createErrorElement.style.display = "block";
       }
 
       function showCreateSuccess(message) {
         createErrorElement.style.display = "none";
-
         createSuccessElement.textContent = message;
         createSuccessElement.style.display = "block";
       }
@@ -467,12 +475,22 @@
         const url = new URL(window.location.href);
 
         url.search = "";
-
         url.searchParams.set("username", username);
         url.searchParams.set("password", password);
 
         return url.toString();
       }
+
+      /*
+       * REPORT ISSUE
+       */
+      document.getElementById("reportIssueButton").addEventListener("click", () => {
+        window.open(
+          "https://github.com/OploLabs/TowelWrap/issues/new?template=bug_report.yml",
+          "_blank",
+          "noopener,noreferrer",
+        );
+      });
 
       import { Filter } from "https://cdn.jsdelivr.net/npm/bad-words@4.1.5/+esm";
 
@@ -482,7 +500,6 @@
 
       document.getElementById("createButton").addEventListener("click", async () => {
         const button = document.getElementById("createButton");
-
         const username = document.getElementById("createUsername").value.trim();
 
         createErrorElement.style.display = "none";
@@ -503,29 +520,21 @@
         try {
           const response = await fetch(`${TOWEL_WRAP_SERVER}/api/games`, {
             method: "POST",
-
             headers: {
               "Content-Type": "application/json",
             },
-
             body: JSON.stringify({
               username,
-
               config: {
                 boardWidth: 7,
                 boardHeight: 8,
                 pieceLength: 2,
-
                 oppositeOrientations: true,
-
                 noMove: "lose",
                 fullBoard: "tie",
-
                 timeControl: "stopwatch",
-
                 countdownMinutes: 10,
                 countdownSeconds: 0,
-
                 startingPlayer: 1,
               },
             }),
@@ -552,7 +561,6 @@
           /*
            * COPY LINK
            */
-
           document.getElementById("copyLinkButton").onclick = async () => {
             const link = createShareLink(data.username, data.password);
 
@@ -574,7 +582,6 @@
           /*
            * SHARE LINK
            */
-
           document.getElementById("shareLinkButton").onclick = async () => {
             const link = createShareLink(data.username, data.password);
 
@@ -633,13 +640,11 @@
 
         if (!username || !password) {
           showJoinError("Please enter both username and password.");
-
           return;
         }
 
         if (filter.isProfane(username)) {
           showJoinError("That username contains inappropriate language.");
-
           return;
         }
 
@@ -648,11 +653,9 @@
         try {
           const response = await fetch(`${TOWEL_WRAP_SERVER}/api/join`, {
             method: "POST",
-
             headers: {
               "Content-Type": "application/json",
             },
-
             body: JSON.stringify({
               username,
               password,
@@ -678,7 +681,6 @@
       const shareParams = new URLSearchParams(window.location.search);
 
       const sharedUsername = shareParams.get("username");
-
       const sharedPassword = shareParams.get("password");
 
       if (sharedUsername) {
