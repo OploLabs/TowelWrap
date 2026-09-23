@@ -190,7 +190,7 @@ function installOnlineBoardEvents() {
         return;
       }
 
-      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       const cell =
         event.target.closest(".cell");
@@ -232,7 +232,7 @@ function installOnlineBoardEvents() {
         return;
       }
 
-      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       onlineHoverCell = null;
       onlineClearPreview();
@@ -247,7 +247,7 @@ function installOnlineBoardEvents() {
         return;
       }
 
-      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       const cell =
         event.target.closest(".cell");

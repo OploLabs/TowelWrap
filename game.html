@@ -2304,6 +2304,9 @@
 ========================================================= */
 
       boardElement.addEventListener("mousemove", (event) => {
+        if (onlineMode) {
+          return;
+        }
         if (gamePaused || gameOver || aiState.thinking) {
           return;
         }
@@ -2336,23 +2339,28 @@
       });
 
       boardElement.addEventListener("mouseleave", () => {
+        if (onlineMode) {
+          return;
+        }
+
         if (hoverCell !== null) {
           hoverCell = null;
-
           render();
         }
       });
 
       boardElement.addEventListener("click", (event) => {
-        const cell = event.target.closest(".cell");
+        if (onlineMode) {
+          return;
+        }
 
+        const cell = event.target.closest(".cell");
         if (!cell) {
           return;
         }
 
         humanMove(Number(cell.dataset.row), Number(cell.dataset.col));
       });
-
       /* =========================================================
    BUTTONS
 ========================================================= */
