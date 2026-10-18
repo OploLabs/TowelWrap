@@ -1396,8 +1396,18 @@ self.onmessage=function(e){
         }
         gameAssessments[i] = { grade, loss, depth: res.depth, best: res.move, playedScore: row.score };
       }
+
       function parseNotation(text) {
-        const parts = text.trim().split("|");
+        text = text.trim();
+
+        // Decode URL-encoded notation when pasted or imported.
+        try {
+          text = decodeURIComponent(text);
+        } catch {
+          // Leave the original text unchanged if decoding fails.
+        }
+
+        const parts = text.split("|");
         if (!parts[0]) throw Error("Notation is empty.");
         const m = parts[0].match(/^p:(\d+):p1o:([HV]):p2o:([HV]):bxh:(\d+)x(\d+)$/);
         if (!m) throw Error("Header not recognized. Expected p:1:p1o:H:p2o:V:bxh:7x8");
