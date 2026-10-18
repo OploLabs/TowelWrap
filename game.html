@@ -641,7 +641,7 @@
         <div class="game-over-actions">
           <button class="button primary large" id="playAgainButton" type="button">Play Again</button>
 
-          <button class="button large" id="copyNotationButton" type="button">Copy notation</button>
+          <button class="button large" id="copyNotationButton2" type="button">Copy notation</button>
 
           <button class="button large" id="gameOverMenuButton" type="button">Main Menu</button>
         </div>
@@ -1628,6 +1628,32 @@
           textArea.remove();
 
           copyNotationButton.textContent = copied ? "Copied!" : "Select notation above";
+        }
+
+        setTimeout(() => {
+          copyNotationButton.textContent = "Copy notation";
+        }, 1500);
+      });
+
+      copyNotationButton2.addEventListener("click", async () => {
+        const notation = getGameNotation();
+
+        try {
+          await navigator.clipboard.writeText(notation);
+          copyNotationButton2.textContent = "Copied!";
+        } catch {
+          // Clipboard access can be unavailable on non-secure pages.
+          const textArea = document.createElement("textarea");
+          textArea.value = notation;
+          textArea.style.position = "fixed";
+          textArea.style.opacity = "0";
+          document.body.appendChild(textArea);
+          textArea.select();
+
+          const copied = document.execCommand("copy");
+          textArea.remove();
+
+          copyNotationButton2.textContent = copied ? "Copied!" : "Select notation above";
         }
 
         setTimeout(() => {
