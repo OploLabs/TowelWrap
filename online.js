@@ -7,6 +7,16 @@ let onlinePlayer = null;
 let onlineMode = false;
 let onlineHoverCell = null;
 
+
+function onlineHideNotation() {
+  const panel = document.querySelector(".move-history-panel");
+
+  if (panel) {
+    panel.style.display = "none";
+  }
+}
+
+
 function getOnlineCredentials() {
   const params = new URLSearchParams(window.location.search);
 
@@ -736,6 +746,8 @@ function onlineConnect(gameId, token) {
 }
 
 function onlineStart() {
+  onlineHideNotation();
+
   const credentials =
     getOnlineCredentials();
 
