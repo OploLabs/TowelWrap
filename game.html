@@ -414,7 +414,7 @@
           font-size: 9px;
         }
       }
-      
+
       .move-history-panel {
         margin-top: 14px;
         padding: 16px;
@@ -522,7 +522,6 @@
           font-size: 11px;
         }
       }
-
     </style>
   </head>
 
@@ -596,26 +595,22 @@
             </div>
           </div>
         </div>
-        
-				<div class="move-history-panel">
-				  <div class="move-history-header">
-				    <div>
-				      <div class="move-history-title">Move History</div>
-				      <div class="move-history-subtitle">Game notation</div>
-				    </div>
-				    <button class="button" id="copyNotationButton" type="button">
-				      Copy notation
-				    </button>
-				  </div>
 
-				  <div class="move-notation" id="moveNotation">
-				    No moves yet
-				  </div>
+        <div class="move-history-panel">
+          <div class="move-history-header">
+            <div>
+              <div class="move-history-title">Move History</div>
+              <div class="move-history-subtitle">Game notation</div>
+            </div>
+            <button class="button" id="copyNotationButton" type="button">Copy notation</button>
+          </div>
 
-				  <div class="move-list" id="moveList">
-				    <div class="move-list-empty">Moves will appear here.</div>
-				  </div>
-				</div>
+          <div class="move-notation" id="moveNotation">No moves yet</div>
+
+          <div class="move-list" id="moveList">
+            <div class="move-list-empty">Moves will appear here.</div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -755,7 +750,6 @@
         }
       }
 
-	
       /* =========================================================
    GAME STATE
 ========================================================= */
@@ -763,10 +757,12 @@
       let board = [];
 
       let currentPlayer = P1;
-	  let gameStartingPlayer = P1;
+      let gameStartingPlayer = P1;
       let gameOver = false;
 
       let moveCount = 0;
+
+      let moveHistory = [];
 
       let hoverCell = null;
 
@@ -778,7 +774,6 @@
         1: "H",
         2: "V",
       };
-
 
       /* =========================================================
    AI CONFIGURATION
@@ -1421,14 +1416,14 @@
           return false;
         }
 
-				const movingPlayer = currentPlayer;
+        const movingPlayer = currentPlayer;
 
-				legalMove.cells.forEach((cell) => {
-				  board[cell.r][cell.c] = movingPlayer;
-				});
+        legalMove.cells.forEach((cell) => {
+          board[cell.r][cell.c] = movingPlayer;
+        });
 
-				recordMove(movingPlayer, legalMove.cells);
-				moveCount++;
+        recordMove(movingPlayer, legalMove.cells);
+        moveCount++;
 
         hoverCell = null;
 
@@ -1592,14 +1587,12 @@
             const move = moveHistory[j];
             const playerMove = document.createElement("span");
 
-            playerMove.className =
-              `move-player ${move.player === P1 ? "p1-move" : "p2-move"}`;
+            playerMove.className = `move-player ${move.player === P1 ? "p1-move" : "p2-move"}`;
 
             const first = formatMoveCoordinate(move.cells[0]);
             const last = formatMoveCoordinate(move.cells[move.cells.length - 1]);
 
-            playerMove.textContent =
-              `${move.player === P1 ? "P1" : "P2"}: ${first}:${last}`;
+            playerMove.textContent = `${move.player === P1 ? "P1" : "P2"}: ${first}:${last}`;
 
             row.appendChild(playerMove);
           }
@@ -1644,9 +1637,8 @@
         }, 1500);
       });
 
-// Optional API for your external engine or integration.
+      // Optional API for your external engine or integration.
       window.getTowelWrapNotation = getGameNotation;
-
 
       /* =========================================================
    COLORS / RULES
@@ -1763,8 +1755,7 @@
           orientations[P2] = rules.oppositeOrientations ? oppositeOrientation(orientations[P1]) : orientations[P1];
 
           currentPlayer = P1;
-		  gameStartingPlayer = currentPlayer;
-
+          gameStartingPlayer = currentPlayer;
 
           aiState.enabled = false;
 
@@ -1857,10 +1848,10 @@
         gamePaused = false;
 
         aiState.thinking = false;
-        
+
         moveCount = 0;
-		moveHistory = [];
-		renderMoveHistory();
+        moveHistory = [];
+        renderMoveHistory();
 
         gameOverElement.classList.add("hidden");
 
@@ -2489,14 +2480,14 @@
 
         pendingMove = null;
 
-				const movingPlayer = currentPlayer;
+        const movingPlayer = currentPlayer;
 
-				cells.forEach((cell) => {
-				  board[cell.r][cell.c] = movingPlayer;
-				});
+        cells.forEach((cell) => {
+          board[cell.r][cell.c] = movingPlayer;
+        });
 
-				recordMove(movingPlayer, cells);
-				moveCount++;
+        recordMove(movingPlayer, cells);
+        moveCount++;
 
         hoverCell = null;
 
