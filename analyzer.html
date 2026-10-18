@@ -1,0 +1,1638 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Towels Wrap — Deep Analyzer</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0d0f14;
+        --panel: #151922;
+        --panel2: #1b202b;
+        --border: #2b3240;
+        --text: #f2f4f8;
+        --muted: #8d96a8;
+        --accent: #7c98ff;
+        --p1: #4f8cff;
+        --p2: #ff5757;
+        --empty: #202632;
+        --good: #51d6a2;
+        --warn: #ffc66d;
+        --bad: #ff7373;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.45 system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .wrap {
+        width: min(1180px, 100%);
+        margin: auto;
+        padding: 22px 16px 40px;
+      }
+      .top,
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .top {
+        margin-bottom: 18px;
+      }
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 11px;
+      }
+      .title {
+        font-size: clamp(25px, 4vw, 34px);
+        font-weight: 850;
+        letter-spacing: -0.04em;
+        margin: 3px 0;
+      }
+      .muted,
+      .notice {
+        color: var(--muted);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 1.05fr) minmax(310px, 0.95fr);
+        gap: 16px;
+        align-items: start;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .panel h2 {
+        font-size: 16px;
+        margin: 0 0 12px;
+      }
+      .board-wrap {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        width: 100%;
+        max-width: 620px;
+        margin: auto;
+      }
+      .board {
+        display: grid;
+        gap: 5px;
+        width: 100%;
+        max-width: 620px;
+        margin: 0;
+        flex: 1;
+        user-select: none;
+      }
+      .eval-column {
+        width: 48px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .eval-vertical {
+        width: 24px;
+        min-width: 24px;
+        height: 320px;
+        min-height: 180px;
+        background: var(--p2);
+        border-radius: 7px;
+        overflow: hidden;
+        border: 1px solid #ffffff1c;
+        position: relative;
+      }
+      .eval-vertical > div {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 50%;
+        width: 100%;
+        background: var(--p1);
+        transition: height 0.18s linear;
+        will-change: height;
+      }
+      .eval-vertical.pending > div {
+        opacity: 0.5;
+      }
+      .eval-caption {
+        font-size: 10px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 5px;
+        letter-spacing: 0.02em;
+      }
+      .eval-number {
+        font-size: 11px;
+        font-weight: 800;
+        text-align: center;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+      }
+      .cell {
+        border: 1px solid #ffffff0b;
+        background: var(--empty);
+        aspect-ratio: 1;
+        border-radius: 6px;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #ffffff40;
+      }
+      .cell.p1 {
+        background: var(--p1);
+      }
+      .cell.p2 {
+        background: var(--p2);
+      }
+      .cell.best {
+        outline: 3px solid var(--good);
+        outline-offset: -3px;
+        filter: brightness(1.15);
+      }
+      .cell.played {
+        outline: 3px solid var(--warn);
+        outline-offset: -3px;
+      }
+      .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+      .dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+        margin-right: 6px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+      .btn {
+        border: 1px solid var(--border);
+        background: var(--panel2);
+        color: var(--text);
+        padding: 9px 12px;
+        border-radius: 9px;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+        font-weight: 700;
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .fieldgrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: #0f131a;
+        color: var(--text);
+        padding: 9px 10px;
+        border-radius: 8px;
+        min-width: 0;
+      }
+      textarea {
+        min-height: 92px;
+        resize: vertical;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      .full {
+        grid-column: 1/-1;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .stat {
+        background: var(--panel2);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      .stat .k {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .stat .v {
+        font-size: 20px;
+        font-weight: 800;
+        margin-top: 3px;
+        overflow-wrap: anywhere;
+      }
+      .status {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px;
+        margin: 12px 0;
+        background: #10141b;
+      }
+      .movegrid {
+        display: grid;
+        grid-template-columns: 36px 1fr 1fr;
+        gap: 6px;
+        align-items: center;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      .movegrid > div {
+        padding: 7px 6px;
+        border-radius: 6px;
+      }
+      .movegrid .row:nth-child(even) {
+        background: var(--panel2);
+      }
+      .movebtn {
+        background: transparent;
+        border: 0;
+        color: var(--text);
+        text-align: left;
+        width: 100%;
+        padding: 0;
+      }
+      .movebtn.active {
+        color: var(--good);
+        font-weight: 800;
+      }
+      .tag {
+        display: inline-block;
+        border-radius: 6px;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: 800;
+        background: #293241;
+        color: var(--muted);
+      }
+      .tag.good {
+        color: var(--good);
+      }
+      .tag.warn {
+        color: var(--warn);
+      }
+      .tag.bad {
+        color: var(--bad);
+      }
+      .analysislist {
+        display: grid;
+        gap: 7px;
+      }
+      .candidate {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--panel2);
+      }
+      .candidate strong {
+        font-family: ui-monospace, monospace;
+      }
+      .small {
+        font-size: 12px;
+      }
+      .notice {
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .error {
+        color: var(--bad);
+        white-space: pre-wrap;
+      }
+      .success {
+        color: var(--good);
+      }
+      .sectiongap {
+        margin-top: 16px;
+      }
+      .inline {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .inline select {
+        width: auto;
+      }
+      .history {
+        max-height: 300px;
+        overflow: auto;
+      }
+      .ruleline {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .ruleline input {
+        width: auto;
+        margin-top: 3px;
+      }
+      .progress-track {
+        height: 5px;
+        background: var(--panel2);
+        border-radius: 9px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        transition: width 0.15s;
+      }
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .wrap {
+          padding: 14px 10px 28px;
+        }
+        .panel {
+          padding: 13px;
+        }
+        .top {
+          align-items: flex-start;
+        }
+        .fieldgrid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 420px) {
+        .stats {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .stat .v {
+          font-size: 16px;
+        }
+        .cell {
+          border-radius: 3px;
+        }
+        .btn {
+          padding: 8px 9px;
+          font-size: 13px;
+        }
+        .board {
+          gap: 3px;
+        }
+        .eval-vertical {
+          height: 260px;
+          min-height: 180px;
+        }
+      }
+
+      /* BETA LABEL */
+      .beta-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        margin-left: 8px;
+        border: 1px solid #5a4b20;
+        border-radius: 6px;
+        background: #252116;
+        color: #f2c94c;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div>
+          <div class="eyebrow">Towels Wrap · Engine Lab</div>
+
+          <div class="title">
+            Deep Analyzer
+            <span class="beta-label">BETA</span>
+          </div>
+          <div class="muted">Review a game, test alternatives, and search for stronger moves.</div>
+        </div>
+        <span class="tag">Standalone · Offline</span>
+      </header>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="toolbar">
+            <h2>Position board</h2>
+            <span class="tag" id="positionLabel">Starting position</span>
+          </div>
+
+          <div class="board-wrap">
+            <div id="board" class="board" aria-label="Game board"></div>
+            <div class="eval-column">
+              <div class="eval-vertical" id="evalTrack" title="Blue represents Player 1's evaluation share">
+                <div id="evalBar"></div>
+              </div>
+              <div class="eval-caption">P1 / P2</div>
+              <div class="eval-number" id="barNumber">—</div>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span><i class="dot" style="background: var(--p1)"></i>Player 1</span>
+            <span><i class="dot" style="background: var(--p2)"></i>Player 2</span>
+            <span><i class="dot" style="background: var(--good)"></i>Best move</span>
+            <span><i class="dot" style="background: var(--warn)"></i>Played move</span>
+          </div>
+
+          <div class="controls">
+            <button class="btn" id="firstBtn">First</button>
+            <button class="btn" id="prevBtn">Previous</button>
+            <button class="btn" id="nextBtn">Next</button>
+            <button class="btn" id="lastBtn">Last</button>
+          </div>
+
+          <div class="status">
+            <div class="toolbar">
+              <strong id="turnLabel">Player 1 to move</strong>
+              <span id="resultTag" class="tag">Waiting</span>
+            </div>
+            <div id="statusText" class="small muted">Enter notation to begin background analysis.</div>
+            <div id="evalSummary" style="font-weight: 800; margin-top: 8px">Evaluation pending</div>
+            <div class="toolbar small muted" style="margin-top: 5px">
+              <span id="p1Eval">P1 advantage: —</span>
+              <span id="p2Eval">P2 advantage: —</span>
+            </div>
+            <div class="progress-track" id="progressTrack">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="notice" id="queueSummary" style="margin-top: 5px">0 positions queued</div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Search depth</div>
+              <div class="v" id="depthStat">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Nodes searched</div>
+              <div class="v" id="nodesStat">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Elapsed</div>
+              <div class="v" id="timeStat">—</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn primary" id="analyzeBtn" hidden>Analyze position</button>
+            <button class="btn" id="analyzeGameBtn" hidden>Analyze all positions</button>
+            <button class="btn" id="stopBtn" hidden>Stop background queue</button>
+          </div>
+          <p class="notice" id="engineMessage">
+            Background analysis starts automatically after valid notation is entered or imported. Results are cached by
+            exact board position and rules.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Game and engine settings</h2>
+          <div class="fieldgrid">
+            <label class="field">Board width<input id="widthInput" type="number" min="2" max="20" value="7" /></label>
+            <label class="field">Board height<input id="heightInput" type="number" min="2" max="20" value="8" /></label>
+            <label class="field">Piece length<input id="lengthInput" type="number" min="1" max="20" value="2" /></label>
+            <label class="field"
+              >Starting player<select id="startInput">
+                <option value="1">Player 1</option>
+                <option value="2">Player 2</option>
+              </select></label
+            >
+            <label class="field"
+              >Player 1 orientation<select id="p1Input">
+                <option value="H">Horizontal</option>
+                <option value="V">Vertical</option>
+              </select></label
+            >
+            <label class="field"
+              >Player 2 orientation<select id="p2Input">
+                <option value="V">Vertical</option>
+                <option value="H">Horizontal</option>
+              </select></label
+            >
+            <label class="field"
+              >No legal move<select id="noMoveInput">
+                <option value="lose">Current player loses</option>
+                <option value="tie">Draw</option>
+              </select></label
+            >
+            <label class="field"
+              >Full board<select id="fullInput">
+                <option value="tie">Draw</option>
+                <option value="win">Last mover wins</option>
+              </select></label
+            >
+            <label class="field"
+              >Search mode<select id="modeInput">
+                <option value="quick">Quick · 0.4 s</option>
+                <option value="deep" selected>Strong · 1.5 s</option>
+                <option value="custom">Custom time</option>
+              </select></label
+            >
+            <label class="field"
+              >Time per position (seconds)<input
+                id="timeInput"
+                type="number"
+                min="0.1"
+                max="120"
+                step="0.5"
+                value="1.5"
+            /></label>
+            <label class="field"
+              >Maximum depth<input id="depthInput" type="number" min="1" max="80" value="30"
+            /></label>
+            <label class="field"
+              >Candidate moves to show<input id="candidatesInput" type="number" min="1" max="12" value="5"
+            /></label>
+            <label class="field"
+              >Parallel workers<select id="workersInput">
+                <option value="1">1 worker</option>
+                <option value="2" selected>2 workers</option>
+                <option value="3">3 workers</option>
+                <option value="4">4 workers</option>
+                <option value="6">6 workers</option>
+                <option value="8">8 workers</option>
+              </select></label
+            >
+          </div>
+
+          <div class="controls">
+            <button class="btn" id="applySettingsBtn">Apply rules</button>
+            <button class="btn" id="resetBtn">Reset board</button>
+          </div>
+
+          <div class="sectiongap">
+            <h2>Import / export game notation</h2>
+            <p class="notice">
+              Paste the notation copied from your game. When the notation becomes valid, the game imports automatically
+              and background analysis starts. Piece length is inferred from moves when possible.
+            </p>
+            <label class="field"
+              >Notation<textarea id="notationInput" placeholder="p:1:p1o:H:p2o:V:bxh:7x8|0,0:1,0|..."></textarea>
+            </label>
+            <div class="controls">
+              <button class="btn primary" id="importBtn">Import notation</button>
+              <button class="btn" id="exportBtn">Export current game</button>
+              <button class="btn" id="copyBtn">Copy notation</button>
+            </div>
+            <div id="importMessage" class="notice" style="margin-top: 8px"></div>
+          </div>
+
+          <div class="sectiongap">
+            <h2>Move assessment</h2>
+            <div id="moveAssessment" class="status small muted">Move grades appear as position analyses complete.</div>
+            <div id="candidates" class="analysislist"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel sectiongap">
+        <div class="toolbar">
+          <div>
+            <h2 style="margin-bottom: 2px">Move list</h2>
+            <div class="notice">
+              Select a move to jump to that position. Coordinates are column,row and zero-indexed.
+            </div>
+          </div>
+          <span class="tag" id="moveCountTag">0 moves</span>
+        </div>
+        <div class="history" style="margin-top: 12px"><div id="moveList" class="movegrid"></div></div>
+      </section>
+
+      <p class="notice sectiongap">
+        Engine notes: heuristic evaluations are not calibrated win probabilities. Search results retain the last
+        completed iterative-deepening depth. Each worker has its own transposition table. Position results are keyed by
+        board, player to move, and game rules.
+      </p>
+    </main>
+
+    <script>
+      "use strict";
+
+      const P1 = 1,
+        P2 = 2,
+        EMPTY = 0,
+        WIN = 1e9;
+      const $ = (id) => document.getElementById(id);
+      const other = (p) => (p === P1 ? P2 : P1);
+
+      let cfg = { w: 7, h: 8, len: 2, start: 1, o1: "H", o2: "V", noMove: "lose", full: "tie" };
+      let game = { initial: null, states: [], moves: [], players: [], index: 0 };
+      let currentResult = null;
+      let gameAssessments = [];
+      let selectedPositionKey = "";
+      let analysisCache = new Map();
+      let jobQueue = [];
+      let queuedKeys = new Set();
+      let activeJobs = new Map();
+      let workers = [];
+      let workerUrl = null;
+      let nextJobId = 1;
+      let totalNodes = 0;
+      let totalCompleted = 0;
+      let totalPositions = 0;
+      let queueStopped = false;
+      let autoImportTimer = null;
+      let lastAutoNotation = "";
+      let queueGeneration = 0;
+
+      function emptyBoard() {
+        return Array.from({ length: cfg.h }, () => Array(cfg.w).fill(EMPTY));
+      }
+      function clone(b) {
+        return b.map((r) => r.slice());
+      }
+      function full(b) {
+        return b.every((row) => row.every((x) => x !== EMPTY));
+      }
+      function getMoves(b, p) {
+        const out = [],
+          o = p === P1 ? cfg.o1 : cfg.o2;
+        for (let r = 0; r < cfg.h; r++)
+          for (let c = 0; c < cfg.w; c++) {
+            const cells = [];
+            for (let i = 0; i < cfg.len; i++) cells.push({ r: o === "H" ? r : r + i, c: o === "H" ? c + i : c });
+            if (cells.every((x) => x.r >= 0 && x.r < cfg.h && x.c >= 0 && x.c < cfg.w && b[x.r][x.c] === EMPTY))
+              out.push({ cells });
+          }
+        return out;
+      }
+      function play(b, m, p) {
+        const n = clone(b);
+        for (const x of m.cells) n[x.r][x.c] = p;
+        return n;
+      }
+      function terminal(b, p, ply) {
+        if (full(b)) {
+          if (cfg.full === "tie") return 0;
+          const w = other(p);
+          return w === P1 ? WIN - ply : -WIN + ply;
+        }
+        if (getMoves(b, p).length) return null;
+        if (cfg.noMove === "tie") return 0;
+        const w = other(p);
+        return w === P1 ? WIN - ply : -WIN + ply;
+      }
+      function moveKey(m) {
+        return m ? m.cells.map((c) => c.r + "," + c.c).join(";") : "";
+      }
+      function parseMoveKey(k) {
+        if (!k) return null;
+        return {
+          cells: k.split(";").map((s) => {
+            const [r, c] = s.split(",").map(Number);
+            return { r, c };
+          }),
+        };
+      }
+      function coord(m) {
+        if (!m) return "—";
+        const a = m.cells[0],
+          z = m.cells[m.cells.length - 1];
+        return `${a.c},${a.r}:${z.c},${z.r}`;
+      }
+      function positionKey(b, p) {
+        return [cfg.w, cfg.h, cfg.len, cfg.o1, cfg.o2, cfg.noMove, cfg.full, p, ...b.map((row) => row.join(""))].join(
+          ":",
+        );
+      }
+      function playerAtIndex(i) {
+        return i === 0 ? cfg.start : other(game.players[i - 1]);
+      }
+      function getCurrentBoard() {
+        return game.states[game.index] || game.initial || emptyBoard();
+      }
+      function clampInt(v, min, max, def) {
+        const n = Number(v);
+        return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.round(n))) : def;
+      }
+      function updateCfgFromInputs() {
+        cfg.w = clampInt($("widthInput").value, 2, 20, 7);
+        cfg.h = clampInt($("heightInput").value, 2, 20, 8);
+        cfg.len = clampInt($("lengthInput").value, 1, Math.min(cfg.w, cfg.h), 2);
+        cfg.start = Number($("startInput").value) === 2 ? 2 : 1;
+        cfg.o1 = $("p1Input").value === "V" ? "V" : "H";
+        cfg.o2 = $("p2Input").value === "H" ? "H" : "V";
+        cfg.noMove = $("noMoveInput").value === "tie" ? "tie" : "lose";
+        cfg.full = $("fullInput").value === "win" ? "win" : "tie";
+        $("widthInput").value = cfg.w;
+        $("heightInput").value = cfg.h;
+        $("lengthInput").value = cfg.len;
+      }
+      function currentSearchSettings() {
+        const mode = $("modeInput").value;
+        let time = Math.max(0.1, Math.min(120, Number($("timeInput").value) || 1.5));
+        if (mode === "quick") time = Math.min(time, 0.4);
+        if (mode === "deep") time = Math.min(time, 1.5);
+        return {
+          time,
+          maxDepth: Math.min(40, clampInt($("depthInput").value, 1, 80, 30)),
+          candidates: clampInt($("candidatesInput").value, 1, 12, 5),
+        };
+      }
+
+      /*
+       * Every worker owns its own search state and transposition table.
+       * Search results are returned to the main thread; the worker never
+       * manipulates the visible UI.
+       */
+      const WORKER_SOURCE = `
+'use strict';
+const P1=1,P2=2,EMPTY=0,WIN=1e9;
+let stop=false,nodes=0,deadline=0,tt=new Map(),cfg=null;
+const other=p=>p===P1?P2:P1;
+function clone(b){return b.map(r=>r.slice())}
+function full(b){return b.every(row=>row.every(x=>x!==EMPTY))}
+function getMoves(b,p){
+ const out=[],o=p===P1?cfg.o1:cfg.o2;
+ for(let r=0;r<cfg.h;r++)for(let c=0;c<cfg.w;c++){
+  const cells=[];
+  for(let i=0;i<cfg.len;i++)cells.push({r:o==='H'?r:r+i,c:o==='H'?c+i:c});
+  if(cells.every(x=>x.r>=0&&x.r<cfg.h&&x.c>=0&&x.c<cfg.w&&b[x.r][x.c]===EMPTY))out.push({cells});
+ }
+ return out;
+}
+function play(b,m,p){
+ const n=clone(b);for(const x of m.cells)n[x.r][x.c]=p;return n;
+}
+function terminal(b,p,ply){
+ if(full(b)){if(cfg.full==='tie')return 0;const w=other(p);return w===P1?WIN-ply:-WIN+ply}
+ if(getMoves(b,p).length)return null;
+ if(cfg.noMove==='tie')return 0;
+ const w=other(p);return w===P1?WIN-ply:-WIN+ply;
+}
+function mobilityEval(b){
+ const m1=getMoves(b,P1).length,m2=getMoves(b,P2).length;
+ let s=(m1-m2)*100;
+ for(const [n,sign] of [[m1,1],[m2,-1]]){
+  if(n===0)s+=sign*-4200;
+  else if(n===1)s+=sign*-240;
+  else if(n===2)s+=sign*-90;
+  else if(n===3)s+=sign*-25;
+ }
+ let empt=0;for(const row of b)for(const v of row)if(!v)empt++;
+ return s+empt*.05;
+}
+function key(b,p){
+ return cfg.w+'x'+cfg.h+':'+cfg.len+':'+cfg.o1+cfg.o2+':'+cfg.noMove+':'+cfg.full+':'+p+':'+b.map(r=>r.join('')).join('');
+}
+function moveKey(m){return m?m.cells.map(c=>c.r+','+c.c).join(';'):''}
+function expired(){return stop||performance.now()>=deadline}
+function moveOrder(b,ms,p,preferred){
+ const cr=(cfg.w-1)/2,rr=(cfg.h-1)/2;
+ return ms.map(m=>{
+  const a=m.cells[0],z=m.cells[m.cells.length-1];
+  const center=-(Math.abs((a.c+z.c)/2-cr)+Math.abs((a.r+z.r)/2-rr));
+  let edge=0;
+  for(const x of m.cells)if(x.c===0||x.c===cfg.w-1||x.r===0||x.r===cfg.h-1)edge+=.15;
+  return {m,s:(preferred&&moveKey(m)===preferred?1e8:0)+center+edge};
+ }).sort((a,b)=>b.s-a.s).map(x=>x.m);
+}
+function ab(b,p,depth,alpha,beta,ply){
+ nodes++;
+ if((nodes&127)===0&&expired())throw Error('STOP');
+ const t=terminal(b,p,ply);if(t!==null)return t;
+ if(depth<=0)return mobilityEval(b);
+ const k=key(b,p),entry=tt.get(k);let preferred='';
+ if(entry){
+  preferred=entry.best||'';
+  if(entry.depth>=depth){
+   if(entry.flag==='exact')return entry.value;
+   if(entry.flag==='lower')alpha=Math.max(alpha,entry.value);
+   else if(entry.flag==='upper')beta=Math.min(beta,entry.value);
+   if(alpha>=beta)return entry.value;
+  }
+ }
+ const origA=alpha,origB=beta;
+ const ms=moveOrder(b,getMoves(b,p),p,preferred);
+ if(!ms.length)return mobilityEval(b);
+ let best=p===P1?-Infinity:Infinity,bestMove='';
+ for(const m of ms){
+  if(expired())throw Error('STOP');
+  const v=ab(play(b,m,p),other(p),depth-1,alpha,beta,ply+1);
+  if(p===P1){if(v>best){best=v;bestMove=moveKey(m)}alpha=Math.max(alpha,best)}
+  else{if(v<best){best=v;bestMove=moveKey(m)}beta=Math.min(beta,best)}
+  if(alpha>=beta)break;
+ }
+ const flag=best<=origA?'upper':best>=origB?'lower':'exact';
+ if(tt.size>150000)tt.clear();
+ tt.set(k,{value:best,depth,flag,best:bestMove});
+ return best;
+}
+function rootSearch(b, p, depth, previous) {
+    const terminalScore = terminal(b, p, 0);
+  
+    if (terminalScore !== null) {
+      return {
+        move: null,
+        score: terminalScore,
+        depth,
+        rows: []
+      };
+    }
+  
+    const ms = moveOrder(b, getMoves(b, p), p, previous);
+    const rows = [];
+  
+    for (const m of ms) {
+      if (expired()) throw Error('STOP');
+  
+      // Full-window search produces comparable candidate scores.
+      const score = ab(
+        play(b, m, p),
+        other(p),
+        depth - 1,
+        -Infinity,
+        Infinity,
+        1
+      );
+  
+      rows.push({ move: m, score });
+    }
+  
+    rows.sort((a, b) =>
+      p === P1 ? b.score - a.score : a.score - b.score
+    );
+  
+    return {
+      move: rows.length ? rows[0].move : null,
+      score: rows.length ? rows[0].score : terminal(b, p, 0) ?? 0,
+      depth,
+      rows
+    };
+  }
+self.onmessage=function(e){
+ const msg=e.data;
+ if(msg.type==='cancel'){stop=true;return}
+ if(msg.type!=='analyze')return;
+ stop=false;nodes=0;tt=new Map();cfg=msg.cfg;
+ deadline=performance.now()+msg.time*1000;
+ const started=performance.now();
+ let completed=null,preferred='';
+ try{
+  for(let d=1;d<=msg.maxDepth;d++){
+   if(expired())break;
+   try{
+    const r=rootSearch(msg.board,msg.player,d,preferred);
+    completed=r;preferred=moveKey(r.move);
+    self.postMessage({type:'progress',id:msg.id,depth:d,nodes,elapsed:(performance.now()-started)/1000,score:r.score,move:preferred});
+   }catch(err){if(err.message!=='STOP')throw err;break}
+   if(expired())break;
+  }
+  self.postMessage({
+   type:'done',id:msg.id,
+   result:completed?{move:completed.move,score:completed.score,depth:completed.depth,rows:completed.rows,nodes,elapsed:(performance.now()-started)/1000}:null,
+   nodes
+  });
+ }catch(err){
+  self.postMessage({type:'error',id:msg.id,message:String(err.message||err)});
+ }
+};
+`;
+
+      function createWorker() {
+        const blob = new Blob([WORKER_SOURCE], { type: "text/javascript" });
+        if (workerUrl === null) workerUrl = URL.createObjectURL(blob);
+        const w = new Worker(workerUrl);
+        w.onmessage = (e) => handleWorkerMessage(w, e.data);
+        w.onerror = (e) => {
+          console.error("Analysis worker error", e.message);
+          const job = activeJobs.get(w);
+          if (job) {
+            activeJobs.delete(w);
+            queuedKeys.delete(job.key);
+            setMessage("Worker error: " + (e.message || "unknown error") + ". The position can be retried.");
+          }
+          replaceWorker(w);
+          scheduleJobs();
+          updateQueueUI();
+        };
+        return w;
+      }
+      function initWorkers() {
+        destroyWorkers(false);
+        const requested = clampInt($("workersInput").value, 1, 8, 2);
+        const hardware = Number(navigator.hardwareConcurrency) || 2;
+        const count = Math.max(1, Math.min(requested, Math.max(1, hardware)));
+        workers = Array.from({ length: count }, createWorker);
+        scheduleJobs();
+      }
+      function destroyWorkers(requeue = true) {
+        for (const w of workers) {
+          const job = activeJobs.get(w);
+          if (job && requeue && !queuedKeys.has(job.key)) {
+            queuedKeys.add(job.key);
+            jobQueue.push(job);
+          }
+          activeJobs.delete(w);
+          w.terminate();
+        }
+        workers = [];
+      }
+      function replaceWorker(old) {
+        const i = workers.indexOf(old);
+        if (i < 0) return;
+        const nw = createWorker();
+        workers[i] = nw;
+      }
+      function stopAllSearches() {
+        queueStopped = true;
+        jobQueue = [];
+        queuedKeys.clear();
+        for (const [w, job] of activeJobs) {
+          w.terminate();
+          activeJobs.delete(w);
+        }
+        workers = [];
+        const requested = clampInt($("workersInput").value, 1, 8, 2);
+        const hardware = Number(navigator.hardwareConcurrency) || 2;
+        const count = Math.max(1, Math.min(requested, Math.max(1, hardware)));
+        workers = Array.from({ length: count }, createWorker);
+        updateQueueUI();
+        setMessage("Background queue stopped. Completed evaluations remain cached.");
+      }
+      function setMessage(text) {
+        $("engineMessage").textContent = text;
+      }
+      function selectedBoardInfo() {
+        const board = clone(getCurrentBoard()),
+          player = playerAtIndex(game.index);
+        return { board, player, key: positionKey(board, player) };
+      }
+      function updateSelectedPosition() {
+        const info = selectedBoardInfo();
+        selectedPositionKey = info.key;
+        currentResult = analysisCache.get(info.key) || null;
+        drawBoard();
+        if (currentResult) {
+          renderSelectedResult(currentResult);
+        } else if (game.index === game.moves.length && game.index > 0) {
+          const previousBoard = game.states[game.index - 1];
+          const previousPlayer = playerAtIndex(game.index - 1);
+          const previousKey = positionKey(previousBoard, previousPlayer);
+          const previousResult = analysisCache.get(previousKey);
+
+          if (previousResult) {
+            // Preserve the preceding move's evaluation while the final
+            // position remains unevaluated.
+            $("evalTrack").classList.remove("pending");
+            $("evalBar").style.height = evaluationToPercent(previousResult.score).toFixed(1) + "%";
+
+            $("barNumber").textContent = scoreText(previousResult.score);
+            $("evalSummary").textContent = `${scoreText(previousResult.score)} · Previous position`;
+            $("resultTag").textContent = "Previous evaluation";
+            $("statusText").textContent =
+              "Final position selected. The bar retains the preceding position’s evaluation.";
+            $("p1Eval").textContent =
+              previousResult.score > 0 ? "P1 advantage" : previousResult.score < 0 ? "P1 under pressure" : "Balanced";
+            $("p2Eval").textContent =
+              previousResult.score < 0 ? "P2 advantage" : previousResult.score > 0 ? "P2 under pressure" : "Balanced";
+          } else {
+            renderSelectedResult(null);
+          }
+        } else {
+          renderSelectedResult(null);
+        }
+        const queued = queuedKeys.has(info.key) || Array.from(activeJobs.values()).some((j) => j.key === info.key);
+        if (!currentResult && !queued) {
+          enqueuePosition(game.index, 1000);
+          scheduleJobs();
+        } else if (!currentResult) {
+          prioritizePosition(info.key);
+        }
+        updateQueueUI();
+      }
+      function enqueuePosition(index, priority = 0) {
+        if (index < 0 || index >= game.states.length) return;
+        const board = clone(game.states[index]);
+        const player = playerAtIndex(index);
+        const key = positionKey(board, player);
+        if (analysisCache.has(key) || queuedKeys.has(key) || Array.from(activeJobs.values()).some((j) => j.key === key))
+          return;
+        const settings = currentSearchSettings();
+        const job = {
+          id: nextJobId++,
+          key,
+          index,
+          board,
+          player,
+          cfg: { ...cfg },
+          time: settings.time,
+          maxDepth: settings.maxDepth,
+          candidates: settings.candidates,
+          priority,
+          generation: queueGeneration,
+        };
+        queuedKeys.add(key);
+        jobQueue.push(job);
+        jobQueue.sort((a, b) => b.priority - a.priority || a.index - b.index);
+      }
+      function prioritizePosition(key) {
+        const job = jobQueue.find((j) => j.key === key);
+        if (job) {
+          job.priority = 10000;
+          jobQueue.sort((a, b) => b.priority - a.priority || a.index - b.index);
+        }
+      }
+      function enqueueAllPositions() {
+        queueStopped = false;
+        queueGeneration++;
+        totalPositions = game.states.length;
+        for (let i = 0; i < game.states.length; i++) {
+          enqueuePosition(i, i === game.index ? 10000 : Math.max(1, 100 - i));
+        }
+        prioritizePosition(selectedPositionKey);
+        scheduleJobs();
+        updateQueueUI();
+        setMessage("Background analysis queued for all game positions. The selected position has priority.");
+      }
+      function scheduleJobs() {
+        if (queueStopped) return;
+        for (const w of workers) {
+          if (activeJobs.has(w)) continue;
+          let job;
+          while (jobQueue.length && !job) {
+            const candidate = jobQueue.shift();
+            if (candidate.generation !== queueGeneration) continue;
+            if (analysisCache.has(candidate.key)) {
+              queuedKeys.delete(candidate.key);
+              continue;
+            }
+            job = candidate;
+          }
+          if (!job) continue;
+          activeJobs.set(w, job);
+          w.postMessage({
+            type: "analyze",
+            id: job.id,
+            board: job.board,
+            player: job.player,
+            cfg: job.cfg,
+            time: job.time,
+            maxDepth: job.maxDepth,
+          });
+        }
+        updateQueueUI();
+      }
+      function handleWorkerMessage(w, msg) {
+        const job = activeJobs.get(w);
+        if (!job || job.id !== msg.id) return;
+        if (msg.type === "progress") {
+          job.progress = msg;
+          if (job.key === selectedPositionKey) {
+            $("depthStat").textContent = msg.depth;
+            $("nodesStat").textContent = Number(msg.nodes).toLocaleString();
+            $("timeStat").textContent = msg.elapsed.toFixed(2) + "s";
+            $("statusText").textContent =
+              `Searching selected position · depth ${msg.depth} · best move ${coord(parseMoveKey(msg.move))}.`;
+          }
+          updateQueueUI();
+          return;
+        }
+        if (msg.type === "error") {
+          activeJobs.delete(w);
+          queuedKeys.delete(job.key);
+          setMessage("Analysis error: " + msg.message);
+          scheduleJobs();
+          return;
+        }
+        if (msg.type !== "done") return;
+        activeJobs.delete(w);
+        queuedKeys.delete(job.key);
+        totalNodes += Number(msg.nodes) || 0;
+        if (msg.result) {
+          const result = {
+            ...msg.result,
+            positionKey: job.key,
+            player: job.player,
+            elapsed: msg.result.elapsed,
+            nodes: msg.result.nodes,
+            index: job.index,
+          };
+          analysisCache.set(job.key, result);
+          totalCompleted++;
+          updateAssessmentForPosition(job.index, result);
+          if (job.key === selectedPositionKey) {
+            currentResult = result;
+            renderSelectedResult(result);
+          }
+        }
+        renderMoves();
+        scheduleJobs();
+        updateQueueUI();
+      }
+      function updateQueueUI() {
+        const active = activeJobs.size;
+        const queued = jobQueue.length;
+
+        $("queueSummary").textContent = `${active} searching · ${queued} queued · ${analysisCache.size} cached`;
+
+        const denom = Math.max(1, game.states.length);
+
+        const done = game.states.reduce((n, board, i) => {
+          return n + (analysisCache.has(positionKey(board, playerAtIndex(i))) ? 1 : 0);
+        }, 0);
+
+        $("progressFill").style.width = ((100 * done) / denom).toFixed(1) + "%";
+
+        const finished = active === 0 && queued === 0 && done === denom;
+
+        $("stopBtn").hidden = active === 0 && queued === 0;
+        $("analyzeBtn").hidden = finished;
+        $("analyzeGameBtn").hidden = finished;
+
+        if (finished) {
+          setMessage(`Analysis complete. Evaluated ${done} of ${denom} positions.`);
+        }
+        $("progressTrack").hidden = finished || queueStopped;
+      }
+      function scoreLabel(score) {
+        if (score > WIN / 2) return "Win proven";
+        if (score < -WIN / 2) return "Loss proven";
+        if (Math.abs(score) < 0.001) return "Draw / equal";
+        return score > 0 ? "P1 advantage" : "P2 advantage";
+      }
+      function scoreText(score) {
+        if (score > WIN / 2) return "Forced win";
+        if (score < -WIN / 2) return "Forced loss";
+        return `${score > 0 ? "+" : ""}${Math.round(score)}`;
+      }
+      function evaluationToPercent(score) {
+        if (score > WIN / 2) return 99;
+        if (score < -WIN / 2) return 1;
+        const bounded = Math.max(-1800, Math.min(1800, score));
+        return 100 / (1 + Math.exp(-bounded / 420));
+      }
+      function renderSelectedResult(res) {
+        const p = playerAtIndex(game.index);
+        $("turnLabel").textContent = `Player ${p} to move`;
+        $("positionLabel").textContent =
+          game.index === 0 ? "Starting position" : `After ${game.index} move${game.index === 1 ? "" : "s"}`;
+        $("moveCountTag").textContent = `${game.moves.length} moves`;
+        if (!res) {
+          $("resultTag").textContent = "Analyzing";
+          $("statusText").textContent =
+            "This exact position has no completed evaluation yet. Background analysis is queued.";
+          $("evalSummary").textContent = "Evaluation pending · searching in background";
+          $("p1Eval").textContent = "P1 advantage: pending";
+          $("p2Eval").textContent = "P2 advantage: pending";
+          $("evalTrack").classList.add("pending");
+          $("barNumber").textContent = "…";
+          $("evalBar").style.height = "50%";
+          $("depthStat").textContent = "—";
+          $("nodesStat").textContent = "—";
+          $("timeStat").textContent = "—";
+          $("moveAssessment").textContent = "Waiting for this position to finish.";
+          $("candidates").innerHTML = "";
+          return;
+        }
+        $("evalTrack").classList.remove("pending");
+        $("resultTag").textContent = scoreLabel(res.score);
+        $("statusText").textContent =
+          `Selected position · ${scoreText(res.score)} from Player 1's perspective. Best move for Player ${p}: ${coord(res.move)}.`;
+        $("evalSummary").textContent =
+          `${scoreText(res.score)} · ${scoreLabel(res.score)} · heuristic score, not win probability`;
+        $("p1Eval").textContent = res.score > 0 ? "P1 advantage" : res.score < 0 ? "P1 under pressure" : "Balanced";
+        $("p2Eval").textContent = res.score < 0 ? "P2 advantage" : res.score > 0 ? "P2 under pressure" : "Balanced";
+        $("evalBar").style.height = evaluationToPercent(res.score).toFixed(1) + "%";
+        $("evalBar").title = `Selected board evaluation: ${scoreText(res.score)}. Blue is P1; red is P2.`;
+        $("barNumber").textContent = scoreText(res.score);
+        $("depthStat").textContent = res.depth;
+        $("nodesStat").textContent = Number(res.nodes).toLocaleString();
+        $("timeStat").textContent = Number(res.elapsed).toFixed(2) + "s";
+        $("moveAssessment").innerHTML = "";
+        const heading = document.createElement("strong");
+        heading.textContent = "Recommended: " + coord(res.move);
+        $("moveAssessment").appendChild(heading);
+        const detail = document.createElement("div");
+        detail.className = "notice";
+        detail.style.marginTop = "5px";
+        detail.textContent = `Evaluation ${scoreText(res.score)} · depth ${res.depth}. Green marks the recommended next move; amber marks the last played move.`;
+        $("moveAssessment").appendChild(detail);
+        renderCandidates(res);
+        drawBoard();
+      }
+      function renderCandidates(res) {
+        const candidates = $("candidates");
+        candidates.innerHTML = "";
+        const max = clampInt($("candidatesInput").value, 1, 12, 5);
+        (res.rows || []).slice(0, max).forEach((r, i) => {
+          const d = document.createElement("div");
+          d.className = "candidate";
+          const left = document.createElement("div");
+          const strong = document.createElement("strong");
+          strong.textContent = coord(r.move);
+          const note = document.createElement("div");
+          note.className = "notice";
+          note.textContent = i === 0 ? "Top recommendation" : `Candidate ${i + 1}`;
+          left.append(strong, note);
+          const right = document.createElement("div");
+          const score = document.createElement("strong");
+          score.textContent = scoreText(r.score);
+          const sub = document.createElement("div");
+          sub.className = "notice";
+          sub.textContent = "P1 score";
+          right.append(score, sub);
+          d.append(left, right);
+          candidates.appendChild(d);
+        });
+      }
+      function drawBoard() {
+        const b = getCurrentBoard(),
+          el = $("board");
+        el.style.gridTemplateColumns = `repeat(${cfg.w},minmax(0,1fr))`;
+        el.innerHTML = "";
+        const p = playerAtIndex(game.index);
+        const res = analysisCache.get(positionKey(b, p));
+        const bestCells = res && res.move ? res.move.cells : [];
+        const playedCells = game.index > 0 && game.moves[game.index - 1] ? game.moves[game.index - 1].cells : [];
+        for (let r = 0; r < cfg.h; r++)
+          for (let c = 0; c < cfg.w; c++) {
+            const d = document.createElement("div");
+            d.className = "cell";
+            if (b[r][c] === P1) d.classList.add("p1");
+            if (b[r][c] === P2) d.classList.add("p2");
+            if (bestCells.some((x) => x.r === r && x.c === c)) d.classList.add("best");
+            if (playedCells.some((x) => x.r === r && x.c === c)) d.classList.add("played");
+            d.title = `${c},${r}${b[r][c] ? " · Player " + b[r][c] : " · empty"}`;
+            el.appendChild(d);
+          }
+        $("turnLabel").textContent = `Player ${p} to move`;
+        $("positionLabel").textContent =
+          game.index === 0 ? "Starting position" : `After ${game.index} move${game.index === 1 ? "" : "s"}`;
+        $("moveCountTag").textContent = `${game.moves.length} moves`;
+        $("firstBtn").disabled = game.index === 0;
+        $("prevBtn").disabled = game.index === 0;
+        $("nextBtn").disabled = game.index >= game.moves.length;
+        $("lastBtn").disabled = game.index >= game.moves.length;
+        renderMoves();
+      }
+      function renderMoves() {
+        const el = $("moveList");
+        el.innerHTML = "";
+        if (!game.moves.length) {
+          const d = document.createElement("div");
+          d.className = "muted small";
+          d.style.gridColumn = "1/-1";
+          d.style.padding = "8px";
+          d.textContent = "No imported moves yet.";
+          el.appendChild(d);
+          return;
+        }
+        for (let i = 0; i < game.moves.length; i += 2) {
+          const n = document.createElement("div");
+          n.className = "row muted";
+          n.textContent = i / 2 + 1 + ".";
+          el.appendChild(n);
+          for (let j = i; j < Math.min(i + 2, game.moves.length); j++) {
+            const d = document.createElement("div");
+            d.className = "row";
+            const btn = document.createElement("button");
+            btn.className = "movebtn" + (game.index === j + 1 ? " active" : "");
+            btn.textContent = `P${game.players[j]} ${coord(game.moves[j])}`;
+            if (gameAssessments[j]) {
+              const tag = document.createElement("span");
+              tag.className =
+                "tag " +
+                (["Blunder", "Mistake"].includes(gameAssessments[j].grade)
+                  ? "bad"
+                  : ["Inaccuracy"].includes(gameAssessments[j].grade)
+                    ? "warn"
+                    : "good");
+              tag.textContent = gameAssessments[j].grade;
+              btn.append(" ", tag);
+            }
+            btn.addEventListener("click", () => {
+              game.index = j + 1;
+              updateSelectedPosition();
+            });
+            d.appendChild(btn);
+            el.appendChild(d);
+          }
+          if (i + 1 >= game.moves.length) {
+            const d = document.createElement("div");
+            d.className = "row";
+            el.appendChild(d);
+          }
+        }
+      }
+      function updateAssessmentForPosition(i, res) {
+        if (i < 0 || i >= game.moves.length) return;
+        const played = game.moves[i];
+        const row = (res.rows || []).find((x) => moveKey(x.move) === moveKey(played));
+        if (!row) return;
+        const loss = res.player === P1 ? res.score - row.score : row.score - res.score;
+        let grade;
+
+        if (loss <= 0.001) {
+          grade = "Best";
+        } else if (loss <= 30) {
+          grade = "Excellent";
+        } else if (loss <= 100) {
+          grade = "Good";
+        } else if (loss <= 250) {
+          grade = "Inaccuracy";
+        } else if (loss <= 500) {
+          grade = "Mistake";
+        } else {
+          grade = "Blunder";
+        }
+        gameAssessments[i] = { grade, loss, depth: res.depth, best: res.move, playedScore: row.score };
+      }
+      function parseNotation(text) {
+        const parts = text.trim().split("|");
+        if (!parts[0]) throw Error("Notation is empty.");
+        const m = parts[0].match(/^p:(\d+):p1o:([HV]):p2o:([HV]):bxh:(\d+)x(\d+)$/);
+        if (!m) throw Error("Header not recognized. Expected p:1:p1o:H:p2o:V:bxh:7x8");
+        const start = Number(m[1]) === 2 ? 2 : 1,
+          w = Number(m[4]),
+          h = Number(m[5]);
+        if (w < 2 || w > 20 || h < 2 || h > 20) throw Error("Board dimensions must be between 2 and 20.");
+        const rawMoves = [];
+        for (const raw of parts.slice(1)) {
+          if (!raw.trim()) continue;
+          const mm = raw.match(/^(\d+),(\d+):(\d+),(\d+)$/);
+          if (!mm) throw Error("Invalid move token: " + raw);
+          const a = { c: +mm[1], r: +mm[2] },
+            z = { c: +mm[3], r: +mm[4] };
+          if (a.c >= w || z.c >= w || a.r >= h || z.r >= h) throw Error("Move coordinate is outside the board: " + raw);
+          if (Math.abs(a.c - z.c) && Math.abs(a.r - z.r))
+            throw Error("A piece move must be horizontal or vertical: " + raw);
+          rawMoves.push({ a, z, length: Math.abs(a.c - z.c) + Math.abs(a.r - z.r) + 1, raw });
+        }
+        let len = Number($("lengthInput").value) || 2;
+        if (rawMoves.length) {
+          const common = rawMoves[0].length;
+          if (!rawMoves.every((x) => x.length === common)) throw Error("Moves imply different piece lengths.");
+          len = common;
+        }
+        if (len > Math.min(w, h)) throw Error("Piece length exceeds the smaller board dimension.");
+        const nextCfg = { ...cfg, w, h, len, start, o1: m[2], o2: m[3] };
+        const initial = Array.from({ length: h }, () => Array(w).fill(EMPTY));
+        const states = [clone(initial)],
+          moves = [],
+          players = [];
+        let b = initial,
+          p = start;
+        function localMoves(board, player) {
+          const out = [],
+            o = player === P1 ? nextCfg.o1 : nextCfg.o2;
+          for (let r = 0; r < h; r++)
+            for (let c = 0; c < w; c++) {
+              const cells = [];
+              for (let i = 0; i < len; i++) cells.push({ r: o === "H" ? r : r + i, c: o === "H" ? c + i : c });
+              if (cells.every((x) => x.r >= 0 && x.r < h && x.c >= 0 && x.c < w && board[x.r][x.c] === EMPTY))
+                out.push({ cells });
+            }
+          return out;
+        }
+        for (const item of rawMoves) {
+          const { a, z } = item,
+            o = p === 1 ? nextCfg.o1 : nextCfg.o2;
+          const expected = { c: o === "H" ? a.c + len - 1 : a.c, r: o === "V" ? a.r + len - 1 : a.r };
+          if (z.c !== expected.c || z.r !== expected.r)
+            throw Error(`Move ${item.raw} conflicts with Player ${p}'s orientation or piece length.`);
+          const move = {
+            cells: Array.from({ length: len }, (_, i) => ({
+              r: a.r + (o === "V" ? i : 0),
+              c: a.c + (o === "H" ? i : 0),
+            })),
+          };
+          if (!localMoves(b, p).some((x) => moveKey(x) === moveKey(move)))
+            throw Error(`Illegal move for Player ${p}: ${item.raw}. Check the move sequence and rules.`);
+          b = play(b, move, p);
+          moves.push(move);
+          players.push(p);
+          states.push(clone(b));
+          p = other(p);
+        }
+        cfg = nextCfg;
+        $("widthInput").value = w;
+        $("heightInput").value = h;
+        $("lengthInput").value = len;
+        $("startInput").value = start;
+        $("p1Input").value = cfg.o1;
+        $("p2Input").value = cfg.o2;
+        game = { initial: clone(initial), states, moves, players, index: moves.length };
+        gameAssessments = [];
+        return `Imported ${moves.length} move(s). Board ${w}×${h}, piece length ${len}. Background analysis starting.`;
+      }
+      function notation() {
+        const header = `p:${cfg.start}:p1o:${cfg.o1}:p2o:${cfg.o2}:bxh:${cfg.w}x${cfg.h}`;
+        return [header, ...game.moves.map(coord)].join("|");
+      }
+      function clearForNewGame() {
+        stopAllSearches();
+        queueGeneration++;
+        analysisCache.clear();
+        jobQueue = [];
+        queuedKeys.clear();
+        activeJobs.clear();
+        totalNodes = 0;
+        totalCompleted = 0;
+        gameAssessments = [];
+        currentResult = null;
+      }
+      function resetGame() {
+        clearForNewGame();
+        game.initial = emptyBoard();
+        game.states = [clone(game.initial)];
+        game.moves = [];
+        game.players = [];
+        game.index = 0;
+        selectedPositionKey = "";
+        drawBoard();
+        updateSelectedPosition();
+        enqueueAllPositions();
+      }
+      function importFromBox(automatic = false) {
+        const text = $("notationInput").value.trim();
+        if (automatic && text === lastAutoNotation) return;
+        try {
+          updateCfgFromInputs();
+          const message = parseNotation(text);
+          lastAutoNotation = text;
+          clearForNewGame();
+          selectedPositionKey = "";
+          drawBoard();
+          updateSelectedPosition();
+          enqueueAllPositions();
+          $("importMessage").className = "notice success";
+          $("importMessage").textContent = message;
+          if (!automatic) setMessage("Notation imported. Background analysis is running.");
+          return true;
+        } catch (e) {
+          if (!automatic) {
+            $("importMessage").className = "notice error";
+            $("importMessage").textContent = e.message;
+          }
+          return false;
+        }
+      }
+      function analyzeSelected() {
+        const info = selectedBoardInfo();
+        selectedPositionKey = info.key;
+        const cached = analysisCache.get(info.key);
+        if (cached) {
+          currentResult = cached;
+          renderSelectedResult(cached);
+          setMessage("Showing the cached evaluation for the selected position.");
+        } else {
+          enqueuePosition(game.index, 10000);
+          prioritizePosition(info.key);
+          queueStopped = false;
+          scheduleJobs();
+          renderSelectedResult(null);
+          setMessage("Selected position prioritized. The interface remains available while workers search.");
+        }
+      }
+      function applySettings() {
+        updateCfgFromInputs();
+        clearForNewGame();
+        game.initial = emptyBoard();
+        game.states = [clone(game.initial)];
+        game.moves = [];
+        game.players = [];
+        game.index = 0;
+        $("notationInput").value = "";
+        lastAutoNotation = "";
+        drawBoard();
+        updateSelectedPosition();
+        enqueueAllPositions();
+        $("importMessage").textContent = "Rules applied and board reset.";
+      }
+      function moveTo(index) {
+        game.index = Math.max(0, Math.min(game.moves.length, index));
+        updateSelectedPosition();
+      }
+      function assessGame() {
+        enqueueAllPositions();
+        setMessage("All positions are queued. Move assessments will update as each pre-move position finishes.");
+      }
+      function autoImportNotation() {
+        clearTimeout(autoImportTimer);
+        autoImportTimer = setTimeout(() => {
+          const text = $("notationInput").value.trim();
+          if (!text || text === lastAutoNotation) return;
+          importFromBox(true);
+        }, 500);
+      }
+
+      /* UI events */
+      $("analyzeBtn").addEventListener("click", analyzeSelected);
+      $("analyzeGameBtn").addEventListener("click", assessGame);
+      $("stopBtn").addEventListener("click", stopAllSearches);
+      $("firstBtn").addEventListener("click", () => moveTo(0));
+      $("prevBtn").addEventListener("click", () => moveTo(game.index - 1));
+      $("nextBtn").addEventListener("click", () => moveTo(game.index + 1));
+      $("lastBtn").addEventListener("click", () => moveTo(game.moves.length));
+      $("applySettingsBtn").addEventListener("click", applySettings);
+      $("resetBtn").addEventListener("click", applySettings);
+      $("importBtn").addEventListener("click", () => importFromBox(false));
+      $("notationInput").addEventListener("input", autoImportNotation);
+      $("workersInput").addEventListener("change", () => {
+        const jobs = Array.from(activeJobs.values());
+        for (const job of jobs) {
+          if (!queuedKeys.has(job.key)) {
+            queuedKeys.add(job.key);
+            jobQueue.push(job);
+          }
+        }
+        destroyWorkers(false);
+        initWorkers();
+      });
+      $("modeInput").addEventListener("change", () => {
+        const v = $("modeInput").value;
+        if (v === "quick") $("timeInput").value = 0.4;
+        else if (v === "deep") $("timeInput").value = 1.5;
+      });
+      $("exportBtn").addEventListener("click", () => {
+        $("notationInput").value = notation();
+        lastAutoNotation = $("notationInput").value.trim();
+        $("importMessage").textContent = "Current move list exported to the notation box.";
+      });
+      $("copyBtn").addEventListener("click", async () => {
+        const t = notation();
+        $("notationInput").value = t;
+        lastAutoNotation = t.trim();
+        try {
+          await navigator.clipboard.writeText(t);
+          $("importMessage").textContent = "Notation copied.";
+        } catch {
+          $("importMessage").textContent = "Notation placed in the text box; select and copy it manually.";
+        }
+      });
+      $("candidatesInput").addEventListener("change", () => {
+        if (currentResult) renderCandidates(currentResult);
+      });
+
+      /* Start a standalone offline worker pool and analyze the initial board. */
+      try {
+        initWorkers();
+        resetGame();
+      } catch (e) {
+        setMessage(
+          "Could not initialize background workers: " + e.message + ". Try opening this file in a modern browser.",
+        );
+        console.error(e);
+      }
+    </script>
+  </body>
+</html>
