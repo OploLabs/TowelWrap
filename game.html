@@ -414,6 +414,115 @@
           font-size: 9px;
         }
       }
+      
+      .move-history-panel {
+        margin-top: 14px;
+        padding: 16px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+      }
+
+      .move-history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 13px;
+      }
+
+      .move-history-title {
+        font-size: 16px;
+        font-weight: 750;
+      }
+
+      .move-history-subtitle {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .move-notation {
+        padding: 11px 12px;
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--empty);
+        color: var(--text);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+        user-select: text;
+      }
+
+      .move-list {
+        display: grid;
+        gap: 5px;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+
+      .move-list-row {
+        display: grid;
+        grid-template-columns: 35px minmax(0, 1fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        padding: 9px 10px;
+        border-radius: 7px;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .move-list-row:nth-child(odd) {
+        background: var(--panel-2);
+      }
+
+      .move-number {
+        color: var(--muted);
+      }
+
+      .move-player {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .move-player.p1-move {
+        color: var(--p1);
+      }
+
+      .move-player.p2-move {
+        color: var(--p2);
+      }
+
+      .move-list-empty {
+        padding: 12px 4px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+      }
+
+      @media (max-width: 430px) {
+        .move-history-panel {
+          padding: 11px;
+        }
+
+        .move-history-header .button {
+          padding: 8px 10px;
+          font-size: 12px;
+        }
+
+        .move-list-row {
+          gap: 5px;
+          padding: 8px 5px;
+          font-size: 11px;
+        }
+
+        .move-notation {
+          font-size: 11px;
+        }
+      }
+
     </style>
   </head>
 
@@ -487,6 +596,26 @@
             </div>
           </div>
         </div>
+        
+				<div class="move-history-panel">
+				  <div class="move-history-header">
+				    <div>
+				      <div class="move-history-title">Move History</div>
+				      <div class="move-history-subtitle">Game notation</div>
+				    </div>
+				    <button class="button" id="copyNotationButton" type="button">
+				      Copy notation
+				    </button>
+				  </div>
+
+				  <div class="move-notation" id="moveNotation">
+				    No moves yet
+				  </div>
+
+				  <div class="move-list" id="moveList">
+				    <div class="move-list-empty">Moves will appear here.</div>
+				  </div>
+				</div>
       </div>
     </section>
 
@@ -626,6 +755,7 @@
         }
       }
 
+	
       /* =========================================================
    GAME STATE
 ========================================================= */
@@ -633,7 +763,7 @@
       let board = [];
 
       let currentPlayer = P1;
-
+			let gameStartingPlayer = P1;
       let gameOver = false;
 
       let moveCount = 0;
@@ -648,6 +778,10 @@
         1: "H",
         2: "V",
       };
+      
+			let gameStartingPlayer = P1;
+			let moveHistory = [];
+
 
       /* =========================================================
    AI CONFIGURATION
@@ -1290,11 +1424,14 @@
           return false;
         }
 
-        legalMove.cells.forEach((cell) => {
-          board[cell.r][cell.c] = currentPlayer;
-        });
+				const movingPlayer = currentPlayer;
 
-        moveCount++;
+				legalMove.cells.forEach((cell) => {
+				  board[cell.r][cell.c] = movingPlayer;
+				});
+
+				recordMove(movingPlayer, legalMove.cells);
+				moveCount++;
 
         hoverCell = null;
 
@@ -1393,6 +1530,126 @@
       const p2ClockTurn = document.getElementById("p2ClockTurn");
 
       const pauseOverlay = document.getElementById("pauseOverlay");
+
+      /* =========================================================
+         MOVE HISTORY AND NOTATION
+      ========================================================= */
+
+      const moveNotationElement = document.getElementById("moveNotation");
+      const moveListElement = document.getElementById("moveList");
+      const copyNotationButton = document.getElementById("copyNotationButton");
+
+      function formatMoveCoordinate(cell) {
+        // External notation uses x,y (column,row), zero-indexed.
+        return `${cell.c},${cell.r}`;
+      }
+
+      function getGameNotation() {
+        const header =
+          `p:${gameStartingPlayer}:` +
+          `p1o:${orientations[P1]}:` +
+          `p2o:${orientations[P2]}:` +
+          `bxh:${rules.boardWidth}x${rules.boardHeight}`;
+
+        const moves = moveHistory.map((move) => {
+          const first = formatMoveCoordinate(move.cells[0]);
+          const last = formatMoveCoordinate(move.cells[move.cells.length - 1]);
+
+          return `${first}:${last}`;
+        });
+
+        return [header, ...moves].join("|");
+      }
+
+      function recordMove(player, cells) {
+        moveHistory.push({
+          player,
+          cells: cells.map(({ r, c }) => ({ r, c })),
+        });
+
+        renderMoveHistory();
+      }
+
+      function renderMoveHistory() {
+        moveNotationElement.textContent = getGameNotation();
+        moveListElement.replaceChildren();
+
+        if (moveHistory.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "move-list-empty";
+          empty.textContent = "Moves will appear here.";
+          moveListElement.appendChild(empty);
+          return;
+        }
+
+        for (let i = 0; i < moveHistory.length; i += 2) {
+          const row = document.createElement("div");
+          row.className = "move-list-row";
+
+          const number = document.createElement("span");
+          number.className = "move-number";
+          number.textContent = `${Math.floor(i / 2) + 1}.`;
+          row.appendChild(number);
+
+          for (let j = i; j < Math.min(i + 2, moveHistory.length); j++) {
+            const move = moveHistory[j];
+            const playerMove = document.createElement("span");
+
+            playerMove.className =
+              `move-player ${move.player === P1 ? "p1-move" : "p2-move"}`;
+
+            const first = formatMoveCoordinate(move.cells[0]);
+            const last = formatMoveCoordinate(move.cells[move.cells.length - 1]);
+
+            playerMove.textContent =
+              `${move.player === P1 ? "P1" : "P2"}: ${first}:${last}`;
+
+            row.appendChild(playerMove);
+          }
+
+          // Keep columns aligned when the last row has one move.
+          if (i + 1 >= moveHistory.length) {
+            const placeholder = document.createElement("span");
+            row.appendChild(placeholder);
+          }
+
+          moveListElement.appendChild(row);
+        }
+
+        moveListElement.lastElementChild?.scrollIntoView({
+          block: "nearest",
+        });
+      }
+
+      copyNotationButton.addEventListener("click", async () => {
+        const notation = getGameNotation();
+
+        try {
+          await navigator.clipboard.writeText(notation);
+          copyNotationButton.textContent = "Copied!";
+        } catch {
+          // Clipboard access can be unavailable on non-secure pages.
+          const textArea = document.createElement("textarea");
+          textArea.value = notation;
+          textArea.style.position = "fixed";
+          textArea.style.opacity = "0";
+          document.body.appendChild(textArea);
+          textArea.select();
+
+          const copied = document.execCommand("copy");
+          textArea.remove();
+
+          copyNotationButton.textContent = copied ? "Copied!" : "Select notation above";
+        }
+
+        setTimeout(() => {
+          copyNotationButton.textContent = "Copy notation";
+        }, 1500);
+      });
+
+// Optional API for your external engine or integration.
+      window.getTowelWrapNotation = getGameNotation;
+
 
       /* =========================================================
    COLORS / RULES
@@ -1565,6 +1822,7 @@
         } else {
           currentPlayer = Number(setup.startingPlayer) === P2 ? P2 : P1;
         }
+        gameStartingPlayer = currentPlayer;
 
         /* -----------------------------------------
        AI
@@ -1600,6 +1858,9 @@
         gamePaused = false;
 
         aiState.thinking = false;
+        
+        moveCount = 0;
+				moveHistory = [];
 
         gameOverElement.classList.add("hidden");
 
@@ -2228,11 +2489,14 @@
 
         pendingMove = null;
 
-        cells.forEach((cell) => {
-          board[cell.r][cell.c] = currentPlayer;
-        });
+				const movingPlayer = currentPlayer;
 
-        moveCount++;
+				cells.forEach((cell) => {
+				  board[cell.r][cell.c] = movingPlayer;
+				});
+
+				recordMove(movingPlayer, cells);
+				moveCount++;
 
         hoverCell = null;
 
