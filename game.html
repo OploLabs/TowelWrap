@@ -1531,7 +1531,6 @@
 
       const moveNotationElement = document.getElementById("moveNotation");
       const moveListElement = document.getElementById("moveList");
-      const copyNotationButton = document.getElementById("copyNotationButton");
 
       function formatMoveCoordinate(cell) {
         // External notation uses x,y (column,row), zero-indexed.
@@ -1609,57 +1608,67 @@
         }
       }
 
-      copyNotationButton.addEventListener("click", async () => {
-        const notation = getGameNotation();
 
-        try {
-          await navigator.clipboard.writeText(notation);
-          copyNotationButton.textContent = "Copied!";
-        } catch {
-          // Clipboard access can be unavailable on non-secure pages.
-          const textArea = document.createElement("textarea");
-          textArea.value = notation;
-          textArea.style.position = "fixed";
-          textArea.style.opacity = "0";
-          document.body.appendChild(textArea);
-          textArea.select();
+        const copyNotationButton = document.getElementById("copyNotationButton"); 
+        const copyNotationButton2 = document.getElementById("copyNotationButton2");
 
-          const copied = document.execCommand("copy");
-          textArea.remove();
+        async function copyGameNotation(button) {
+          const notation = getGameNotation();
+          const originalText = button.textContent;
 
-          copyNotationButton.textContent = copied ? "Copied!" : "Select notation above";
+          try {
+            // Preferred method: modern clipboard API.
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(notation);
+            } else {
+              // Fallback for Safari and iPad.
+              const textArea = document.createElement("textarea");
+              textArea.value = notation;
+              textArea.readOnly = true;
+
+              textArea.style.position = "fixed";
+              textArea.style.top = "0";
+              textArea.style.left = "0";
+              textArea.style.width = "1px";
+              textArea.style.height = "1px";
+              textArea.style.padding = "0";
+              textArea.style.border = "0";
+              textArea.style.opacity = "0";
+              textArea.style.fontSize = "16px";
+
+              document.body.appendChild(textArea);
+
+              textArea.focus();
+              textArea.select();
+              textArea.setSelectionRange(0, textArea.value.length);
+
+              const copied = document.execCommand("copy");
+              textArea.remove();
+
+              if (!copied) {
+                throw new Error("Copy command failed");
+              }
+            }
+
+            button.textContent = "Copied!";
+          } catch (error) {
+            console.error("Could not copy notation:", error);
+            button.textContent = "Copy failed";
+          }
+
+          setTimeout(() => {
+            button.textContent = originalText;
+          }, 1800);
         }
 
-        setTimeout(() => {
-          copyNotationButton.textContent = "Copy notation";
-        }, 1500);
-      });
+        copyNotationButton.addEventListener("click", () => {
+          copyGameNotation(copyNotationButton);
+        });
 
-      copyNotationButton2.addEventListener("click", async () => {
-        const notation = getGameNotation();
+        copyNotationButton2.addEventListener("click", () => {
+          copyGameNotation(copyNotationButton2);
+        });
 
-        try {
-          await navigator.clipboard.writeText(notation);
-          copyNotationButton2.textContent = "Copied!";
-        } catch {
-          // Clipboard access can be unavailable on non-secure pages.
-          const textArea = document.createElement("textarea");
-          textArea.value = notation;
-          textArea.style.position = "fixed";
-          textArea.style.opacity = "0";
-          document.body.appendChild(textArea);
-          textArea.select();
-
-          const copied = document.execCommand("copy");
-          textArea.remove();
-
-          copyNotationButton2.textContent = copied ? "Copied!" : "Select notation above";
-        }
-
-        setTimeout(() => {
-          copyNotationButton.textContent = "Copy notation";
-        }, 1500);
-      });
 
       // Optional API for your external engine or integration.
       window.getTowelWrapNotation = getGameNotation;
