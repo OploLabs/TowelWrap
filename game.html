@@ -641,7 +641,7 @@
         <div class="game-over-actions">
           <button class="button primary large" id="playAgainButton" type="button">Play Again</button>
 
-          <button class="button large" id="copyNotationButton2" type="button">Copy notation</button>
+          <button class="button large" id="openAnalyzerButton" type="button">Open Analyzer</button>
 
           <button class="button large" id="gameOverMenuButton" type="button">Main Menu</button>
         </div>
@@ -1553,6 +1553,29 @@
 
         return [header, ...moves].join("|");
       }
+      function encodeNotationForUrl(text) {
+        const bytes = new TextEncoder().encode(text);
+        let binary = "";
+      
+        for (const byte of bytes) {
+          binary += String.fromCharCode(byte);
+        }
+      
+        return btoa(binary)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+      }
+      
+      function openAnalyzer() {
+        const notation = getGameNotation();
+        const encoded = encodeNotationForUrl(notation);
+      
+        const analyzerUrl = new URL("https://oplolabs.github.io/TowelWrap/");
+        analyzerUrl.searchParams.set("n", encoded);
+      
+        window.open(analyzerUrl.toString(), "_blank", "noopener,noreferrer");
+      }
 
       function recordMove(player, cells) {
         moveHistory.push({
@@ -1610,7 +1633,7 @@
 
 
         const copyNotationButton = document.getElementById("copyNotationButton"); 
-        const copyNotationButton2 = document.getElementById("copyNotationButton2");
+        const openAnalyzerButton = document.getElementById("openAnalyzerButton");
 
         async function copyGameNotation(button) {
           const notation = getGameNotation();
@@ -1665,9 +1688,7 @@
           copyGameNotation(copyNotationButton);
         });
 
-        copyNotationButton2.addEventListener("click", () => {
-          copyGameNotation(copyNotationButton2);
-        });
+        openAnalyzerButton.addEventListener("click", openAnalyzer);
 
 
       // Optional API for your external engine or integration.
