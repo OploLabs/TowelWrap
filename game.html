@@ -1571,7 +1571,7 @@
         const notation = getGameNotation();
         const encoded = encodeNotationForUrl(notation);
       
-        const analyzerUrl = new URL("https://oplolabs.github.io/TowelWrap/");
+        const analyzerUrl = new URL("https://oplolabs.github.io/TowelWrap/analyzer");
         analyzerUrl.searchParams.set("n", encoded);
       
         window.open(analyzerUrl.toString(), "_blank", "noopener,noreferrer");
