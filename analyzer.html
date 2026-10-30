@@ -627,10 +627,11 @@
             <label class="field"
               >Notation<textarea id="notationInput" placeholder="p:1:p1o:H:p2o:V:bxh:7x8|0,0:1,0|..."></textarea>
             </label>
-            <div class="controls">
-              <button class="btn primary" id="importBtn">Import notation</button>
-              <button class="btn" id="exportBtn">Export current game</button>
+          <div class="controls">
+            <button class="btn primary" id="importBtn">Import notation</button>
+            <button class="btn" id="exportBtn">Export current game</button>
               <button class="btn" id="copyBtn">Copy notation</button>
+              <button class="btn" id="shareBtn">Share game URL</button>
             </div>
             <div id="importMessage" class="notice" style="margin-top: 8px"></div>
           </div>
@@ -1488,6 +1489,73 @@ self.onmessage=function(e){
         const header = `p:${cfg.start}:p1o:${cfg.o1}:p2o:${cfg.o2}:bxh:${cfg.w}x${cfg.h}`;
         return [header, ...game.moves.map(coord)].join("|");
       }
+      function encodeGameNotation(text) {
+        const bytes = new TextEncoder().encode(text);
+        let binary = "";
+      
+        bytes.forEach((b) => {
+          binary += String.fromCharCode(b);
+        });
+      
+        return btoa(binary)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+      }
+      
+      function decodeGameNotation(encoded) {
+        const base64 = encoded
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+      
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+      
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      
+        return new TextDecoder().decode(bytes);
+      }
+      function shareGameUrl() {
+        const encoded = encodeGameNotation(notation());
+      
+        const url = new URL(window.location.href);
+        url.searchParams.set("n", encoded);
+      
+        navigator.clipboard.writeText(url.toString())
+          .then(() => {
+            $("importMessage").className = "notice success";
+            $("importMessage").textContent = "Shareable game URL copied!";
+          })
+          .catch(() => {
+            $("importMessage").className = "notice success";
+            $("importMessage").textContent = url.toString();
+          });
+      }
+      
+      function importGameFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const encoded = params.get("n");
+      
+        if (!encoded) return;
+      
+        try {
+          const decoded = decodeGameNotation(encoded);
+      
+          $("notationInput").value = decoded;
+      
+          if (importFromBox(false)) {
+            lastAutoNotation = decoded.trim();
+      
+            $("importMessage").className = "notice success";
+            $("importMessage").textContent =
+              "Game successfully loaded from share URL. Background analysis started.";
+          }
+        } catch (e) {
+          $("importMessage").className = "notice error";
+          $("importMessage").textContent =
+            "Could not load game from URL: " + e.message;
+        }
+      }
       function clearForNewGame() {
         stopAllSearches();
         queueGeneration++;
@@ -1597,6 +1665,7 @@ self.onmessage=function(e){
       $("resetBtn").addEventListener("click", applySettings);
       $("importBtn").addEventListener("click", () => importFromBox(false));
       $("notationInput").addEventListener("input", autoImportNotation);
+      $("shareBtn").addEventListener("click", shareGameUrl);
       $("workersInput").addEventListener("change", () => {
         const jobs = Array.from(activeJobs.values());
         for (const job of jobs) {
@@ -1636,7 +1705,12 @@ self.onmessage=function(e){
       /* Start a standalone offline worker pool and analyze the initial board. */
       try {
         initWorkers();
-        resetGame();
+        
+        if (new URLSearchParams(window.location.search).has("n")) {
+          importGameFromUrl();
+        } else {
+          resetGame();
+        }
       } catch (e) {
         setMessage(
           "Could not initialize background workers: " + e.message + ". Try opening this file in a modern browser.",
